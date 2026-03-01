@@ -50,15 +50,8 @@
       box-shadow: 0 0 20px rgba(48, 209, 88, 0.35), 0 0 6px rgba(48, 209, 88, 0.25), inset 0 0 8px rgba(48, 209, 88, 0.08);
     }
     .btn-colorful {
-      background: linear-gradient(135deg, #30D158, #14B8A6, #0EA5E9, #8B5CF6) !important;
-      color: #fff !important;
-      background-size: 200% 200%;
-      animation: btn-gradient-shift 3s ease infinite;
-    }
-    @keyframes btn-gradient-shift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      background: #30D158 !important;
+      color: #000 !important;
     }
     #hero-form button:disabled {
       opacity: 0.5;
@@ -80,7 +73,7 @@
 
   <!-- Toast -->
   <div id="toast" class="toast fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-white/[0.06] rounded-2xl px-6 py-4 glass">
-    <p class="text-sm font-medium text-success">You're on the list. We'll be in touch.</p>
+    <p id="toast-msg" class="text-sm font-medium text-success">You're on the list. We'll be in touch.</p>
   </div>
 
   <!-- Header -->
@@ -248,7 +241,7 @@
               Join the Waitlist
             </button>
           </form>
-          <p class="text-xs text-white/40">Early access. No spam. Unsubscribe anytime.</p>
+          <p class="text-xs text-white/40">Early access. No spam. We'll only email you about our launch.</p>
         </div>
       </div>
     </section>
@@ -654,18 +647,45 @@
       }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
       document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
-      // Forms
-      function submit(form) {
-        const input = form.querySelector('input[type="email"]');
-        const email = input.value.trim();
-        if (!email) return;
-        console.log('Waitlist signup:', email);
+      // Forms — Google Sheets integration
+      const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL'; // Replace with your deployed Apps Script URL
+
+      function showToast(message, isError) {
+        const msg = $('toast-msg');
+        msg.textContent = message;
+        msg.className = isError ? 'text-sm font-medium text-red-400' : 'text-sm font-medium text-success';
         $('toast').classList.add('show');
         setTimeout(() => $('toast').classList.remove('show'), 3000);
-        input.value = '';
-        input.classList.remove('email-glow');
+      }
+
+      async function submit(form) {
+        const input = form.querySelector('input[type="email"]');
         const btn = form.querySelector('button[type="submit"]');
-        btn.classList.remove('btn-colorful');
+        const email = input.value.trim();
+        if (!email) return;
+
+        const originalText = btn.textContent;
+        btn.textContent = 'Joining...';
+        btn.disabled = true;
+
+        try {
+          const res = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ email }),
+          });
+          if (!res.ok) throw new Error('Request failed');
+          showToast("You're on the list. We'll be in touch.", false);
+          input.value = '';
+          input.classList.remove('email-glow');
+          btn.classList.remove('btn-colorful');
+        } catch (err) {
+          showToast('Something went wrong. Please try again.', true);
+          btn.disabled = false;
+          btn.textContent = originalText;
+          return;
+        }
+
+        btn.textContent = originalText;
         btn.disabled = true;
       }
       $('hero-form').addEventListener('submit', function(e) { e.preventDefault(); submit(this); });
