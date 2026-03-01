@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Triad — Discipline, Installed.</title>
+  <meta name="description" content="TRIAD — The mobile-first discipline and habit-tracking app. Set 3 daily goals, build streaks, and hold each other accountable.">
+  <meta property="og:title" content="Triad — Discipline, Installed.">
+  <meta property="og:description" content="Set 3 goals. Hold each other accountable. Never break the chain.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Triad — Discipline, Installed.">
+  <meta name="twitter:description" content="Set 3 goals. Hold each other accountable. Never break the chain.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='61' height='61' viewBox='0 0 317 317' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='317' height='317' rx='108' fill='%23000000'/%3E%3Crect width='191' height='32' fill='%23FFFFFF' transform='translate(158.5 241.2) translate(-95.5 -16)'/%3E%3Crect width='190.2' height='31.7' fill='%23FFFFFF' transform='translate(110.75 158.5) rotate(-60) translate(-95.1 -15.85)'/%3E%3Crect width='190.2' height='31.7' fill='%23FFFFFF' transform='translate(206.25 158.5) rotate(-120) translate(-95.1 -15.85)'/%3E%3Crect width='127' height='8' fill='%23000000' transform='translate(158.5 241.2) translate(-63.5 -4)'/%3E%3Crect width='126.8' height='7.92' fill='%23000000' transform='translate(110.75 158.5) rotate(-60) translate(-63.4 -3.96)'/%3E%3Crect width='126.8' height='7.92' fill='%23000000' transform='translate(206.25 158.5) rotate(-120) translate(-63.4 -3.96)'/%3E%3Ccircle cx='158.5' cy='75.8' r='31.5' fill='%23FFFFFF'/%3E%3Ccircle cx='63' cy='241.2' r='31.5' fill='%23FFFFFF'/%3E%3Ccircle cx='254' cy='241.2' r='32.5' fill='%23FFFFFF'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] },
+          colors: { card: '#1C1C1E', success: '#30D158', petrol: '#14B8A6', secondary: '#98989E' },
+          borderRadius: { '2xl': '16px', '3xl': '24px' },
+        },
+      },
+    }
+  </script>
+  <style>
+    * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #000; color: #fff; }
+
+    .glass { backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%); }
+    .press { transition: transform 0.15s ease; }
+    .press:active { transform: scale(0.97); }
+
+    .fade-up { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .stagger-1 { transition-delay: 0.1s; }
+    .stagger-2 { transition-delay: 0.2s; }
+    .stagger-3 { transition-delay: 0.3s; }
+
+    .toast { transform: translateY(20px); opacity: 0; transition: all 0.3s ease-out; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    @keyframes pact-complete-pop {
+      0% { transform: scale(0.3); opacity: 0; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes nudge-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+  </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+
+  <!-- Toast -->
+  <div id="toast" class="toast fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-white/[0.06] rounded-2xl px-6 py-4 glass">
+    <p class="text-sm font-medium text-success">You're on the list. We'll be in touch.</p>
+  </div>
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-40 glass bg-black/70 border-b border-white/[0.06]">
+    <div class="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <svg width="36" height="36" viewBox="0 0 317 317" fill="none">
+          <rect width="317" height="317" rx="108" fill="#000"/>
+          <rect width="191" height="32" fill="#FFF" transform="translate(158.5 241.2) translate(-95.5 -16)"/>
+          <rect width="190.2" height="31.7" fill="#FFF" transform="translate(110.75 158.5) rotate(-60) translate(-95.1 -15.85)"/>
+          <rect width="190.2" height="31.7" fill="#FFF" transform="translate(206.25 158.5) rotate(-120) translate(-95.1 -15.85)"/>
+          <rect width="127" height="8" fill="#000" transform="translate(158.5 241.2) translate(-63.5 -4)"/>
+          <rect width="126.8" height="7.92" fill="#000" transform="translate(110.75 158.5) rotate(-60) translate(-63.4 -3.96)"/>
+          <rect width="126.8" height="7.92" fill="#000" transform="translate(206.25 158.5) rotate(-120) translate(-63.4 -3.96)"/>
+          <circle cx="158.5" cy="75.8" r="31.5" fill="#FFF"/>
+          <circle cx="63" cy="241.2" r="31.5" fill="#FFF"/>
+          <circle cx="254" cy="241.2" r="32.5" fill="#FFF"/>
+        </svg>
+        <span class="text-lg font-extrabold tracking-tight">TRIAD</span>
+      </div>
+      <a href="#waitlist" class="text-sm font-semibold text-white/80 hover:text-white transition-colors press">Join Waitlist</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero: Live Preview -->
+    <section class="min-h-screen flex flex-col items-center justify-center pt-20 pb-10 px-5">
+      <div class="w-full max-w-md flex flex-col items-center">
+
+        <!-- Caption -->
+        <div class="w-full text-center py-4 min-h-[72px] flex items-center justify-center px-2">
+          <p id="pact-caption" class="text-white text-[28px] sm:text-[32px] font-black leading-[1.1] tracking-tight" style="transition: opacity 0.25s ease;">
+            <span style="color:#30D158">2 friends.</span> One pact.
+          </p>
+        </div>
+
+        <!-- Pact Live Preview -->
+        <div id="pact-preview-wrap" style="transition: opacity 0.8s ease;">
+          <div class="overflow-hidden relative" style="height: 412px; padding-top: 60px; padding-bottom: 60px;">
+            <div id="pact-container" class="relative mx-auto" style="width: 260px; height: 292px; transform-origin: center center; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);">
+
+              <!-- Duo SVG -->
+              <div id="duo-wrap" class="absolute" style="left: 14px; top: 75px; transition: opacity 0.6s ease;">
+                <svg width="232" height="142" viewBox="0 0 80 49">
+                  <line id="duo-bar-left" x1="14" y1="24.5" x2="40" y2="24.5" stroke="#FFF" stroke-width="7" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1);"/>
+                  <line id="duo-bar-right" x1="40" y1="24.5" x2="66" y2="24.5" stroke="#30D158" stroke-width="7" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1);"/>
+                  <line x1="20" y1="24.5" x2="60" y2="24.5" stroke="#000" stroke-width="1.7"/>
+                  <ellipse id="duo-vertex-left" cx="14" cy="24.5" rx="7" ry="7" fill="#FFF" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1);"/>
+                  <ellipse id="duo-vertex-right" cx="66" cy="24.5" rx="7" ry="7" fill="#30D158" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1);"/>
+                </svg>
+              </div>
+
+              <!-- Triad SVG -->
+              <div id="triad-wrap" class="absolute" style="left: 0; top: 28px; opacity: 0; transition: opacity 0.6s ease;">
+                <svg width="260" height="232" viewBox="0 0 55 49">
+                  <line id="t-bar-l" x1="7" y1="42" x2="27.5" y2="42" stroke="#FFF" stroke-width="7" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                  <line id="t-bar-r" x1="27.5" y1="42" x2="48" y2="42" stroke="#FFF" stroke-width="7" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                  <line id="t-dl-u" x1="27.5" y1="7" x2="17.25" y2="24.5" stroke="#FFF" stroke-width="6.8" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                  <line id="t-dl-l" x1="17.25" y1="24.5" x2="7" y2="42" stroke="#FFF" stroke-width="6.8" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                  <line id="t-dr-u" x1="27.5" y1="7" x2="37.75" y2="24.5" stroke="#FFF" stroke-width="6.8" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                  <line id="t-dr-l" x1="37.75" y1="24.5" x2="48" y2="42" stroke="#FFF" stroke-width="6.8" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                  <line id="t-acc-b" x1="13" y1="42" x2="41" y2="42" stroke="#000" stroke-width="1.7" style="transition: opacity 0.5s ease;"/>
+                  <line id="t-acc-l" x1="24" y1="13" x2="10" y2="36" stroke="#000" stroke-width="1.7" style="transition: opacity 0.5s ease;"/>
+                  <line id="t-acc-r" x1="31" y1="13" x2="45" y2="36" stroke="#000" stroke-width="1.7" style="transition: opacity 0.5s ease;"/>
+                  <ellipse id="t-v-bl" cx="7" cy="42" rx="7" ry="7" fill="#FFF" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                  <ellipse id="t-v-br" cx="48" cy="42" rx="7" ry="7" fill="#FFF" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                  <ellipse id="t-v-top" cx="27.5" cy="7" rx="7" ry="7" fill="#FFF" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                </svg>
+              </div>
+
+              <!-- Node 0: You -->
+              <div id="node-0" class="absolute" style="left: 55px; top: 146px; transition: left 0.7s cubic-bezier(0.4,0,0.2,1), top 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;">
+                <div style="width: 66px; height: 66px; transform: translate(-50%,-50%);" class="relative flex items-center justify-center rounded-full">
+                  <svg id="ring-0" class="absolute inset-0 w-full h-full" style="transform: rotate(-90deg);" viewBox="0 0 36 36" width="66" height="66">
+                    <path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="rgba(48,209,88,0.15)" stroke-width="3.5"/>
+                    <path id="rp-0" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#30D158" stroke-width="3.5" stroke-dasharray="67, 100" stroke-linecap="round" style="transition: stroke-dasharray 0.5s ease;"/>
+                  </svg>
+                  <div id="comp-0" class="absolute inset-0 flex items-center justify-center" style="display:none;">
+                    <div class="absolute inset-0 rounded-full border-2 border-black" style="background:#30D158; box-shadow: 0 0 16px -2px rgba(48,209,88,0.5);"></div>
+                    <svg class="relative z-10" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                </div>
+                <div id="nudge-0" class="absolute" style="display:none; left:0; top:-40px; transform:translateX(-50%);">
+                  <div class="px-2.5 py-1 rounded-full whitespace-nowrap" style="background:#FF9F0A; box-shadow: 0 4px 12px rgba(255,159,10,0.3); animation: nudge-pulse 1s ease-in-out infinite;">
+                    <span class="text-black text-[10px] font-bold">Nudge sent!</span>
+                  </div>
+                </div>
+                <div id="lbl-0" class="absolute text-[14px] font-semibold text-white whitespace-nowrap" style="left:0; transform:translateX(-50%); top:39px;">You</div>
+              </div>
+
+              <!-- Node 1: Atlas -->
+              <div id="node-1" class="absolute" style="left: 205px; top: 146px; transition: left 0.7s cubic-bezier(0.4,0,0.2,1), top 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;">
+                <div style="width: 66px; height: 66px; transform: translate(-50%,-50%);" class="relative flex items-center justify-center rounded-full">
+                  <svg id="ring-1" class="absolute inset-0 w-full h-full" style="transform: rotate(-90deg); display:none;" viewBox="0 0 36 36" width="66" height="66">
+                    <path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="rgba(48,209,88,0.15)" stroke-width="3.5"/>
+                    <path id="rp-1" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#30D158" stroke-width="3.5" stroke-dasharray="100, 100" stroke-linecap="round" style="transition: stroke-dasharray 0.5s ease;"/>
+                  </svg>
+                  <div id="comp-1" class="absolute inset-0 flex items-center justify-center">
+                    <div class="absolute inset-0 rounded-full border-2 border-black" style="background:#30D158; box-shadow: 0 0 16px -2px rgba(48,209,88,0.5);"></div>
+                    <svg class="relative z-10" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                </div>
+                <div id="nudge-1" class="absolute" style="display:none; left:0; top:-40px; transform:translateX(-50%);">
+                  <div class="px-2.5 py-1 rounded-full whitespace-nowrap" style="background:#FF9F0A; box-shadow: 0 4px 12px rgba(255,159,10,0.3); animation: nudge-pulse 1s ease-in-out infinite;">
+                    <span class="text-black text-[10px] font-bold">Nudge sent!</span>
+                  </div>
+                </div>
+                <div id="lbl-1" class="absolute text-[14px] font-semibold text-white whitespace-nowrap" style="left:0; transform:translateX(-50%); top:39px;">Atlas</div>
+              </div>
+
+              <!-- Node 2: Marcus -->
+              <div id="node-2" class="absolute" style="left: 227px; top: 227px; opacity: 0; transition: left 0.7s cubic-bezier(0.4,0,0.2,1), top 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;">
+                <div style="width: 66px; height: 66px; transform: translate(-50%,-50%);" class="relative flex items-center justify-center rounded-full">
+                  <svg id="ring-2" class="absolute inset-0 w-full h-full" style="transform: rotate(-90deg);" viewBox="0 0 36 36" width="66" height="66">
+                    <path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="rgba(48,209,88,0.15)" stroke-width="3.5"/>
+                    <path id="rp-2" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#30D158" stroke-width="3.5" stroke-dasharray="33, 100" stroke-linecap="round" style="transition: stroke-dasharray 0.5s ease;"/>
+                  </svg>
+                  <div id="comp-2" class="absolute inset-0 flex items-center justify-center" style="display:none;">
+                    <div class="absolute inset-0 rounded-full border-2 border-black" style="background:#30D158; box-shadow: 0 0 16px -2px rgba(48,209,88,0.5);"></div>
+                    <svg class="relative z-10" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                </div>
+                <div id="nudge-2" class="absolute" style="display:none; left:0; top:-40px; transform:translateX(-50%);">
+                  <div class="px-2.5 py-1 rounded-full whitespace-nowrap" style="background:#FF9F0A; box-shadow: 0 4px 12px rgba(255,159,10,0.3); animation: nudge-pulse 1s ease-in-out infinite;">
+                    <span class="text-black text-[10px] font-bold">Nudge sent!</span>
+                  </div>
+                </div>
+                <div id="lbl-2" class="absolute text-[14px] font-semibold text-white whitespace-nowrap" style="left:0; transform:translateX(-50%); top:39px;">Marcus</div>
+              </div>
+
+              <!-- Objectives Card (shown during zoom on Marcus) -->
+              <div id="objectives-card" class="absolute" style="display:none; opacity:0; left:170px; top:125px; transform:translate(-50%, 0); transition: opacity 0.4s ease; z-index:10; pointer-events:none;">
+                <div class="rounded-xl border border-white/[0.06] px-3 py-2.5" style="background:#1C1C1E; min-width:120px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                  <p class="text-[5px] font-bold text-white/40 uppercase tracking-wider mb-1.5" style="letter-spacing:0.05em;">Today's Goals</p>
+                  <div class="flex flex-col gap-1">
+                    <div id="obj-0" class="flex items-center gap-1.5">
+                      <span id="obj-check-0" class="text-[7px]" style="color:#30D158;">&#10003;</span>
+                      <span id="obj-text-0" class="text-[6px] font-medium" style="color:#30D158;">Gym &mdash; 45 min</span>
+                    </div>
+                    <div id="obj-1" class="flex items-center gap-1.5">
+                      <span id="obj-check-1" class="text-[7px]" style="color:rgba(255,255,255,0.3);">&#9675;</span>
+                      <span id="obj-text-1" class="text-[6px] font-medium text-white/70">Read &mdash; 20 pages</span>
+                    </div>
+                    <div id="obj-2" class="flex items-center gap-1.5">
+                      <span id="obj-check-2" class="text-[7px]" style="color:rgba(255,255,255,0.3);">&#9675;</span>
+                      <span id="obj-text-2" class="text-[6px] font-medium text-white/70">Cold plunge</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Tagline + CTA -->
+        <div id="waitlist" class="w-full text-center mt-4">
+          <p class="text-xl sm:text-2xl font-bold tracking-wide mb-1">DISCIPLINE, INSTALLED.</p>
+          <p class="text-sm text-secondary mb-6">3 goals. One deadline. Zero excuses.</p>
+          <form id="hero-form" class="flex flex-col sm:flex-row gap-3 mb-3" onsubmit="return false;">
+            <input type="email" placeholder="Your email address" required
+              class="flex-1 bg-card border border-white/10 rounded-2xl py-4 px-4 text-white placeholder:text-white/30 outline-none focus:border-white/30 text-base transition-colors">
+            <button type="submit" class="bg-white text-black rounded-2xl py-4 px-6 font-semibold text-base press whitespace-nowrap sm:w-auto w-full">
+              Join the Waitlist
+            </button>
+          </form>
+          <p class="text-xs text-white/40">Early access. No spam. Unsubscribe anytime.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-20 px-5">
+      <div class="max-w-5xl mx-auto">
+        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-white/40 mb-10 text-center">How it works</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div class="fade-up stagger-1 relative rounded-2xl p-7 pt-8 border border-[#30D158]/30" style="background: linear-gradient(165deg, rgba(48,209,88,0.15), rgba(48,209,88,0.03) 60%, transparent); box-shadow: 0 0 50px -8px rgba(48,209,88,0.25), inset 0 1px 0 rgba(48,209,88,0.2);">
+            <div class="absolute top-0 left-7 right-7 h-[2px]" style="background: linear-gradient(90deg, transparent, #30D158, transparent);"></div>
+            <span class="text-[40px] font-black leading-none block mb-4" style="color: rgba(48,209,88,0.4);">01</span>
+            <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Set 3 daily goals</h3>
+            <p class="text-[14px] text-white/55 leading-[1.6]">Not ten. Not one. Three things that actually move the needle — every single day.</p>
+          </div>
+          <div class="fade-up stagger-2 relative rounded-2xl p-7 pt-8 border border-[#30D158]/30" style="background: linear-gradient(165deg, rgba(48,209,88,0.15), rgba(48,209,88,0.03) 60%, transparent); box-shadow: 0 0 50px -8px rgba(48,209,88,0.25), inset 0 1px 0 rgba(48,209,88,0.2);">
+            <div class="absolute top-0 left-7 right-7 h-[2px]" style="background: linear-gradient(90deg, transparent, #30D158, transparent);"></div>
+            <span class="text-[40px] font-black leading-none block mb-4" style="color: rgba(48,209,88,0.4);">02</span>
+            <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Build the streak</h3>
+            <p class="text-[14px] text-white/55 leading-[1.6]">Show up consistently and watch your streak grow. Miss a day and everyone in your pact knows.</p>
+          </div>
+          <div class="fade-up stagger-3 relative rounded-2xl p-7 pt-8 border border-[#30D158]/30" style="background: linear-gradient(165deg, rgba(48,209,88,0.15), rgba(48,209,88,0.03) 60%, transparent); box-shadow: 0 0 50px -8px rgba(48,209,88,0.25), inset 0 1px 0 rgba(48,209,88,0.2);">
+            <div class="absolute top-0 left-7 right-7 h-[2px]" style="background: linear-gradient(90deg, transparent, #30D158, transparent);"></div>
+            <span class="text-[40px] font-black leading-none block mb-4" style="color: rgba(48,209,88,0.4);">03</span>
+            <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Hold each other to it</h3>
+            <p class="text-[14px] text-white/55 leading-[1.6]">Form a pact with 2 or 3 friends. Send nudges when someone slacks. Win together.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/[0.06] py-8 px-5">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-white/30">&copy; 2026 Triad</p>
+      <div class="flex items-center gap-5">
+        <a href="#" class="text-white/30 hover:text-white/60 transition-colors press" aria-label="X (Twitter)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href="#" class="text-white/30 hover:text-white/60 transition-colors press" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ─── Constants ──────────────────────────────────────────
+    const W = '#FFFFFF', G = '#30D158', BK = '#000000';
+    const NS = 66; // node size
+
+    // Triad vertex positions (px in 260×292 container)
+    const TP = [
+      { x: 130, y: 61 },   // top = You
+      { x: 33, y: 227 },   // bl = Atlas
+      { x: 227, y: 227 },  // br = Marcus
+    ];
+    // Duo vertex positions (centered in same container)
+    const DP = [
+      { x: 55, y: 146 },   // left = You
+      { x: 205, y: 146 },  // right = Atlas
+    ];
+    // Zoom transforms per triad vertex
+    const ZT = [
+      'scale(2.2) translate(0px, 25%)',
+      'scale(2.2) translate(30%, -10%)',
+      'scale(2.2) translate(-30%, -10%)',
+    ];
+
+    const MEMBERS = [
+      { name: 'You', total: 3, init: 2 },
+      { name: 'Atlas', total: 3, init: 3 },
+      { name: 'Marcus', total: 3, init: 1 },
+    ];
+
+    // ─── State ──────────────────────────────────────────────
+    let st = { shape: 'duo', cc: [2, 3, 1], zoom: null, nudge: null, op: 1 };
+    let prevComp = [false, true, false]; // track previous complete state
+    let timers = [];
+    let captionKey = null;
+    let svgPhase = 'duo'; // 'duo' | 'triad' | 'transitioning'
+    let objVisible = false;
+
+    // ─── Animation Steps ────────────────────────────────────
+    const STEPS = [
+      { d: 0,     a: 'duo' },
+      { d: 3500,  a: 'triad' },
+      { d: 7000,  a: 'reset' },
+      { d: 10000, a: 'zin', m: 2 },
+      { d: 13000, a: 'nudge', m: 2 },
+      { d: 16000, a: 'nc' },
+      { d: 16100, a: 'comp', m: 2, c: 2 },
+      { d: 18000, a: 'zout' },
+      { d: 21000, a: 'comp', m: 0, c: 3 },
+      { d: 24000, a: 'comp', m: 2, c: 3 },
+    ];
+    const CYCLE = 28000;
+
+    // ─── Captions ───────────────────────────────────────────
+    const CAPS = {
+      0: { k: 'duo', h: '<span style="color:#30D158">2 friends.</span> One pact.' },
+      1: { k: 'tri', h: '<span style="color:#30D158">3 friends.</span> Even stronger.' },
+      2: { k: 'gol', h: 'Promises break. <span style="color:#30D158">Pacts don\'t.</span>' },
+      3: { k: 'prg', h: 'Your friends see <span style="color:#30D158">every goal.</span>' },
+      4: { k: 'nud', h: '<span style="color:#FF9F0A">Slack?</span> They\'ll call you out.' },
+      7: { k: 'grn', h: '<span style="color:#30D158">Nobody stops</span> until everyone wins.' },
+      8: { k: 'win', h: '<span style="color:#30D158">Make the pact.</span>' },
+    };
+
+    function getCaption(si) {
+      const keys = Object.keys(CAPS).map(Number).sort((a, b) => a - b);
+      let c = CAPS[0];
+      for (const k of keys) { if (k <= si) c = CAPS[k]; }
+      return c;
+    }
+
+    function updateCaption(si) {
+      const c = getCaption(si);
+      if (c.k === captionKey) return;
+      const el = $('pact-caption');
+      el.style.opacity = '0';
+      setTimeout(() => { el.innerHTML = c.h; captionKey = c.k; el.style.opacity = '1'; }, 250);
+    }
+
+    // ─── Objectives Card ─────────────────────────────────────
+    function showObjectives() {
+      var card = $('objectives-card');
+      card.style.display = 'block';
+      $('obj-check-0').innerHTML = '\u2713';
+      $('obj-check-0').style.color = '#30D158';
+      $('obj-text-0').style.color = '#30D158';
+      $('obj-check-1').innerHTML = '\u25CB';
+      $('obj-check-1').style.color = 'rgba(255,255,255,0.3)';
+      $('obj-text-1').style.color = 'rgba(255,255,255,0.7)';
+      $('obj-check-2').innerHTML = '\u25CB';
+      $('obj-check-2').style.color = 'rgba(255,255,255,0.3)';
+      $('obj-text-2').style.color = 'rgba(255,255,255,0.7)';
+      requestAnimationFrame(function() { card.style.opacity = '1'; });
+      objVisible = true;
+    }
+
+    function hideObjectives() {
+      var card = $('objectives-card');
+      card.style.opacity = '0';
+      setTimeout(function() { card.style.display = 'none'; }, 400);
+      objVisible = false;
+    }
+
+    function checkObjective(idx) {
+      var check = $('obj-check-' + idx);
+      var text = $('obj-text-' + idx);
+      check.innerHTML = '\u2713';
+      check.style.color = '#30D158';
+      text.style.color = '#30D158';
+    }
+
+    // ─── Helpers ────────────────────────────────────────────
+    const $ = id => document.getElementById(id);
+    const isDone = i => st.cc[i] >= MEMBERS[i].total;
+    const pct = i => Math.round((st.cc[i] / MEMBERS[i].total) * 100);
+
+    function ss(id, color, op) {
+      const el = $(id); if (!el) return;
+      el.setAttribute('stroke', color);
+      if (op !== undefined) el.style.opacity = op;
+    }
+    function sf(id, color, op) {
+      const el = $(id); if (!el) return;
+      el.setAttribute('fill', color);
+      if (op !== undefined) el.style.opacity = op;
+    }
+    function so(id, op) { const el = $(id); if (el) el.style.opacity = op; }
+
+    // ─── State Mutations ────────────────────────────────────
+    function resetState() {
+      st = { shape: 'duo', cc: MEMBERS.map(m => m.init), zoom: null, nudge: null, op: 1 };
+      prevComp = MEMBERS.map(m => m.init >= m.total);
+      svgPhase = 'duo';
+      var card = $('objectives-card');
+      if (card) { card.style.display = 'none'; card.style.opacity = '0'; }
+      objVisible = false;
+    }
+
+    function applyStep(s) {
+      switch (s.a) {
+        case 'duo':
+          st.shape = 'duo'; st.op = 1; st.zoom = null; st.nudge = null;
+          st.cc = MEMBERS.map(m => m.init);
+          prevComp = MEMBERS.map(m => m.init >= m.total);
+          svgPhase = 'duo';
+          hideObjectives();
+          break;
+        case 'triad':
+          st.shape = 'triad';
+          svgPhase = 'transitioning';
+          // Phase 1: fast fade out duo SVG
+          $('duo-wrap').style.transition = 'opacity 0.25s ease';
+          $('duo-wrap').style.opacity = '0';
+          // Phase 2: delayed fade in triad SVG after nodes have moved
+          timers.push(setTimeout(() => {
+            $('triad-wrap').style.transition = 'opacity 0.5s ease';
+            $('triad-wrap').style.opacity = '1';
+            svgPhase = 'triad';
+            render();
+          }, 350));
+          break;
+        case 'reset':
+          st.shape = 'triad'; st.zoom = null; st.nudge = null;
+          st.cc = MEMBERS.map(m => m.init);
+          prevComp = MEMBERS.map(m => m.init >= m.total);
+          hideObjectives();
+          break;
+        case 'zin':
+          st.zoom = s.m;
+          if (s.m === 2) showObjectives();
+          break;
+        case 'nudge': st.nudge = s.m; break;
+        case 'nc': st.nudge = null; break;
+        case 'comp':
+          st.cc[s.m] = s.c;
+          if (s.m === 2 && objVisible) checkObjective(s.c - 1);
+          break;
+        case 'zout':
+          st.zoom = null;
+          hideObjectives();
+          break;
+      }
+    }
+
+    // ─── Render ─────────────────────────────────────────────
+    function render() {
+      const isT = st.shape === 'triad';
+      const pos = isT ? TP : DP;
+      const vis = isT ? 3 : 2;
+
+      // Shape crossfade — skip during phased transition (managed by applyStep)
+      if (svgPhase === 'duo') {
+        $('duo-wrap').style.transition = 'opacity 0.6s ease';
+        $('duo-wrap').style.opacity = '1';
+        $('triad-wrap').style.opacity = '0';
+      } else if (svgPhase === 'triad') {
+        $('duo-wrap').style.opacity = '0';
+        $('triad-wrap').style.opacity = '1';
+      }
+      // svgPhase === 'transitioning' → opacities controlled by applyStep timers
+
+      // Outer opacity
+      $('pact-preview-wrap').style.opacity = st.op;
+
+      // Zoom
+      const ctr = $('pact-container');
+      ctr.style.transform = st.zoom !== null ? ZT[st.zoom] : 'scale(1) translate(0px,0px)';
+
+      // SVG colors
+      updateTriadSVG();
+      updateDuoSVG();
+
+      // Nodes
+      for (let i = 0; i < 3; i++) {
+        const node = $('node-' + i);
+        const ring = $('ring-' + i);
+        const rp = $('rp-' + i);
+        const comp = $('comp-' + i);
+        const nudge = $('nudge-' + i);
+        const lbl = $('lbl-' + i);
+
+        if (i >= vis) { node.style.opacity = '0'; continue; }
+
+        // Position
+        node.style.left = pos[i].x + 'px';
+        node.style.top = pos[i].y + 'px';
+
+        // Dim non-zoomed
+        const dim = st.zoom !== null && st.zoom !== i;
+        node.style.opacity = dim ? '0.15' : '1';
+
+        // Keep node-2 hidden during shape transition; it appears when triad SVG fades in
+        if (i === 2 && svgPhase === 'transitioning') {
+          node.style.opacity = '0';
+        }
+
+        // Complete vs ring
+        const done = isDone(i);
+        if (done && !prevComp[i]) {
+          // New completion — animate
+          ring.style.display = 'none';
+          comp.style.display = 'flex';
+          comp.style.animation = 'none';
+          void comp.offsetHeight;
+          comp.style.animation = 'pact-complete-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards';
+          prevComp[i] = true;
+        } else if (done) {
+          ring.style.display = 'none';
+          comp.style.display = 'flex';
+        } else {
+          ring.style.display = 'block';
+          comp.style.display = 'none';
+          comp.style.animation = '';
+          rp.setAttribute('stroke-dasharray', pct(i) + ', 100');
+          prevComp[i] = false;
+        }
+
+        // Nudge
+        nudge.style.display = st.nudge === i ? 'block' : 'none';
+
+        // Label pos
+        if (isT && i === 0) {
+          lbl.style.top = -(NS / 2 + 8) + 'px';
+          lbl.style.transform = 'translate(-50%, -100%)';
+        } else {
+          lbl.style.top = (NS / 2 + 6) + 'px';
+          lbl.style.transform = 'translateX(-50%)';
+        }
+      }
+    }
+
+    function updateTriadSVG() {
+      const t = isDone(0), bl = isDone(1), br = isDone(2);
+      const hi = st.shape === 'triad' ? st.zoom : null;
+      const eo = o => hi !== null && hi !== o ? 0.15 : 1;
+
+      ss('t-bar-l', bl ? G : W, eo(1));
+      ss('t-bar-r', br ? G : W, eo(2));
+      ss('t-dl-u', t ? G : W, eo(0));
+      ss('t-dl-l', bl ? G : W, eo(1));
+      ss('t-dr-u', t ? G : W, eo(0));
+      ss('t-dr-l', br ? G : W, eo(2));
+
+      const ao = hi !== null ? 0.3 : 1;
+      so('t-acc-b', ao); so('t-acc-l', ao); so('t-acc-r', ao);
+
+      sf('t-v-top', t ? G : W, eo(0));
+      sf('t-v-bl', bl ? G : W, eo(1));
+      sf('t-v-br', br ? G : W, eo(2));
+    }
+
+    function updateDuoSVG() {
+      const l = isDone(0), r = isDone(1);
+      ss('duo-bar-left', l ? G : W);
+      ss('duo-bar-right', r ? G : W);
+      sf('duo-vertex-left', l ? G : W);
+      sf('duo-vertex-right', r ? G : W);
+    }
+
+    // ─── Cycle ──────────────────────────────────────────────
+    function runCycle() {
+      timers.forEach(clearTimeout);
+      timers = [];
+      resetState();
+      captionKey = null;
+      render();
+      updateCaption(0);
+
+      STEPS.forEach((s, i) => {
+        timers.push(setTimeout(() => { applyStep(s); updateCaption(i); render(); }, s.d));
+      });
+
+      timers.push(setTimeout(() => { st.op = 0; $('pact-preview-wrap').style.opacity = '0'; }, CYCLE - 800));
+      timers.push(setTimeout(runCycle, CYCLE));
+    }
+
+    // ─── Init ───────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      runCycle();
+
+      // Scroll animations
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+      // Forms
+      function submit(form) {
+        const input = form.querySelector('input[type="email"]');
+        const email = input.value.trim();
+        if (!email) return;
+        console.log('Waitlist signup:', email);
+        $('toast').classList.add('show');
+        setTimeout(() => $('toast').classList.remove('show'), 3000);
+        input.value = '';
+      }
+      $('hero-form').addEventListener('submit', function(e) { e.preventDefault(); submit(this); });
+    });
+  </script>
+</body>
+</html>
