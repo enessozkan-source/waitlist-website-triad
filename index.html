@@ -45,6 +45,26 @@
     .toast { transform: translateY(20px); opacity: 0; transition: all 0.3s ease-out; }
     .toast.show { transform: translateY(0); opacity: 1; }
 
+    .email-glow {
+      border-color: #30D158 !important;
+      box-shadow: 0 0 20px rgba(48, 209, 88, 0.35), 0 0 6px rgba(48, 209, 88, 0.25), inset 0 0 8px rgba(48, 209, 88, 0.08);
+    }
+    .btn-colorful {
+      background: linear-gradient(135deg, #30D158, #14B8A6, #0EA5E9, #8B5CF6) !important;
+      color: #fff !important;
+      background-size: 200% 200%;
+      animation: btn-gradient-shift 3s ease infinite;
+    }
+    @keyframes btn-gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    #hero-form button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     @keyframes pact-complete-pop {
       0% { transform: scale(0.3); opacity: 0; }
       60% { transform: scale(1.1); opacity: 1; }
@@ -99,7 +119,7 @@
 
         <!-- Pact Live Preview -->
         <div id="pact-preview-wrap" style="transition: opacity 0.8s ease;">
-          <div class="overflow-hidden relative" style="height: 412px; padding-top: 60px; padding-bottom: 60px;">
+          <div class="overflow-hidden relative" style="height: 460px; padding-top: 60px; padding-bottom: 60px;">
             <div id="pact-container" class="relative mx-auto" style="width: 260px; height: 292px; transform-origin: center center; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);">
 
               <!-- Duo SVG -->
@@ -191,27 +211,28 @@
                 <div id="lbl-2" class="absolute text-[14px] font-semibold text-white whitespace-nowrap" style="left:0; transform:translateX(-50%); top:39px;">Marcus</div>
               </div>
 
-              <!-- Objectives Card (shown during zoom on Marcus) -->
-              <div id="objectives-card" class="absolute" style="display:none; opacity:0; left:170px; top:125px; transform:translate(-50%, 0); transition: opacity 0.4s ease; z-index:10; pointer-events:none;">
-                <div class="rounded-xl border border-white/[0.06] px-3 py-2.5" style="background:#1C1C1E; min-width:120px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
-                  <p class="text-[5px] font-bold text-white/40 uppercase tracking-wider mb-1.5" style="letter-spacing:0.05em;">Today's Goals</p>
-                  <div class="flex flex-col gap-1">
-                    <div id="obj-0" class="flex items-center gap-1.5">
-                      <span id="obj-check-0" class="text-[7px]" style="color:#30D158;">&#10003;</span>
-                      <span id="obj-text-0" class="text-[6px] font-medium" style="color:#30D158;">Gym &mdash; 45 min</span>
-                    </div>
-                    <div id="obj-1" class="flex items-center gap-1.5">
-                      <span id="obj-check-1" class="text-[7px]" style="color:rgba(255,255,255,0.3);">&#9675;</span>
-                      <span id="obj-text-1" class="text-[6px] font-medium text-white/70">Read &mdash; 20 pages</span>
-                    </div>
-                    <div id="obj-2" class="flex items-center gap-1.5">
-                      <span id="obj-check-2" class="text-[7px]" style="color:rgba(255,255,255,0.3);">&#9675;</span>
-                      <span id="obj-text-2" class="text-[6px] font-medium text-white/70">Cold plunge</span>
-                    </div>
+
+            </div>
+
+            <!-- Objectives Card (shown during zoom on Marcus) -->
+            <div id="objectives-card" class="absolute" style="display:none; opacity:0; left:50%; top:50%; transform:translate(-80%, -50%); transition: opacity 0.4s ease; z-index:10; pointer-events:none;">
+              <div class="rounded-2xl border border-white/[0.06] px-4 py-3" style="background:#1C1C1E; min-width:150px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
+                <p class="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2" style="letter-spacing:0.05em;">Today's Goals</p>
+                <div class="flex flex-col gap-1.5">
+                  <div id="obj-0" class="flex items-center gap-2">
+                    <span id="obj-check-0" class="text-[13px]" style="color:#30D158;">&#10003;</span>
+                    <span id="obj-text-0" class="text-[12px] font-medium" style="color:#30D158;">Gym &mdash; 45 min</span>
+                  </div>
+                  <div id="obj-1" class="flex items-center gap-2">
+                    <span id="obj-check-1" class="text-[13px]" style="color:rgba(255,255,255,0.3);">&#9675;</span>
+                    <span id="obj-text-1" class="text-[12px] font-medium text-white/70">Read &mdash; 20 pages</span>
+                  </div>
+                  <div id="obj-2" class="flex items-center gap-2">
+                    <span id="obj-check-2" class="text-[13px]" style="color:rgba(255,255,255,0.3);">&#9675;</span>
+                    <span id="obj-text-2" class="text-[12px] font-medium text-white/70">Cold plunge</span>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -223,7 +244,7 @@
           <form id="hero-form" class="flex flex-col sm:flex-row gap-3 mb-3" onsubmit="return false;">
             <input type="email" placeholder="Your email address" required
               class="flex-1 bg-card border border-white/10 rounded-2xl py-4 px-4 text-white placeholder:text-white/30 outline-none focus:border-white/30 text-base transition-colors">
-            <button type="submit" class="bg-white text-black rounded-2xl py-4 px-6 font-semibold text-base press whitespace-nowrap sm:w-auto w-full">
+            <button type="submit" disabled class="bg-white text-black rounded-2xl py-4 px-6 font-semibold text-base press whitespace-nowrap sm:w-auto w-full transition-all">
               Join the Waitlist
             </button>
           </form>
@@ -237,21 +258,54 @@
       <div class="max-w-5xl mx-auto">
         <p class="text-xs font-semibold tracking-[0.2em] uppercase text-white/40 mb-10 text-center">How it works</p>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <div class="fade-up stagger-1 relative rounded-2xl p-7 pt-8 border border-[#30D158]/30" style="background: linear-gradient(165deg, rgba(48,209,88,0.15), rgba(48,209,88,0.03) 60%, transparent); box-shadow: 0 0 50px -8px rgba(48,209,88,0.25), inset 0 1px 0 rgba(48,209,88,0.2);">
+          <div class="fade-up stagger-1 relative overflow-hidden rounded-2xl p-7 pt-8 border border-[#30D158]/30" style="background: linear-gradient(165deg, rgba(48,209,88,0.15), rgba(48,209,88,0.03) 60%, transparent); box-shadow: 0 0 50px -8px rgba(48,209,88,0.25), inset 0 1px 0 rgba(48,209,88,0.2);">
             <div class="absolute top-0 left-7 right-7 h-[2px]" style="background: linear-gradient(90deg, transparent, #30D158, transparent);"></div>
-            <span class="text-[40px] font-black leading-none block mb-4" style="color: rgba(48,209,88,0.4);">01</span>
+            <!-- Decorative icon bg -->
+            <div class="absolute -top-4 -right-4 w-28 h-28 opacity-[0.04]">
+              <svg viewBox="0 0 24 24" fill="#30D158" width="100%" height="100%"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6" fill="black"/><circle cx="12" cy="12" r="2" fill="#30D158"/></svg>
+            </div>
+            <div class="flex items-center gap-4 mb-5">
+              <div class="relative flex-shrink-0">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: rgba(48,209,88,0.12); box-shadow: 0 0 20px rgba(48,209,88,0.2);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1" fill="#30D158"/></svg>
+                </div>
+              </div>
+              <span class="text-[32px] font-black leading-none" style="color: rgba(48,209,88,0.3);">01</span>
+            </div>
             <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Set 3 daily goals</h3>
             <p class="text-[14px] text-white/55 leading-[1.6]">Not ten. Not one. Three things that actually move the needle — every single day.</p>
           </div>
-          <div class="fade-up stagger-2 relative rounded-2xl p-7 pt-8 border border-[#30D158]/30" style="background: linear-gradient(165deg, rgba(48,209,88,0.15), rgba(48,209,88,0.03) 60%, transparent); box-shadow: 0 0 50px -8px rgba(48,209,88,0.25), inset 0 1px 0 rgba(48,209,88,0.2);">
+          <div class="fade-up stagger-2 relative overflow-hidden rounded-2xl p-7 pt-8 border border-[#30D158]/30" style="background: linear-gradient(165deg, rgba(48,209,88,0.15), rgba(48,209,88,0.03) 60%, transparent); box-shadow: 0 0 50px -8px rgba(48,209,88,0.25), inset 0 1px 0 rgba(48,209,88,0.2);">
             <div class="absolute top-0 left-7 right-7 h-[2px]" style="background: linear-gradient(90deg, transparent, #30D158, transparent);"></div>
-            <span class="text-[40px] font-black leading-none block mb-4" style="color: rgba(48,209,88,0.4);">02</span>
+            <!-- Decorative icon bg -->
+            <div class="absolute -top-4 -right-4 w-28 h-28 opacity-[0.04]">
+              <svg viewBox="0 0 24 24" fill="#30D158" width="100%" height="100%"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+            </div>
+            <div class="flex items-center gap-4 mb-5">
+              <div class="relative flex-shrink-0">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: rgba(48,209,88,0.12); box-shadow: 0 0 20px rgba(48,209,88,0.2);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                </div>
+              </div>
+              <span class="text-[32px] font-black leading-none" style="color: rgba(48,209,88,0.3);">02</span>
+            </div>
             <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Build the streak</h3>
             <p class="text-[14px] text-white/55 leading-[1.6]">Show up consistently and watch your streak grow. Miss a day and everyone in your pact knows.</p>
           </div>
-          <div class="fade-up stagger-3 relative rounded-2xl p-7 pt-8 border border-[#30D158]/30" style="background: linear-gradient(165deg, rgba(48,209,88,0.15), rgba(48,209,88,0.03) 60%, transparent); box-shadow: 0 0 50px -8px rgba(48,209,88,0.25), inset 0 1px 0 rgba(48,209,88,0.2);">
+          <div class="fade-up stagger-3 relative overflow-hidden rounded-2xl p-7 pt-8 border border-[#30D158]/30" style="background: linear-gradient(165deg, rgba(48,209,88,0.15), rgba(48,209,88,0.03) 60%, transparent); box-shadow: 0 0 50px -8px rgba(48,209,88,0.25), inset 0 1px 0 rgba(48,209,88,0.2);">
             <div class="absolute top-0 left-7 right-7 h-[2px]" style="background: linear-gradient(90deg, transparent, #30D158, transparent);"></div>
-            <span class="text-[40px] font-black leading-none block mb-4" style="color: rgba(48,209,88,0.4);">03</span>
+            <!-- Decorative icon bg -->
+            <div class="absolute -top-4 -right-4 w-28 h-28 opacity-[0.04]">
+              <svg viewBox="0 0 24 24" fill="#30D158" width="100%" height="100%"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="flex items-center gap-4 mb-5">
+              <div class="relative flex-shrink-0">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: rgba(48,209,88,0.12); box-shadow: 0 0 20px rgba(48,209,88,0.2);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+              </div>
+              <span class="text-[32px] font-black leading-none" style="color: rgba(48,209,88,0.3);">03</span>
+            </div>
             <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Hold each other to it</h3>
             <p class="text-[14px] text-white/55 leading-[1.6]">Form a pact with 2 or 3 friends. Send nudges when someone slacks. Win together.</p>
           </div>
@@ -609,8 +663,23 @@
         $('toast').classList.add('show');
         setTimeout(() => $('toast').classList.remove('show'), 3000);
         input.value = '';
+        input.classList.remove('email-glow');
+        const btn = form.querySelector('button[type="submit"]');
+        btn.classList.remove('btn-colorful');
+        btn.disabled = true;
       }
       $('hero-form').addEventListener('submit', function(e) { e.preventDefault(); submit(this); });
+
+      // Glow input + colorful button only for fully valid emails (requires TLD)
+      const heroInput = document.querySelector('#hero-form input[type="email"]');
+      const heroBtn = document.querySelector('#hero-form button[type="submit"]');
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+      heroInput.addEventListener('input', function() {
+        const valid = emailRegex.test(this.value.trim());
+        this.classList.toggle('email-glow', valid);
+        heroBtn.classList.toggle('btn-colorful', valid);
+        heroBtn.disabled = !valid;
+      });
     });
   </script>
 </body>
