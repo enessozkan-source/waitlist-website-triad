@@ -194,13 +194,6 @@
     <section class="min-h-screen flex flex-col items-center justify-center pt-20 pb-10 px-5">
       <div class="w-full max-w-md flex flex-col items-center">
 
-        <!-- Caption -->
-        <div class="w-full text-center py-4 min-h-[72px] flex items-center justify-center px-2">
-          <p id="pact-caption" class="text-white text-[28px] sm:text-[32px] font-black leading-[1.1] tracking-tight" style="transition: opacity 0.25s ease;">
-            <span style="color:#30D158">2 friends.</span> One pact.
-          </p>
-        </div>
-
         <!-- iPhone 14 Pro Mockup (Devices.css) -->
         <div id="device-wrapper">
           <div class="device device-iphone-14-pro device-black">
@@ -234,6 +227,13 @@
                 <!-- In-app nav bar -->
                 <div class="app-navbar">
                   <span class="text-[17px] font-semibold text-white tracking-tight">Your Pact</span>
+                </div>
+
+                <!-- Live Caption (inside phone) -->
+                <div class="text-center px-3 py-2 flex-shrink-0" style="min-height: 40px; display: flex; align-items: center; justify-content: center;">
+                  <p id="pact-caption" class="text-white text-[15px] font-black leading-[1.1] tracking-tight" style="transition: opacity 0.25s ease;">
+                    <span style="color:#30D158">2 friends.</span> One pact.
+                  </p>
                 </div>
 
                 <!-- Animation viewport -->
@@ -282,7 +282,7 @@
                             <svg class="relative z-10" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
                           </div>
                         </div>
-                        <div id="nudge-0" class="absolute" style="display:none; left:0; top:-40px; transform:translateX(-50%);">
+                        <div id="nudge-0" class="absolute" style="display:none; left:0; top:-20px; transform:translateX(-50%);">
                           <div class="px-2.5 py-1 rounded-full whitespace-nowrap" style="background:#FF9F0A; box-shadow: 0 4px 12px rgba(255,159,10,0.3); animation: nudge-pulse 1s ease-in-out infinite;">
                             <span class="text-black text-[10px] font-bold">Nudge sent!</span>
                           </div>
@@ -302,7 +302,7 @@
                             <svg class="relative z-10" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
                           </div>
                         </div>
-                        <div id="nudge-1" class="absolute" style="display:none; left:0; top:-40px; transform:translateX(-50%);">
+                        <div id="nudge-1" class="absolute" style="display:none; left:0; top:-20px; transform:translateX(-50%);">
                           <div class="px-2.5 py-1 rounded-full whitespace-nowrap" style="background:#FF9F0A; box-shadow: 0 4px 12px rgba(255,159,10,0.3); animation: nudge-pulse 1s ease-in-out infinite;">
                             <span class="text-black text-[10px] font-bold">Nudge sent!</span>
                           </div>
@@ -322,7 +322,7 @@
                             <svg class="relative z-10" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
                           </div>
                         </div>
-                        <div id="nudge-2" class="absolute" style="display:none; left:0; top:-40px; transform:translateX(-50%);">
+                        <div id="nudge-2" class="absolute" style="display:none; left:0; top:-20px; transform:translateX(-50%);">
                           <div class="px-2.5 py-1 rounded-full whitespace-nowrap" style="background:#FF9F0A; box-shadow: 0 4px 12px rgba(255,159,10,0.3); animation: nudge-pulse 1s ease-in-out infinite;">
                             <span class="text-black text-[10px] font-bold">Nudge sent!</span>
                           </div>
@@ -333,7 +333,7 @@
                     </div>
 
                     <!-- Objectives Card -->
-                    <div id="objectives-card" class="absolute" style="display:none; opacity:0; left:50%; top:50%; transform:translate(-80%, -50%); transition: opacity 0.4s ease; z-index:10; pointer-events:none;">
+                    <div id="objectives-card" class="absolute" style="display:none; opacity:0; left:175px; top:260px; transform:translate(-50%, 0); transition: opacity 0.4s ease; z-index:10; pointer-events:none;">
                       <div class="rounded-2xl border border-white/[0.06] px-4 py-3" style="background:#1C1C1E; min-width:150px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
                         <p class="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2" style="letter-spacing:0.05em;">Today's Goals</p>
                         <div class="flex flex-col gap-1.5">
@@ -534,8 +534,8 @@
       var vh = window.innerHeight;
       // Width constraint: device (428px) + 40px padding
       var scaleW = (vw - 40) / 428;
-      // Height constraint: leave room for header(56) + caption(88) + gap(32) + CTA(180) = 356px
-      var scaleH = (vh - 356) / 868;
+      // Height constraint: leave room for header(56) + gap(32) + CTA(180) = 268px (caption is now inside phone)
+      var scaleH = (vh - 268) / 868;
       var deviceScale = Math.min(scaleW, scaleH, 0.75);
       deviceScale = Math.max(deviceScale, 0.32);
       wrapper.style.transform = 'scale(' + deviceScale + ')';
