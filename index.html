@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Triad — Discipline, Installed.</title>
-  <meta name="description" content="TRIAD — The mobile-first discipline and habit-tracking app. Set 3 daily goals, build streaks, and hold each other accountable.">
-  <meta property="og:title" content="Triad — Discipline, Installed.">
+  <title>Triad - Discipline, Installed.</title>
+  <meta name="description" content="TRIAD - The mobile-first discipline and habit-tracking app. Set 3 daily goals, build streaks, and hold each other accountable.">
+  <meta property="og:title" content="Triad - Discipline, Installed.">
   <meta property="og:description" content="Set 3 goals. Hold each other accountable. Never break the chain.">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Triad — Discipline, Installed.">
+  <meta name="twitter:title" content="Triad - Discipline, Installed.">
   <meta name="twitter:description" content="Set 3 goals. Hold each other accountable. Never break the chain.">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='61' height='61' viewBox='0 0 317 317' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='317' height='317' rx='108' fill='%23000000'/%3E%3Crect width='191' height='32' fill='%23FFFFFF' transform='translate(158.5 241.2) translate(-95.5 -16)'/%3E%3Crect width='190.2' height='31.7' fill='%23FFFFFF' transform='translate(110.75 158.5) rotate(-60) translate(-95.1 -15.85)'/%3E%3Crect width='190.2' height='31.7' fill='%23FFFFFF' transform='translate(206.25 158.5) rotate(-120) translate(-95.1 -15.85)'/%3E%3Crect width='127' height='8' fill='%23000000' transform='translate(158.5 241.2) translate(-63.5 -4)'/%3E%3Crect width='126.8' height='7.92' fill='%23000000' transform='translate(110.75 158.5) rotate(-60) translate(-63.4 -3.96)'/%3E%3Crect width='126.8' height='7.92' fill='%23000000' transform='translate(206.25 158.5) rotate(-120) translate(-63.4 -3.96)'/%3E%3Ccircle cx='158.5' cy='75.8' r='31.5' fill='%23FFFFFF'/%3E%3Ccircle cx='63' cy='241.2' r='31.5' fill='%23FFFFFF'/%3E%3Ccircle cx='254' cy='241.2' r='32.5' fill='%23FFFFFF'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/devices.css@0.2.0/dist/devices.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -67,6 +68,96 @@
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.08); }
     }
+
+    /* ─── Devices.css Overrides ─────────────────────────── */
+    #device-wrapper {
+      margin: 0 auto;
+      transform-origin: top center;
+    }
+    .device-iphone-14-pro .device-screen {
+      background: #000 !important;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ─── Screen Content ─────────────────────────────── */
+    .iphone-statusbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 24px 6px 24px;
+      flex-shrink: 0;
+    }
+    .statusbar-time {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+    .statusbar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .app-navbar {
+      padding: 4px 0 8px;
+      text-align: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+      background: #000;
+    }
+
+    #animation-viewport {
+      position: relative;
+      width: 260px;
+      height: 340px;
+    }
+
+    .iphone-tabbar {
+      display: flex;
+      justify-content: center;
+      padding: 6px 16px 2px;
+      flex-shrink: 0;
+    }
+
+    .iphone-tabbar-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      width: 100%;
+      max-width: 358px;
+      height: 56px;
+      border-radius: 500px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .iphone-nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      transition: transform 0.15s ease;
+      cursor: pointer;
+    }
+    .iphone-nav-btn:active { transform: scale(0.9); }
+
+    .iphone-home-indicator {
+      width: 134px;
+      height: 5px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+      margin: 8px auto 4px;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body class="min-h-screen overflow-x-hidden">
@@ -110,130 +201,216 @@
           </p>
         </div>
 
-        <!-- Pact Live Preview -->
-        <div id="pact-preview-wrap" style="transition: opacity 0.8s ease;">
-          <div class="overflow-hidden relative" style="height: 460px; padding-top: 60px; padding-bottom: 60px;">
-            <div id="pact-container" class="relative mx-auto" style="width: 260px; height: 292px; transform-origin: center center; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);">
+        <!-- iPhone 14 Pro Mockup (Devices.css) -->
+        <div id="device-wrapper">
+          <div class="device device-iphone-14-pro device-black">
+            <div class="device-frame">
+              <div class="device-screen">
 
-              <!-- Duo SVG -->
-              <div id="duo-wrap" class="absolute" style="left: 14px; top: 75px; transition: opacity 0.6s ease;">
-                <svg width="232" height="142" viewBox="0 0 80 49">
-                  <line id="duo-bar-left" x1="14" y1="24.5" x2="40" y2="24.5" stroke="#FFF" stroke-width="7" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1);"/>
-                  <line id="duo-bar-right" x1="40" y1="24.5" x2="66" y2="24.5" stroke="#30D158" stroke-width="7" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1);"/>
-                  <line x1="20" y1="24.5" x2="60" y2="24.5" stroke="#000" stroke-width="1.7"/>
-                  <ellipse id="duo-vertex-left" cx="14" cy="24.5" rx="7" ry="7" fill="#FFF" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1);"/>
-                  <ellipse id="duo-vertex-right" cx="66" cy="24.5" rx="7" ry="7" fill="#30D158" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1);"/>
-                </svg>
+                <!-- Status Bar -->
+                <div class="iphone-statusbar">
+                  <span class="statusbar-time">9:41</span>
+                  <div class="statusbar-right">
+                    <svg width="17" height="11" viewBox="0 0 17 11" fill="none">
+                      <rect x="0" y="7.5" width="3" height="3.5" rx="0.7" fill="#fff"/>
+                      <rect x="4.5" y="5" width="3" height="6" rx="0.7" fill="#fff"/>
+                      <rect x="9" y="2.5" width="3" height="8.5" rx="0.7" fill="#fff"/>
+                      <rect x="13.5" y="0" width="3" height="11" rx="0.7" fill="#fff"/>
+                    </svg>
+                    <svg width="15" height="11" viewBox="0 0 15 11" fill="none">
+                      <path d="M0.5 3.5C3 1 5.5 0 7.5 0S12 1 14.5 3.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+                      <path d="M3 6C4.5 4.5 6 3.8 7.5 3.8S10.5 4.5 12 6" stroke="#fff" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+                      <path d="M5.2 8.5C6 7.7 6.7 7.3 7.5 7.3S9 7.7 9.8 8.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+                      <circle cx="7.5" cy="10.5" r="1" fill="#fff"/>
+                    </svg>
+                    <svg width="25" height="11" viewBox="0 0 25 11" fill="none">
+                      <rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+                      <rect x="21.5" y="3" width="2" height="5" rx="1" fill="rgba(255,255,255,0.35)"/>
+                      <rect x="2" y="2" width="16" height="7" rx="1.5" fill="#30D158"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <!-- In-app nav bar -->
+                <div class="app-navbar">
+                  <span class="text-[17px] font-semibold text-white tracking-tight">Your Pact</span>
+                </div>
+
+                <!-- Animation viewport -->
+                <div id="pact-preview-wrap" class="flex-1 flex items-center justify-center" style="transition: opacity 0.8s ease; min-height: 0;">
+                  <div id="animation-viewport">
+                    <div id="pact-container" class="relative mx-auto" style="width: 260px; height: 292px; transform-origin: center center; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);">
+
+                      <!-- Duo SVG -->
+                      <div id="duo-wrap" class="absolute" style="left: 14px; top: 75px; transition: opacity 0.6s ease;">
+                        <svg width="232" height="142" viewBox="0 0 80 49">
+                          <line id="duo-bar-left" x1="14" y1="24.5" x2="40" y2="24.5" stroke="#FFF" stroke-width="7" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1);"/>
+                          <line id="duo-bar-right" x1="40" y1="24.5" x2="66" y2="24.5" stroke="#30D158" stroke-width="7" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1);"/>
+                          <line x1="20" y1="24.5" x2="60" y2="24.5" stroke="#000" stroke-width="1.7"/>
+                          <ellipse id="duo-vertex-left" cx="14" cy="24.5" rx="7" ry="7" fill="#FFF" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1);"/>
+                          <ellipse id="duo-vertex-right" cx="66" cy="24.5" rx="7" ry="7" fill="#30D158" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1);"/>
+                        </svg>
+                      </div>
+
+                      <!-- Triad SVG -->
+                      <div id="triad-wrap" class="absolute" style="left: 0; top: 28px; opacity: 0; transition: opacity 0.6s ease;">
+                        <svg width="260" height="232" viewBox="0 0 55 49">
+                          <line id="t-bar-l" x1="7" y1="42" x2="27.5" y2="42" stroke="#FFF" stroke-width="7" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                          <line id="t-bar-r" x1="27.5" y1="42" x2="48" y2="42" stroke="#FFF" stroke-width="7" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                          <line id="t-dl-u" x1="27.5" y1="7" x2="17.25" y2="24.5" stroke="#FFF" stroke-width="6.8" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                          <line id="t-dl-l" x1="17.25" y1="24.5" x2="7" y2="42" stroke="#FFF" stroke-width="6.8" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                          <line id="t-dr-u" x1="27.5" y1="7" x2="37.75" y2="24.5" stroke="#FFF" stroke-width="6.8" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                          <line id="t-dr-l" x1="37.75" y1="24.5" x2="48" y2="42" stroke="#FFF" stroke-width="6.8" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                          <line id="t-acc-b" x1="13" y1="42" x2="41" y2="42" stroke="#000" stroke-width="1.7" style="transition: opacity 0.5s ease;"/>
+                          <line id="t-acc-l" x1="24" y1="13" x2="10" y2="36" stroke="#000" stroke-width="1.7" style="transition: opacity 0.5s ease;"/>
+                          <line id="t-acc-r" x1="31" y1="13" x2="45" y2="36" stroke="#000" stroke-width="1.7" style="transition: opacity 0.5s ease;"/>
+                          <ellipse id="t-v-bl" cx="7" cy="42" rx="7" ry="7" fill="#FFF" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                          <ellipse id="t-v-br" cx="48" cy="42" rx="7" ry="7" fill="#FFF" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                          <ellipse id="t-v-top" cx="27.5" cy="7" rx="7" ry="7" fill="#FFF" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
+                        </svg>
+                      </div>
+
+                      <!-- Node 0: You -->
+                      <div id="node-0" class="absolute" style="left: 55px; top: 146px; transition: left 0.7s cubic-bezier(0.4,0,0.2,1), top 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;">
+                        <div style="width: 66px; height: 66px; transform: translate(-50%,-50%);" class="relative flex items-center justify-center rounded-full">
+                          <svg id="ring-0" class="absolute inset-0 w-full h-full" style="transform: rotate(-90deg);" viewBox="0 0 36 36" width="66" height="66">
+                            <path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="rgba(48,209,88,0.15)" stroke-width="3.5"/>
+                            <path id="rp-0" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#30D158" stroke-width="3.5" stroke-dasharray="67, 100" stroke-linecap="round" style="transition: stroke-dasharray 0.5s ease;"/>
+                          </svg>
+                          <div id="comp-0" class="absolute inset-0 flex items-center justify-center" style="display:none;">
+                            <div class="absolute inset-0 rounded-full border-2 border-black" style="background:#30D158; box-shadow: 0 0 16px -2px rgba(48,209,88,0.5);"></div>
+                            <svg class="relative z-10" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                          </div>
+                        </div>
+                        <div id="nudge-0" class="absolute" style="display:none; left:0; top:-40px; transform:translateX(-50%);">
+                          <div class="px-2.5 py-1 rounded-full whitespace-nowrap" style="background:#FF9F0A; box-shadow: 0 4px 12px rgba(255,159,10,0.3); animation: nudge-pulse 1s ease-in-out infinite;">
+                            <span class="text-black text-[10px] font-bold">Nudge sent!</span>
+                          </div>
+                        </div>
+                        <div id="lbl-0" class="absolute text-[14px] font-semibold text-white whitespace-nowrap" style="left:0; transform:translateX(-50%); top:39px;">You</div>
+                      </div>
+
+                      <!-- Node 1: Atlas -->
+                      <div id="node-1" class="absolute" style="left: 205px; top: 146px; transition: left 0.7s cubic-bezier(0.4,0,0.2,1), top 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;">
+                        <div style="width: 66px; height: 66px; transform: translate(-50%,-50%);" class="relative flex items-center justify-center rounded-full">
+                          <svg id="ring-1" class="absolute inset-0 w-full h-full" style="transform: rotate(-90deg); display:none;" viewBox="0 0 36 36" width="66" height="66">
+                            <path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="rgba(48,209,88,0.15)" stroke-width="3.5"/>
+                            <path id="rp-1" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#30D158" stroke-width="3.5" stroke-dasharray="100, 100" stroke-linecap="round" style="transition: stroke-dasharray 0.5s ease;"/>
+                          </svg>
+                          <div id="comp-1" class="absolute inset-0 flex items-center justify-center">
+                            <div class="absolute inset-0 rounded-full border-2 border-black" style="background:#30D158; box-shadow: 0 0 16px -2px rgba(48,209,88,0.5);"></div>
+                            <svg class="relative z-10" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                          </div>
+                        </div>
+                        <div id="nudge-1" class="absolute" style="display:none; left:0; top:-40px; transform:translateX(-50%);">
+                          <div class="px-2.5 py-1 rounded-full whitespace-nowrap" style="background:#FF9F0A; box-shadow: 0 4px 12px rgba(255,159,10,0.3); animation: nudge-pulse 1s ease-in-out infinite;">
+                            <span class="text-black text-[10px] font-bold">Nudge sent!</span>
+                          </div>
+                        </div>
+                        <div id="lbl-1" class="absolute text-[14px] font-semibold text-white whitespace-nowrap" style="left:0; transform:translateX(-50%); top:39px;">Atlas</div>
+                      </div>
+
+                      <!-- Node 2: Marcus -->
+                      <div id="node-2" class="absolute" style="left: 227px; top: 227px; opacity: 0; transition: left 0.7s cubic-bezier(0.4,0,0.2,1), top 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;">
+                        <div style="width: 66px; height: 66px; transform: translate(-50%,-50%);" class="relative flex items-center justify-center rounded-full">
+                          <svg id="ring-2" class="absolute inset-0 w-full h-full" style="transform: rotate(-90deg);" viewBox="0 0 36 36" width="66" height="66">
+                            <path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="rgba(48,209,88,0.15)" stroke-width="3.5"/>
+                            <path id="rp-2" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#30D158" stroke-width="3.5" stroke-dasharray="33, 100" stroke-linecap="round" style="transition: stroke-dasharray 0.5s ease;"/>
+                          </svg>
+                          <div id="comp-2" class="absolute inset-0 flex items-center justify-center" style="display:none;">
+                            <div class="absolute inset-0 rounded-full border-2 border-black" style="background:#30D158; box-shadow: 0 0 16px -2px rgba(48,209,88,0.5);"></div>
+                            <svg class="relative z-10" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                          </div>
+                        </div>
+                        <div id="nudge-2" class="absolute" style="display:none; left:0; top:-40px; transform:translateX(-50%);">
+                          <div class="px-2.5 py-1 rounded-full whitespace-nowrap" style="background:#FF9F0A; box-shadow: 0 4px 12px rgba(255,159,10,0.3); animation: nudge-pulse 1s ease-in-out infinite;">
+                            <span class="text-black text-[10px] font-bold">Nudge sent!</span>
+                          </div>
+                        </div>
+                        <div id="lbl-2" class="absolute text-[14px] font-semibold text-white whitespace-nowrap" style="left:0; transform:translateX(-50%); top:39px;">Marcus</div>
+                      </div>
+
+                    </div>
+
+                    <!-- Objectives Card -->
+                    <div id="objectives-card" class="absolute" style="display:none; opacity:0; left:50%; top:50%; transform:translate(-80%, -50%); transition: opacity 0.4s ease; z-index:10; pointer-events:none;">
+                      <div class="rounded-2xl border border-white/[0.06] px-4 py-3" style="background:#1C1C1E; min-width:150px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
+                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2" style="letter-spacing:0.05em;">Today's Goals</p>
+                        <div class="flex flex-col gap-1.5">
+                          <div id="obj-0" class="flex items-center gap-2">
+                            <span id="obj-check-0" class="text-[13px]" style="color:#30D158;">&#10003;</span>
+                            <span id="obj-text-0" class="text-[12px] font-medium" style="color:#30D158;">Gym - 45 min</span>
+                          </div>
+                          <div id="obj-1" class="flex items-center gap-2">
+                            <span id="obj-check-1" class="text-[13px]" style="color:rgba(255,255,255,0.3);">&#9675;</span>
+                            <span id="obj-text-1" class="text-[12px] font-medium text-white/70">Read - 20 pages</span>
+                          </div>
+                          <div id="obj-2" class="flex items-center gap-2">
+                            <span id="obj-check-2" class="text-[13px]" style="color:rgba(255,255,255,0.3);">&#9675;</span>
+                            <span id="obj-text-2" class="text-[12px] font-medium text-white/70">Cold plunge</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Bottom Tab Bar (Glass Pill — matches actual app) -->
+                <div class="iphone-tabbar">
+                  <div class="iphone-tabbar-pill">
+                    <!-- Home -->
+                    <div class="iphone-nav-btn">
+                      <svg width="30" height="30" viewBox="0 0 24 24" fill="#000000">
+                        <path d="M4 21V9l8-6l8 6v12h-6v-7h-4v7z"/>
+                      </svg>
+                    </div>
+                    <!-- Pact (Triad logo) — ACTIVE -->
+                    <div class="iphone-nav-btn">
+                      <svg width="30" height="27" viewBox="0 0 55 49">
+                        <line x1="7" y1="42" x2="48" y2="42" stroke="#D9D9D9" stroke-width="7"/>
+                        <line x1="27.5" y1="7" x2="7" y2="42" stroke="#D9D9D9" stroke-width="6.8"/>
+                        <line x1="27.5" y1="7" x2="48" y2="42" stroke="#D9D9D9" stroke-width="6.8"/>
+                        <line x1="13" y1="42" x2="41" y2="42" stroke="#000000" stroke-width="1.7"/>
+                        <line x1="24" y1="13" x2="10" y2="36" stroke="#000000" stroke-width="1.7"/>
+                        <line x1="31" y1="13" x2="45" y2="36" stroke="#000000" stroke-width="1.7"/>
+                        <ellipse cx="7" cy="42" rx="7" ry="7" fill="#D9D9D9"/>
+                        <ellipse cx="48" cy="42" rx="7" ry="7" fill="#D9D9D9"/>
+                        <ellipse cx="27.5" cy="7" rx="7" ry="7" fill="#D9D9D9"/>
+                      </svg>
+                    </div>
+                    <!-- Calendar (bar chart) -->
+                    <div class="iphone-nav-btn">
+                      <svg width="30" height="30" viewBox="0 0 24 24" fill="#000000">
+                        <path d="M16 20v-7h4v7zm-6 0V4h4v16zm-6 0V9h4v11z"/>
+                      </svg>
+                    </div>
+                    <!-- Profile -->
+                    <div class="iphone-nav-btn">
+                      <svg width="30" height="30" viewBox="0 0 512 512" fill="#000000">
+                        <path fill-rule="evenodd" d="M256 42.667A213.333 213.333 0 0 1 469.334 256c0 117.821-95.513 213.334-213.334 213.334c-117.82 0-213.333-95.513-213.333-213.334C42.667 138.18 138.18 42.667 256 42.667m21.334 234.667h-42.667c-52.815 0-98.158 31.987-117.715 77.648c30.944 43.391 81.692 71.685 139.048 71.685s108.104-28.294 139.049-71.688c-19.557-45.658-64.9-77.645-117.715-77.645M256 106.667c-35.346 0-64 28.654-64 64s28.654 64 64 64s64-28.654 64-64s-28.653-64-64-64"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Home Indicator -->
+                <div class="iphone-home-indicator"></div>
+
               </div>
-
-              <!-- Triad SVG -->
-              <div id="triad-wrap" class="absolute" style="left: 0; top: 28px; opacity: 0; transition: opacity 0.6s ease;">
-                <svg width="260" height="232" viewBox="0 0 55 49">
-                  <line id="t-bar-l" x1="7" y1="42" x2="27.5" y2="42" stroke="#FFF" stroke-width="7" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
-                  <line id="t-bar-r" x1="27.5" y1="42" x2="48" y2="42" stroke="#FFF" stroke-width="7" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
-                  <line id="t-dl-u" x1="27.5" y1="7" x2="17.25" y2="24.5" stroke="#FFF" stroke-width="6.8" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
-                  <line id="t-dl-l" x1="17.25" y1="24.5" x2="7" y2="42" stroke="#FFF" stroke-width="6.8" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
-                  <line id="t-dr-u" x1="27.5" y1="7" x2="37.75" y2="24.5" stroke="#FFF" stroke-width="6.8" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
-                  <line id="t-dr-l" x1="37.75" y1="24.5" x2="48" y2="42" stroke="#FFF" stroke-width="6.8" style="transition: stroke 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
-                  <line id="t-acc-b" x1="13" y1="42" x2="41" y2="42" stroke="#000" stroke-width="1.7" style="transition: opacity 0.5s ease;"/>
-                  <line id="t-acc-l" x1="24" y1="13" x2="10" y2="36" stroke="#000" stroke-width="1.7" style="transition: opacity 0.5s ease;"/>
-                  <line id="t-acc-r" x1="31" y1="13" x2="45" y2="36" stroke="#000" stroke-width="1.7" style="transition: opacity 0.5s ease;"/>
-                  <ellipse id="t-v-bl" cx="7" cy="42" rx="7" ry="7" fill="#FFF" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
-                  <ellipse id="t-v-br" cx="48" cy="42" rx="7" ry="7" fill="#FFF" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
-                  <ellipse id="t-v-top" cx="27.5" cy="7" rx="7" ry="7" fill="#FFF" style="transition: fill 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;"/>
-                </svg>
-              </div>
-
-              <!-- Node 0: You -->
-              <div id="node-0" class="absolute" style="left: 55px; top: 146px; transition: left 0.7s cubic-bezier(0.4,0,0.2,1), top 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;">
-                <div style="width: 66px; height: 66px; transform: translate(-50%,-50%);" class="relative flex items-center justify-center rounded-full">
-                  <svg id="ring-0" class="absolute inset-0 w-full h-full" style="transform: rotate(-90deg);" viewBox="0 0 36 36" width="66" height="66">
-                    <path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="rgba(48,209,88,0.15)" stroke-width="3.5"/>
-                    <path id="rp-0" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#30D158" stroke-width="3.5" stroke-dasharray="67, 100" stroke-linecap="round" style="transition: stroke-dasharray 0.5s ease;"/>
-                  </svg>
-                  <div id="comp-0" class="absolute inset-0 flex items-center justify-center" style="display:none;">
-                    <div class="absolute inset-0 rounded-full border-2 border-black" style="background:#30D158; box-shadow: 0 0 16px -2px rgba(48,209,88,0.5);"></div>
-                    <svg class="relative z-10" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  </div>
-                </div>
-                <div id="nudge-0" class="absolute" style="display:none; left:0; top:-40px; transform:translateX(-50%);">
-                  <div class="px-2.5 py-1 rounded-full whitespace-nowrap" style="background:#FF9F0A; box-shadow: 0 4px 12px rgba(255,159,10,0.3); animation: nudge-pulse 1s ease-in-out infinite;">
-                    <span class="text-black text-[10px] font-bold">Nudge sent!</span>
-                  </div>
-                </div>
-                <div id="lbl-0" class="absolute text-[14px] font-semibold text-white whitespace-nowrap" style="left:0; transform:translateX(-50%); top:39px;">You</div>
-              </div>
-
-              <!-- Node 1: Atlas -->
-              <div id="node-1" class="absolute" style="left: 205px; top: 146px; transition: left 0.7s cubic-bezier(0.4,0,0.2,1), top 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;">
-                <div style="width: 66px; height: 66px; transform: translate(-50%,-50%);" class="relative flex items-center justify-center rounded-full">
-                  <svg id="ring-1" class="absolute inset-0 w-full h-full" style="transform: rotate(-90deg); display:none;" viewBox="0 0 36 36" width="66" height="66">
-                    <path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="rgba(48,209,88,0.15)" stroke-width="3.5"/>
-                    <path id="rp-1" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#30D158" stroke-width="3.5" stroke-dasharray="100, 100" stroke-linecap="round" style="transition: stroke-dasharray 0.5s ease;"/>
-                  </svg>
-                  <div id="comp-1" class="absolute inset-0 flex items-center justify-center">
-                    <div class="absolute inset-0 rounded-full border-2 border-black" style="background:#30D158; box-shadow: 0 0 16px -2px rgba(48,209,88,0.5);"></div>
-                    <svg class="relative z-10" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  </div>
-                </div>
-                <div id="nudge-1" class="absolute" style="display:none; left:0; top:-40px; transform:translateX(-50%);">
-                  <div class="px-2.5 py-1 rounded-full whitespace-nowrap" style="background:#FF9F0A; box-shadow: 0 4px 12px rgba(255,159,10,0.3); animation: nudge-pulse 1s ease-in-out infinite;">
-                    <span class="text-black text-[10px] font-bold">Nudge sent!</span>
-                  </div>
-                </div>
-                <div id="lbl-1" class="absolute text-[14px] font-semibold text-white whitespace-nowrap" style="left:0; transform:translateX(-50%); top:39px;">Atlas</div>
-              </div>
-
-              <!-- Node 2: Marcus -->
-              <div id="node-2" class="absolute" style="left: 227px; top: 227px; opacity: 0; transition: left 0.7s cubic-bezier(0.4,0,0.2,1), top 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;">
-                <div style="width: 66px; height: 66px; transform: translate(-50%,-50%);" class="relative flex items-center justify-center rounded-full">
-                  <svg id="ring-2" class="absolute inset-0 w-full h-full" style="transform: rotate(-90deg);" viewBox="0 0 36 36" width="66" height="66">
-                    <path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="rgba(48,209,88,0.15)" stroke-width="3.5"/>
-                    <path id="rp-2" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#30D158" stroke-width="3.5" stroke-dasharray="33, 100" stroke-linecap="round" style="transition: stroke-dasharray 0.5s ease;"/>
-                  </svg>
-                  <div id="comp-2" class="absolute inset-0 flex items-center justify-center" style="display:none;">
-                    <div class="absolute inset-0 rounded-full border-2 border-black" style="background:#30D158; box-shadow: 0 0 16px -2px rgba(48,209,88,0.5);"></div>
-                    <svg class="relative z-10" width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  </div>
-                </div>
-                <div id="nudge-2" class="absolute" style="display:none; left:0; top:-40px; transform:translateX(-50%);">
-                  <div class="px-2.5 py-1 rounded-full whitespace-nowrap" style="background:#FF9F0A; box-shadow: 0 4px 12px rgba(255,159,10,0.3); animation: nudge-pulse 1s ease-in-out infinite;">
-                    <span class="text-black text-[10px] font-bold">Nudge sent!</span>
-                  </div>
-                </div>
-                <div id="lbl-2" class="absolute text-[14px] font-semibold text-white whitespace-nowrap" style="left:0; transform:translateX(-50%); top:39px;">Marcus</div>
-              </div>
-
-
             </div>
-
-            <!-- Objectives Card (shown during zoom on Marcus) -->
-            <div id="objectives-card" class="absolute" style="display:none; opacity:0; left:50%; top:50%; transform:translate(-80%, -50%); transition: opacity 0.4s ease; z-index:10; pointer-events:none;">
-              <div class="rounded-2xl border border-white/[0.06] px-4 py-3" style="background:#1C1C1E; min-width:150px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
-                <p class="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2" style="letter-spacing:0.05em;">Today's Goals</p>
-                <div class="flex flex-col gap-1.5">
-                  <div id="obj-0" class="flex items-center gap-2">
-                    <span id="obj-check-0" class="text-[13px]" style="color:#30D158;">&#10003;</span>
-                    <span id="obj-text-0" class="text-[12px] font-medium" style="color:#30D158;">Gym &mdash; 45 min</span>
-                  </div>
-                  <div id="obj-1" class="flex items-center gap-2">
-                    <span id="obj-check-1" class="text-[13px]" style="color:rgba(255,255,255,0.3);">&#9675;</span>
-                    <span id="obj-text-1" class="text-[12px] font-medium text-white/70">Read &mdash; 20 pages</span>
-                  </div>
-                  <div id="obj-2" class="flex items-center gap-2">
-                    <span id="obj-check-2" class="text-[13px]" style="color:rgba(255,255,255,0.3);">&#9675;</span>
-                    <span id="obj-text-2" class="text-[12px] font-medium text-white/70">Cold plunge</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div class="device-stripe"></div>
+            <div class="device-header"></div>
+            <div class="device-sensors"></div>
+            <div class="device-btns"></div>
+            <div class="device-power"></div>
           </div>
         </div>
 
         <!-- Tagline + CTA -->
-        <div id="waitlist" class="w-full text-center mt-4">
-          <p class="text-xl sm:text-2xl font-bold tracking-wide mb-1">DISCIPLINE, INSTALLED.</p>
-          <p class="text-sm text-secondary mb-6">3 goals. One deadline. Zero excuses.</p>
+        <div id="waitlist" class="w-full text-center mt-8">
+          <p class="text-xl sm:text-2xl font-bold tracking-wide mb-1">3 GOALS. EVERY SINGLE DAY.</p>
+          <p class="text-sm text-secondary mb-6">Track your progress and lock in with your crew.</p>
           <form id="hero-form" class="flex flex-col sm:flex-row gap-3 mb-3" onsubmit="return false;">
             <input type="email" placeholder="Your email address" required
               class="flex-1 bg-card border border-white/10 rounded-2xl py-4 px-4 text-white placeholder:text-white/30 outline-none focus:border-white/30 text-base transition-colors">
@@ -266,7 +443,7 @@
               <span class="text-[32px] font-black leading-none" style="color: rgba(48,209,88,0.3);">01</span>
             </div>
             <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Set 3 daily goals</h3>
-            <p class="text-[14px] text-white/55 leading-[1.6]">Not ten. Not one. Three things that actually move the needle — every single day.</p>
+            <p class="text-[14px] text-white/55 leading-[1.6]">Not ten. Not one. Three things that actually move the needle, every single day.</p>
           </div>
           <div class="fade-up stagger-2 relative overflow-hidden rounded-2xl p-7 pt-8 border border-[#30D158]/30" style="background: linear-gradient(165deg, rgba(48,209,88,0.15), rgba(48,209,88,0.03) 60%, transparent); box-shadow: 0 0 50px -8px rgba(48,209,88,0.25), inset 0 1px 0 rgba(48,209,88,0.2);">
             <div class="absolute top-0 left-7 right-7 h-[2px]" style="background: linear-gradient(90deg, transparent, #30D158, transparent);"></div>
@@ -344,6 +521,34 @@
       'scale(2.2) translate(30%, -10%)',
       'scale(2.2) translate(-30%, -10%)',
     ];
+
+    // ─── Phone Scaling ───────────────────────────────────
+    // Devices.css iPhone 14 Pro: 428×868px native, screen 390×830px.
+    // Scale whole device to fit both viewport width AND height so CTA stays visible.
+    function updatePhoneScale() {
+      var wrapper = document.getElementById('device-wrapper');
+      var vp = document.getElementById('animation-viewport');
+      var wrap = document.getElementById('pact-preview-wrap');
+      if (!wrapper || !vp || !wrap) return;
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+      // Width constraint: device (428px) + 40px padding
+      var scaleW = (vw - 40) / 428;
+      // Height constraint: leave room for header(56) + caption(88) + gap(32) + CTA(180) = 356px
+      var scaleH = (vh - 356) / 868;
+      var deviceScale = Math.min(scaleW, scaleH, 0.75);
+      deviceScale = Math.max(deviceScale, 0.32);
+      wrapper.style.transform = 'scale(' + deviceScale + ')';
+      wrapper.style.height = Math.round(868 * deviceScale) + 'px';
+      // Animation: scale 260px viewport to fill 390px screen width
+      var animScale = Math.min(390 / 260, 1.45);
+      vp.style.width = '260px';
+      vp.style.height = '340px';
+      vp.style.transform = 'scale(' + animScale + ')';
+      vp.style.transformOrigin = 'top center';
+      wrap.style.height = Math.round(340 * animScale) + 'px';
+      wrap.style.flexShrink = '0';
+    }
 
     const MEMBERS = [
       { name: 'You', total: 3, init: 2 },
@@ -640,6 +845,10 @@
     // ─── Init ───────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
       runCycle();
+
+      // Phone scaling
+      updatePhoneScale();
+      window.addEventListener('resize', updatePhoneScale);
 
       // Scroll animations
       const obs = new IntersectionObserver(entries => {
