@@ -1,0 +1,5 @@
+What's NOT included (can be done later)
+FAQ section (not legally required, nice-to-have)
+Tailwind CDN replacement (works fine for now, optimization for later)
+Analytics setup (depends on hosting choice)
+Favicon PNG fallback (minor)
