@@ -54,10 +54,15 @@
       background: #30D158 !important;
       color: #000 !important;
     }
-    #hero-form button:disabled {
+    .waitlist-form button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
+    @keyframes counter-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .animate-pulse { animation: counter-pulse 2s ease-in-out infinite; }
 
     @keyframes pact-complete-pop {
       0% { transform: scale(0.3); opacity: 0; }
@@ -69,16 +74,35 @@
       50% { transform: scale(1.08); }
     }
 
-    /* ─── Devices.css Overrides ─────────────────────────── */
+    /* ─── Devices.css Overrides — Borderless Floating Screen ─── */
     #device-wrapper {
       margin: 0 auto;
       transform-origin: top center;
     }
+    /* Strip the device frame completely */
+    .device-iphone-14-pro { width: 390px !important; height: 830px !important; }
+    .device-iphone-14-pro .device-frame {
+      padding: 0 !important;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      border-radius: 44px !important;
+      width: 390px !important;
+      height: 830px !important;
+    }
+    .device-iphone-14-pro .device-stripe,
+    .device-iphone-14-pro .device-header,
+    .device-iphone-14-pro .device-sensors,
+    .device-iphone-14-pro .device-btns,
+    .device-iphone-14-pro .device-power { display: none !important; }
     .device-iphone-14-pro .device-screen {
       background: #000 !important;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      border-radius: 44px !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 0 80px -10px rgba(48, 209, 88, 0.15), 0 20px 60px -15px rgba(0, 0, 0, 0.7) !important;
     }
 
     /* ─── Screen Content ─────────────────────────────── */
@@ -119,7 +143,7 @@
     .iphone-tabbar {
       display: flex;
       justify-content: center;
-      padding: 6px 16px 2px;
+      padding: 4px 16px 2px;
       flex-shrink: 0;
     }
 
@@ -129,7 +153,7 @@
       justify-content: space-around;
       width: 100%;
       max-width: 358px;
-      height: 56px;
+      height: 70px;
       border-radius: 500px;
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(40px) saturate(180%);
@@ -142,8 +166,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 42px;
-      height: 42px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
       transition: transform 0.15s ease;
       cursor: pointer;
@@ -224,16 +248,21 @@
                   </div>
                 </div>
 
-                <!-- In-app nav bar -->
-                <div class="app-navbar">
-                  <span class="text-[17px] font-semibold text-white tracking-tight">Your Pact</span>
-                </div>
-
-                <!-- Live Caption (inside phone) -->
-                <div class="text-center px-3 py-2 flex-shrink-0" style="min-height: 40px; display: flex; align-items: center; justify-content: center;">
-                  <p id="pact-caption" class="text-white text-[15px] font-black leading-[1.1] tracking-tight" style="transition: opacity 0.25s ease;">
-                    <span style="color:#30D158">2 friends.</span> One pact.
-                  </p>
+                <!-- Pact Title + Group Streak -->
+                <div class="app-navbar" style="text-align: left; padding: 6px 20px 4px;">
+                  <p class="text-[9px] font-semibold uppercase tracking-[0.12em] text-white/40" style="margin-bottom: 1px;">The Pact</p>
+                  <p class="text-[18px] font-bold text-white tracking-tight leading-tight">Morning Grind</p>
+                  <!-- Group Streak -->
+                  <div class="flex items-center gap-2 mt-2">
+                    <div class="flex items-center justify-center rounded-full" style="width: 28px; height: 28px; background: rgba(48,209,88,0.12);">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                    </div>
+                    <div>
+                      <p class="text-[8px] font-semibold uppercase tracking-wider text-white/40 leading-none">Group Streak</p>
+                      <p class="text-[12px] font-bold leading-tight" style="color:#30D158;">43 Day Streak</p>
+                      <p class="text-[7px] font-bold uppercase tracking-wider text-white/30 leading-none">2 days to beat your record!</p>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Animation viewport -->
@@ -356,18 +385,55 @@
                   </div>
                 </div>
 
-                <!-- Bottom Tab Bar (Glass Pill — matches actual app) -->
+                <!-- User Pills + Countdown -->
+                <div class="flex-shrink-0 px-4 pb-2" style="text-align: center;">
+                  <p class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mb-2">Hold each other accountable</p>
+                  <div class="flex items-center justify-center gap-2 mb-3">
+                    <!-- You pill -->
+                    <div class="flex items-center gap-1.5 rounded-full px-2.5 py-1" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);">
+                      <span class="text-[9px] font-bold text-white/50">0/5</span>
+                      <span class="text-[9px] font-semibold text-white/80">You</span>
+                    </div>
+                    <!-- Atlas pill -->
+                    <div class="flex items-center gap-1.5 rounded-full px-2.5 py-1" style="background: rgba(255,159,10,0.08); border: 1px solid rgba(255,159,10,0.2);">
+                      <span class="text-[9px] font-bold" style="color: rgba(255,159,10,0.7);">0/5</span>
+                      <span class="text-[9px] font-semibold text-white/80">Atlas</span>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="#FF9F0A"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
+                    </div>
+                    <!-- Marcus pill -->
+                    <div class="flex items-center gap-1.5 rounded-full px-2.5 py-1" style="background: rgba(255,159,10,0.08); border: 1px solid rgba(255,159,10,0.2);">
+                      <span class="text-[9px] font-bold" style="color: rgba(255,159,10,0.7);">0/5</span>
+                      <span class="text-[9px] font-semibold text-white/80">Marcus</span>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="#FF9F0A"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
+                    </div>
+                  </div>
+                  <!-- Countdown to midnight -->
+                  <div class="mb-1">
+                    <div class="flex items-baseline justify-center gap-0.5">
+                      <span class="text-[22px] font-black text-white tracking-tight">21</span>
+                      <span class="text-[9px] font-medium text-white/40">h</span>
+                      <span class="text-[22px] font-black text-white tracking-tight ml-1">00</span>
+                      <span class="text-[9px] font-medium text-white/40">m</span>
+                    </div>
+                    <div class="mx-auto mt-1 rounded-full overflow-hidden" style="width: 120px; height: 3px; background: rgba(255,255,255,0.1);">
+                      <div class="rounded-full h-full" style="width: 12%; background: #30D158;"></div>
+                    </div>
+                    <p class="text-[7px] font-bold uppercase tracking-[0.15em] text-white/30 mt-1">Until Reset</p>
+                  </div>
+                </div>
+
+                <!-- Bottom Tab Bar (Glass Pill — compact) -->
                 <div class="iphone-tabbar">
                   <div class="iphone-tabbar-pill">
                     <!-- Home -->
                     <div class="iphone-nav-btn">
-                      <svg width="30" height="30" viewBox="0 0 24 24" fill="#000000">
+                      <svg width="44" height="44" viewBox="0 0 24 24" fill="#000000">
                         <path d="M4 21V9l8-6l8 6v12h-6v-7h-4v7z"/>
                       </svg>
                     </div>
                     <!-- Pact (Triad logo) — ACTIVE -->
                     <div class="iphone-nav-btn">
-                      <svg width="30" height="27" viewBox="0 0 55 49">
+                      <svg width="44" height="39" viewBox="0 0 55 49">
                         <line x1="7" y1="42" x2="48" y2="42" stroke="#D9D9D9" stroke-width="7"/>
                         <line x1="27.5" y1="7" x2="7" y2="42" stroke="#D9D9D9" stroke-width="6.8"/>
                         <line x1="27.5" y1="7" x2="48" y2="42" stroke="#D9D9D9" stroke-width="6.8"/>
@@ -381,13 +447,13 @@
                     </div>
                     <!-- Calendar (bar chart) -->
                     <div class="iphone-nav-btn">
-                      <svg width="30" height="30" viewBox="0 0 24 24" fill="#000000">
+                      <svg width="44" height="44" viewBox="0 0 24 24" fill="#000000">
                         <path d="M16 20v-7h4v7zm-6 0V4h4v16zm-6 0V9h4v11z"/>
                       </svg>
                     </div>
                     <!-- Profile -->
                     <div class="iphone-nav-btn">
-                      <svg width="30" height="30" viewBox="0 0 512 512" fill="#000000">
+                      <svg width="44" height="44" viewBox="0 0 512 512" fill="#000000">
                         <path fill-rule="evenodd" d="M256 42.667A213.333 213.333 0 0 1 469.334 256c0 117.821-95.513 213.334-213.334 213.334c-117.82 0-213.333-95.513-213.333-213.334C42.667 138.18 138.18 42.667 256 42.667m21.334 234.667h-42.667c-52.815 0-98.158 31.987-117.715 77.648c30.944 43.391 81.692 71.685 139.048 71.685s108.104-28.294 139.049-71.688c-19.557-45.658-64.9-77.645-117.715-77.645M256 106.667c-35.346 0-64 28.654-64 64s28.654 64 64 64s64-28.654 64-64s-28.653-64-64-64"/>
                       </svg>
                     </div>
@@ -407,18 +473,28 @@
           </div>
         </div>
 
+        <!-- Live Caption (below phone) -->
+        <div class="w-full text-center py-4 min-h-[72px] flex items-center justify-center px-2">
+          <p id="pact-caption" class="text-white text-[28px] sm:text-[32px] font-black leading-[1.1] tracking-tight" style="transition: opacity 0.25s ease;">
+            <span style="color:#30D158">2 friends.</span> One pact.
+          </p>
+        </div>
+
         <!-- Tagline + CTA -->
-        <div id="waitlist" class="w-full text-center mt-8">
+        <div id="waitlist" class="w-full text-center">
           <p class="text-xl sm:text-2xl font-bold tracking-wide mb-1">3 GOALS. EVERY SINGLE DAY.</p>
           <p class="text-sm text-secondary mb-6">Track your progress and lock in with your crew.</p>
-          <form id="hero-form" class="flex flex-col sm:flex-row gap-3 mb-3" onsubmit="return false;">
+          <form id="hero-form" class="waitlist-form flex flex-col sm:flex-row gap-3 mb-3" onsubmit="return false;">
             <input type="email" placeholder="Your email address" required
               class="flex-1 bg-card border border-white/10 rounded-2xl py-4 px-4 text-white placeholder:text-white/30 outline-none focus:border-white/30 text-base transition-colors">
             <button type="submit" disabled class="bg-white text-black rounded-2xl py-4 px-6 font-semibold text-base press whitespace-nowrap sm:w-auto w-full transition-all">
               Join the Waitlist
             </button>
           </form>
-          <p class="text-xs text-white/40">Early access. No spam. We'll only email you about our launch.</p>
+          <p class="text-xs text-white/40 mt-1">
+            <span class="waitlist-count font-medium text-white/50">847</span> people on the waitlist
+          </p>
+          <p class="text-sm font-bold text-white/80 mt-3 tracking-tight">Dropping this week. Get in or get left behind.</p>
         </div>
       </div>
     </section>
@@ -485,16 +561,36 @@
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-white/[0.06] py-8 px-5">
-    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p class="text-sm text-white/30">&copy; 2026 Triad</p>
-      <div class="flex items-center gap-5">
-        <a href="#" class="text-white/30 hover:text-white/60 transition-colors press" aria-label="X (Twitter)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        </a>
-        <a href="#" class="text-white/30 hover:text-white/60 transition-colors press" aria-label="Instagram">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-        </a>
+  <footer class="border-t border-white/[0.06] py-12 px-5">
+    <div class="max-w-5xl mx-auto">
+      <!-- Footer CTA -->
+      <div class="text-center mb-10">
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight mb-2">Ready to lock in?</h2>
+        <p class="text-sm text-white/50 mb-5">Join the waitlist and be the first to build pacts with your crew.</p>
+        <form id="footer-form" class="waitlist-form flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-3" onsubmit="return false;">
+          <input type="email" placeholder="Your email address" required
+            class="flex-1 bg-card border border-white/10 rounded-2xl py-4 px-4 text-white placeholder:text-white/30 outline-none focus:border-white/30 text-base transition-colors">
+          <button type="submit" disabled class="bg-white text-black rounded-2xl py-4 px-6 font-semibold text-base press whitespace-nowrap sm:w-auto w-full transition-all">
+            Join Waitlist
+          </button>
+        </form>
+        <p class="text-xs text-white/40">Be the first to know. No spam. <a href="#privacy" class="underline hover:text-white/60 transition-colors">Privacy Policy</a></p>
+        <p class="text-sm font-bold text-white/80 mt-3 tracking-tight">Dropping this week. Get in or get left behind.</p>
+      </div>
+      <!-- Footer bottom -->
+      <div class="flex flex-col items-center gap-4 pt-6 border-t border-white/[0.06]">
+        <p id="privacy" class="text-[10px] text-white/20 text-center max-w-md leading-relaxed">We collect your email solely to notify you about the Triad launch. We will never sell, share, or spam your email. Unsubscribe anytime by replying to any email we send.</p>
+        <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p class="text-sm text-white/30">&copy; 2026 Triad</p>
+          <div class="flex items-center gap-5">
+          <a href="#" class="text-white/30 hover:text-white/60 transition-colors press" aria-label="X (Twitter)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="#" class="text-white/30 hover:text-white/60 transition-colors press" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          </div>
+        </div>
       </div>
     </div>
   </footer>
@@ -523,8 +619,8 @@
     ];
 
     // ─── Phone Scaling ───────────────────────────────────
-    // Devices.css iPhone 14 Pro: 428×868px native, screen 390×830px.
-    // Scale whole device to fit both viewport width AND height so CTA stays visible.
+    // Borderless floating screen: 390×830px (no device frame).
+    // Scale to fit viewport width AND height so CTA stays visible.
     function updatePhoneScale() {
       var wrapper = document.getElementById('device-wrapper');
       var vp = document.getElementById('animation-viewport');
@@ -532,14 +628,14 @@
       if (!wrapper || !vp || !wrap) return;
       var vw = window.innerWidth;
       var vh = window.innerHeight;
-      // Width constraint: device (428px) + 40px padding
-      var scaleW = (vw - 40) / 428;
-      // Height constraint: leave room for header(56) + gap(32) + CTA(180) = 268px (caption is now inside phone)
-      var scaleH = (vh - 268) / 868;
-      var deviceScale = Math.min(scaleW, scaleH, 0.75);
-      deviceScale = Math.max(deviceScale, 0.32);
+      // Width constraint: screen (390px) + 32px padding
+      var scaleW = (vw - 32) / 390;
+      // Height constraint: leave room for header(56) + caption(88) + gap(24) + CTA(180) = 348px
+      var scaleH = (vh - 348) / 830;
+      var deviceScale = Math.min(scaleW, scaleH, 1.0);
+      deviceScale = Math.max(deviceScale, 0.4);
       wrapper.style.transform = 'scale(' + deviceScale + ')';
-      wrapper.style.height = Math.round(868 * deviceScale) + 'px';
+      wrapper.style.height = Math.round(830 * deviceScale) + 'px';
       // Animation: scale 260px viewport to fill 390px screen width
       var animScale = Math.min(390 / 260, 1.45);
       vp.style.width = '260px';
@@ -856,8 +952,21 @@
       }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
       document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
-      // Forms — Google Sheets integration
+      // ─── Waitlist Counter ─────────────────────────────────
+      const BASE_COUNT = 847;
+      const stored = parseInt(localStorage.getItem('triad_signups') || '0');
+      let currentCount = BASE_COUNT + stored;
+
+      function updateCounterDisplay() {
+        document.querySelectorAll('.waitlist-count').forEach(el => {
+          el.textContent = currentCount.toLocaleString();
+        });
+      }
+      updateCounterDisplay();
+
+      // ─── Forms ─────────────────────────────────────────────
       const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL'; // Replace with your deployed Apps Script URL
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
       function showToast(message, isError) {
         const msg = $('toast-msg');
@@ -865,6 +974,32 @@
         msg.className = isError ? 'text-sm font-medium text-red-400' : 'text-sm font-medium text-success';
         $('toast').classList.add('show');
         setTimeout(() => $('toast').classList.remove('show'), 3000);
+      }
+
+      function showSharePanel(form) {
+        const panel = document.createElement('div');
+        panel.className = 'text-center py-4';
+        panel.innerHTML =
+          '<div class="inline-flex items-center gap-2 bg-success/10 border border-success/20 rounded-full px-4 py-2 mb-4">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>' +
+            '<span class="text-success text-sm font-semibold">You\'re in!</span>' +
+          '</div>' +
+          '<p class="text-lg font-bold mb-1">Triad works best with friends.</p>' +
+          '<p class="text-sm text-white/50 mb-4">Share with your crew so you can pact up on day one.</p>' +
+          '<div class="flex justify-center gap-3">' +
+            '<a href="https://twitter.com/intent/tweet?text=' + encodeURIComponent('I just joined the Triad waitlist \u2014 the accountability app where you form pacts with friends to crush 3 daily goals. Join me:') + '&url=' + encodeURIComponent(window.location.href) + '" ' +
+              'target="_blank" rel="noopener" ' +
+              'class="flex items-center gap-2 bg-card border border-white/10 rounded-xl px-4 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:border-white/20 transition-all press">' +
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>' +
+              'Share on X' +
+            '</a>' +
+            '<button onclick="navigator.clipboard.writeText(window.location.href);this.querySelector(\'span\').textContent=\'Copied!\';setTimeout(()=>this.querySelector(\'span\').textContent=\'Copy Link\',2000)" ' +
+              'class="flex items-center gap-2 bg-card border border-white/10 rounded-xl px-4 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:border-white/20 transition-all press">' +
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+              '<span>Copy Link</span>' +
+            '</button>' +
+          '</div>';
+        form.parentNode.replaceChild(panel, form);
       }
 
       async function submit(form) {
@@ -880,35 +1015,43 @@
         try {
           const res = await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({ email }),
           });
           if (!res.ok) throw new Error('Request failed');
-          showToast("You're on the list. We'll be in touch.", false);
-          input.value = '';
-          input.classList.remove('email-glow');
-          btn.classList.remove('btn-colorful');
+
+          // Update counter
+          localStorage.setItem('triad_signups', (stored + 1).toString());
+          currentCount++;
+          updateCounterDisplay();
+
+          showSharePanel(form);
         } catch (err) {
           showToast('Something went wrong. Please try again.', true);
           btn.disabled = false;
           btn.textContent = originalText;
-          return;
         }
-
-        btn.textContent = originalText;
-        btn.disabled = true;
       }
-      $('hero-form').addEventListener('submit', function(e) { e.preventDefault(); submit(this); });
 
-      // Glow input + colorful button only for fully valid emails (requires TLD)
-      const heroInput = document.querySelector('#hero-form input[type="email"]');
-      const heroBtn = document.querySelector('#hero-form button[type="submit"]');
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-      heroInput.addEventListener('input', function() {
-        const valid = emailRegex.test(this.value.trim());
-        this.classList.toggle('email-glow', valid);
-        heroBtn.classList.toggle('btn-colorful', valid);
-        heroBtn.disabled = !valid;
-      });
+      function setupFormValidation(formId) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+        const input = form.querySelector('input[type="email"]');
+        const btn = form.querySelector('button[type="submit"]');
+        input.addEventListener('input', function() {
+          const valid = emailRegex.test(this.value.trim());
+          this.classList.toggle('email-glow', valid);
+          btn.classList.toggle('btn-colorful', valid);
+          btn.disabled = !valid;
+        });
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          submit(this);
+        });
+      }
+
+      setupFormValidation('hero-form');
+      setupFormValidation('footer-form');
     });
   </script>
 </body>
