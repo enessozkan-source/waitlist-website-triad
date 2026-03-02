@@ -136,6 +136,12 @@
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.08); }
     }
+    @keyframes bell-tap {
+      0% { transform: scale(1); background: rgba(255,159,10,0.12); }
+      25% { transform: scale(1.5); background: rgba(255,159,10,0.6); }
+      60% { transform: scale(1.1); background: rgba(255,159,10,0.3); }
+      100% { transform: scale(1); background: rgba(255,159,10,0.15); }
+    }
 
     /* ─── Devices.css Overrides — Borderless Floating Screen ─── */
     #device-wrapper {
@@ -432,27 +438,27 @@
 
                     <!-- Objectives Card (outside pact-container, not affected by zoom) -->
                     <div id="objectives-card" class="absolute" style="display:none; opacity:0; left:50%; top:340px; transform:translate(-50%, 0); transition: opacity 0.4s ease; z-index:10; pointer-events:none;">
-                      <div style="background:#1C1C1E; width:248px; border-radius:16px; box-shadow: 0 4px 24px rgba(0,0,0,0.5); overflow:hidden;">
+                      <div style="background:#1C1C1E; width:200px; border-radius:14px; box-shadow: 0 4px 24px rgba(0,0,0,0.5); overflow:hidden;">
 
                         <!-- Nav -->
-                        <div style="padding:10px 14px 0; display:flex; align-items:center;">
-                          <span style="font-size:13px; color:#0A84FF; font-weight:400;">&#8249; Back</span>
+                        <div style="padding:8px 11px 0; display:flex; align-items:center;">
+                          <span style="font-size:11px; color:#0A84FF; font-weight:400;">&#8249; Back</span>
                         </div>
 
                         <!-- Profile header -->
-                        <div style="padding:8px 14px 10px;">
-                          <p style="font-size:20px; font-weight:800; color:#fff; letter-spacing:-0.4px; line-height:1.15; margin:0 0 3px;">Marcus</p>
-                          <div style="display:flex; align-items:center; gap:5px;">
-                            <span style="width:6px; height:6px; border-radius:50%; background:#FF9F0A; display:inline-block;"></span>
-                            <span style="font-size:8px; color:rgba(255,255,255,0.4); font-weight:500;">6 of 9 tasks · On track</span>
+                        <div style="padding:5px 11px 8px;">
+                          <p style="font-size:16px; font-weight:800; color:#fff; letter-spacing:-0.3px; line-height:1.15; margin:0 0 2px;">Marcus</p>
+                          <div style="display:flex; align-items:center; gap:4px;">
+                            <span style="width:5px; height:5px; border-radius:50%; background:#FF9F0A; display:inline-block;"></span>
+                            <span style="font-size:7px; color:rgba(255,255,255,0.4); font-weight:500;">6 of 9 tasks · On track</span>
                           </div>
                         </div>
 
                         <!-- Divider -->
-                        <div style="height:0.5px; background:rgba(255,255,255,0.08); margin:0 14px;"></div>
+                        <div style="height:0.5px; background:rgba(255,255,255,0.08); margin:0 11px;"></div>
 
                         <!-- Goals -->
-                        <div style="padding:10px 14px 14px;">
+                        <div style="padding:8px 11px 11px;">
 
                           <!-- Goal 1: WRITE THE BOOK - DONE 3/3 -->
                           <div style="margin-bottom:8px;">
@@ -463,7 +469,7 @@
                               </div>
                               <span style="font-size:7px; color:#30D158; font-weight:600;">3/3</span>
                             </div>
-                            <div style="padding-left:16px; display:flex; flex-direction:column; gap:3px;">
+                            <div style="padding-left:14px; display:flex; flex-direction:column; gap:2px;">
                               <div style="display:flex; align-items:center; gap:6px;">
                                 <span style="width:8px; height:8px; border-radius:1.5px; background:#30D158; display:inline-flex; align-items:center; justify-content:center;"><svg width="5" height="5" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                                 <span style="font-size:8px; color:rgba(255,255,255,0.25); font-weight:500; text-decoration:line-through;">1500 words before noon</span>
@@ -488,7 +494,7 @@
                               </div>
                               <span style="font-size:7px; color:#30D158; font-weight:600;">3/3</span>
                             </div>
-                            <div style="padding-left:16px; display:flex; flex-direction:column; gap:3px;">
+                            <div style="padding-left:14px; display:flex; flex-direction:column; gap:2px;">
                               <div style="display:flex; align-items:center; gap:6px;">
                                 <span style="width:8px; height:8px; border-radius:1.5px; background:#30D158; display:inline-flex; align-items:center; justify-content:center;"><svg width="5" height="5" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                                 <span style="font-size:8px; color:rgba(255,255,255,0.25); font-weight:500; text-decoration:line-through;">Dawn march. 5 miles.</span>
@@ -509,42 +515,47 @@
 
                           <!-- Goal 3: GOVERN THE MIND - PENDING 0/3 -->
                           <div>
-                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-                              <div style="display:flex; align-items:center; gap:6px;">
-                                <span style="width:10px; height:10px; border-radius:2px; border:1.5px solid rgba(255,255,255,0.25); display:inline-block;"></span>
-                                <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:0.5px;">Govern the Mind</span>
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
+                              <div style="display:flex; align-items:center; gap:5px;">
+                                <span style="width:9px; height:9px; border-radius:2px; border:1.5px solid rgba(255,255,255,0.25); display:inline-block;"></span>
+                                <span style="font-size:8.5px; font-weight:700; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:0.5px;">Govern the Mind</span>
                               </div>
                               <span style="font-size:7px; color:rgba(255,255,255,0.3); font-weight:600;">0/3</span>
                             </div>
-                            <div style="padding-left:16px; display:flex; flex-direction:column; gap:5px;">
+                            <div style="padding-left:14px; display:flex; flex-direction:column; gap:4px;">
                               <div style="display:flex; align-items:center; justify-content:space-between;">
-                                <div style="display:flex; align-items:center; gap:6px;">
-                                  <span id="obj-check-0" style="width:8px; height:8px; border-radius:1.5px; border:1.5px solid rgba(255,255,255,0.18); display:inline-flex; align-items:center; justify-content:center; background:transparent; transition: all 0.3s ease;"></span>
-                                  <span id="obj-text-0" style="font-size:8px; color:rgba(255,255,255,0.55); font-weight:500; transition: all 0.3s ease;">Sit with silence. 20 min.</span>
+                                <div style="display:flex; align-items:center; gap:5px;">
+                                  <span id="obj-check-0" style="width:7px; height:7px; border-radius:1.5px; border:1.5px solid rgba(255,255,255,0.18); display:inline-flex; align-items:center; justify-content:center; background:transparent; transition: all 0.3s ease;"></span>
+                                  <span id="obj-text-0" style="font-size:7.5px; color:rgba(255,255,255,0.55); font-weight:500; transition: all 0.3s ease;">Sit with silence. 20 min.</span>
                                 </div>
-                                <div style="width:16px; height:16px; border-radius:50%; background:rgba(255,159,10,0.12); display:flex; align-items:center; justify-content:center;">
-                                  <svg width="8" height="8" viewBox="0 0 24 24" fill="rgba(255,159,10,0.7)"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
+                                <div id="nudge-bell-0" style="width:14px; height:14px; border-radius:50%; background:rgba(255,159,10,0.12); display:flex; align-items:center; justify-content:center;">
+                                  <svg width="7" height="7" viewBox="0 0 24 24" fill="rgba(255,159,10,0.7)"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
                                 </div>
                               </div>
                               <div style="display:flex; align-items:center; justify-content:space-between;">
-                                <div style="display:flex; align-items:center; gap:6px;">
-                                  <span id="obj-check-1" style="width:8px; height:8px; border-radius:1.5px; border:1.5px solid rgba(255,255,255,0.18); display:inline-flex; align-items:center; justify-content:center; background:transparent; transition: all 0.3s ease;"></span>
-                                  <span id="obj-text-1" style="font-size:8px; color:rgba(255,255,255,0.55); font-weight:500; transition: all 0.3s ease;">Study one defeat. Take the lesson.</span>
+                                <div style="display:flex; align-items:center; gap:5px;">
+                                  <span id="obj-check-1" style="width:7px; height:7px; border-radius:1.5px; border:1.5px solid rgba(255,255,255,0.18); display:inline-flex; align-items:center; justify-content:center; background:transparent; transition: all 0.3s ease;"></span>
+                                  <span id="obj-text-1" style="font-size:7.5px; color:rgba(255,255,255,0.55); font-weight:500; transition: all 0.3s ease;">Study one defeat. Take the lesson.</span>
                                 </div>
-                                <div style="width:16px; height:16px; border-radius:50%; background:rgba(255,159,10,0.12); display:flex; align-items:center; justify-content:center;">
-                                  <svg width="8" height="8" viewBox="0 0 24 24" fill="rgba(255,159,10,0.7)"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
+                                <div id="nudge-bell-1" style="width:14px; height:14px; border-radius:50%; background:rgba(255,159,10,0.12); display:flex; align-items:center; justify-content:center;">
+                                  <svg width="7" height="7" viewBox="0 0 24 24" fill="rgba(255,159,10,0.7)"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
                                 </div>
                               </div>
                               <div style="display:flex; align-items:center; justify-content:space-between;">
-                                <div style="display:flex; align-items:center; gap:6px;">
-                                  <span id="obj-check-2" style="width:8px; height:8px; border-radius:1.5px; border:1.5px solid rgba(255,255,255,0.18); display:inline-flex; align-items:center; justify-content:center; background:transparent; transition: all 0.3s ease;"></span>
-                                  <span id="obj-text-2" style="font-size:8px; color:rgba(255,255,255,0.55); font-weight:500; transition: all 0.3s ease;">Write tomorrow's battle orders</span>
+                                <div style="display:flex; align-items:center; gap:5px;">
+                                  <span id="obj-check-2" style="width:7px; height:7px; border-radius:1.5px; border:1.5px solid rgba(255,255,255,0.18); display:inline-flex; align-items:center; justify-content:center; background:transparent; transition: all 0.3s ease;"></span>
+                                  <span id="obj-text-2" style="font-size:7.5px; color:rgba(255,255,255,0.55); font-weight:500; transition: all 0.3s ease;">Write tomorrow's battle orders</span>
                                 </div>
-                                <div style="width:16px; height:16px; border-radius:50%; background:rgba(255,159,10,0.12); display:flex; align-items:center; justify-content:center;">
-                                  <svg width="8" height="8" viewBox="0 0 24 24" fill="rgba(255,159,10,0.7)"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
+                                <div id="nudge-bell-2" style="width:14px; height:14px; border-radius:50%; background:rgba(255,159,10,0.12); display:flex; align-items:center; justify-content:center;">
+                                  <svg width="7" height="7" viewBox="0 0 24 24" fill="rgba(255,159,10,0.7)"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
                                 </div>
                               </div>
                             </div>
+                          </div>
+
+                          <!-- Nudge sent banner (hidden by default) -->
+                          <div id="card-nudge-banner" style="display:none; opacity:0; margin-top:8px; padding:5px 0; text-align:center; background:rgba(255,159,10,0.1); border-radius:8px; transition: opacity 0.3s ease;">
+                            <span style="font-size:7.5px; font-weight:700; color:#FF9F0A;">Nudge sent!</span>
                           </div>
 
                         </div>
@@ -651,14 +662,15 @@
 
         <!-- Tagline + CTA -->
         <div id="waitlist" class="w-full text-center">
-          <p class="text-xs font-semibold tracking-[0.2em] uppercase mb-3" style="color: #30D158;">Launching this week</p>
           <p class="text-xl sm:text-2xl font-bold tracking-wide mb-1">3 GOALS. EVERY SINGLE DAY.</p>
-          <p class="text-sm text-secondary mb-6">Track your progress and lock in with your crew.</p>
+          <p class="text-sm text-secondary mb-2">Track your progress and lock in with your crew.</p>
+          <p class="text-lg sm:text-xl font-bold tracking-tight mb-6" style="color: #30D158;">Launching this week.</p>
           <form id="hero-form" class="waitlist-form flex flex-col sm:flex-row gap-3 mb-3" onsubmit="return false;">
             <input type="email" placeholder="Your email address" required
               class="flex-1 bg-card border border-white/10 rounded-2xl py-4 px-4 text-white placeholder:text-white/30 outline-none focus:border-white/30 text-base transition-colors">
-            <button type="submit" disabled class="bg-white text-black rounded-2xl py-4 px-6 font-semibold text-base press whitespace-nowrap sm:w-auto w-full transition-all">
-              Join the Waitlist
+            <button type="submit" disabled class="bg-white text-black rounded-2xl py-4 px-8 font-semibold text-base press whitespace-nowrap sm:w-auto w-full transition-all flex flex-col items-center justify-center leading-tight">
+              <span class="text-base font-bold">Become a Founding Member</span>
+              <span class="text-[11px] font-medium opacity-50">Join the waitlist</span>
             </button>
           </form>
           <p class="text-xs text-white/40 mt-1">
@@ -672,9 +684,9 @@
             </div>
           </div>
           <div class="urgency-rotator mt-3">
-            <p class="urgency-line active text-sm font-bold text-white/80 tracking-tight">Launching this week. Doors close when we're full.</p>
-            <p class="urgency-line text-sm font-bold text-white/80 tracking-tight"><span class="waitlist-count">847</span> people joined before you opened this page.</p>
-            <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Founding Member spots are almost gone. Claim yours.</p>
+            <p class="urgency-line active text-sm font-bold text-white/80 tracking-tight">Launching this week. Join now and lock in Founding Member status.</p>
+            <p class="urgency-line text-sm font-bold text-white/80 tracking-tight"><span class="spots-left">153</span> Founding Member spots left. Then it closes forever.</p>
+            <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Only a few Founding Member spots left. This won't reopen.</p>
             <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">First 1,000 get Founding Member status. Permanently.</p>
           </div>
         </div>
@@ -808,8 +820,9 @@
         <form id="footer-form" class="waitlist-form flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-3" onsubmit="return false;">
           <input type="email" placeholder="Your email address" required
             class="flex-1 bg-card border border-white/10 rounded-2xl py-4 px-4 text-white placeholder:text-white/30 outline-none focus:border-white/30 text-base transition-colors">
-          <button type="submit" disabled class="bg-white text-black rounded-2xl py-4 px-6 font-semibold text-base press whitespace-nowrap sm:w-auto w-full transition-all">
-            Join Waitlist
+          <button type="submit" disabled class="bg-white text-black rounded-2xl py-4 px-8 font-semibold text-base press whitespace-nowrap sm:w-auto w-full transition-all flex flex-col items-center justify-center leading-tight">
+            <span class="text-base font-bold">Become a Founding Member</span>
+            <span class="text-[11px] font-medium opacity-50">Join the waitlist</span>
           </button>
         </form>
         <p class="text-xs text-white/40">Be the first to know. No spam. <a href="#privacy" class="underline hover:text-white/60 transition-colors">Privacy Policy</a></p>
@@ -824,9 +837,9 @@
           </div>
         </div>
         <div class="urgency-rotator mt-3">
-          <p class="urgency-line active text-sm font-bold text-white/80 tracking-tight">Launching this week. Doors close when we're full.</p>
-          <p class="urgency-line text-sm font-bold text-white/80 tracking-tight"><span class="waitlist-count">847</span> people joined before you opened this page.</p>
-          <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Founding Member spots are almost gone. Claim yours.</p>
+          <p class="urgency-line active text-sm font-bold text-white/80 tracking-tight">Launching this week. Join now and lock in Founding Member status.</p>
+          <p class="urgency-line text-sm font-bold text-white/80 tracking-tight"><span class="spots-left">153</span> Founding Member spots left. Then it closes forever.</p>
+          <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Only a few Founding Member spots left. This won't reopen.</p>
           <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">First 1,000 get Founding Member status. Permanently.</p>
         </div>
       </div>
@@ -987,6 +1000,9 @@
       card.style.opacity = '0';
       setTimeout(function() { card.style.display = 'none'; }, 400);
       objVisible = false;
+      resetNudgeBells();
+      var banner = $('card-nudge-banner');
+      if (banner) { banner.style.display = 'none'; banner.style.opacity = '0'; }
     }
 
     function checkObjective(idx) {
@@ -997,6 +1013,41 @@
       check.innerHTML = '<svg width="5" height="5" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
       text.style.color = 'rgba(255,255,255,0.25)';
       text.style.textDecoration = 'line-through';
+    }
+
+    function pulseNudgeBells() {
+      for (var i = 0; i < 3; i++) {
+        var bell = $('nudge-bell-' + i);
+        if (bell) {
+          bell.style.animation = 'bell-tap 0.5s ease ' + (i * 120) + 'ms forwards';
+        }
+      }
+    }
+
+    function resetNudgeBells() {
+      for (var i = 0; i < 3; i++) {
+        var bell = $('nudge-bell-' + i);
+        if (bell) {
+          bell.style.animation = '';
+          bell.style.background = 'rgba(255,159,10,0.12)';
+        }
+      }
+    }
+
+    function showCardNudge() {
+      var banner = $('card-nudge-banner');
+      if (banner) {
+        banner.style.display = 'block';
+        requestAnimationFrame(function() { banner.style.opacity = '1'; });
+      }
+    }
+
+    function hideCardNudge() {
+      var banner = $('card-nudge-banner');
+      if (banner) {
+        banner.style.opacity = '0';
+        setTimeout(function() { banner.style.display = 'none'; }, 300);
+      }
     }
 
     // ─── Helpers ────────────────────────────────────────────
@@ -1064,16 +1115,29 @@
         case 'zin':
           st.zoom = s.m;
           if (s.m === 2) showObjectives();
-          // Stage 1: scroll to reveal card header + first goal
+          // Immediately start scrolling to reveal card
           timers.push(setTimeout(function() {
-            animScrollY = -160;
+            animScrollY = -130;
             applyViewportTransform(true);
-          }, 600));
-          // Stage 2: slow pan to reveal all goals
+          }, 200));
+          // Slow pan to reveal all goals
           timers.push(setTimeout(function() {
-            animScrollY = -390;
-            applyViewportTransform(true, 2.5);
-          }, 3000));
+            animScrollY = -350;
+            applyViewportTransform(true, 2.0);
+          }, 1800));
+          // Pulse the nudge bell buttons
+          timers.push(setTimeout(function() {
+            pulseNudgeBells();
+          }, 4500));
+          // Show "Nudge sent!" banner on card
+          timers.push(setTimeout(function() {
+            showCardNudge();
+          }, 5200));
+          // Hide nudge banner
+          timers.push(setTimeout(function() {
+            hideCardNudge();
+            resetNudgeBells();
+          }, 7000));
           break;
         case 'nudge': st.nudge = s.m; break;
         case 'nc': st.nudge = null; break;
