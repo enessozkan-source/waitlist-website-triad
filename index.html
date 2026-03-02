@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Triad - Discipline, Installed.</title>
-  <meta name="description" content="TRIAD - The mobile-first discipline and habit-tracking app. Set 3 daily goals, build streaks, and hold each other accountable.">
+  <meta name="description" content="TRIAD - The mobile-first discipline and habit-tracking app. Declare 3 chief aims, deploy daily actions, and hold each other accountable.">
   <meta property="og:title" content="Triad - Discipline, Installed.">
-  <meta property="og:description" content="Set 3 goals. Hold each other accountable. Never break the chain.">
+  <meta property="og:description" content="Declare 3 chief aims. Deploy daily actions. Hold each other to it.">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Triad - Discipline, Installed.">
@@ -237,7 +237,6 @@
     }
     .iphone-nav-btn:active { transform: scale(0.9); }
 
-    .feature-scroll::-webkit-scrollbar { display: none; }
 
     .iphone-home-indicator {
       width: 134px;
@@ -251,13 +250,18 @@
 </head>
 <body class="min-h-screen overflow-x-hidden">
 
+  <!-- Launch Banner -->
+  <div class="fixed top-0 left-0 right-0 z-50 text-center py-2 text-xs font-semibold tracking-wide" style="background: linear-gradient(90deg, rgba(48,209,88,0.15), rgba(48,209,88,0.25), rgba(48,209,88,0.15)); border-bottom: 1px solid rgba(48,209,88,0.3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+    <span style="color: #30D158;">Launching this week</span><span class="text-white/50"> · </span><span class="text-white/60">Founding Member spots are limited</span>
+  </div>
+
   <!-- Toast -->
   <div id="toast" class="toast fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-white/[0.06] rounded-2xl px-6 py-4 glass">
     <p id="toast-msg" class="text-sm font-medium text-success">You're on the list. We'll be in touch.</p>
   </div>
 
   <!-- Header -->
-  <header class="fixed top-0 left-0 right-0 z-40 glass bg-black/70 border-b border-white/[0.06]">
+  <header class="fixed top-[33px] left-0 right-0 z-40 glass bg-black/70 border-b border-white/[0.06]">
     <div class="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <svg width="36" height="36" viewBox="0 0 317 317" fill="none">
@@ -280,7 +284,7 @@
 
   <main>
     <!-- Hero: Live Preview -->
-    <section class="min-h-screen flex flex-col items-center justify-center pt-20 pb-10 px-5">
+    <section class="min-h-screen flex flex-col items-center justify-center pt-28 pb-10 px-5">
       <div class="w-full max-w-md flex flex-col items-center">
 
         <!-- iPhone 14 Pro Mockup (Devices.css) -->
@@ -426,23 +430,123 @@
 
                     </div>
 
-                    <!-- Objectives Card -->
-                    <div id="objectives-card" class="absolute" style="display:none; opacity:0; left:175px; top:240px; transform:translate(-50%, 0); transition: opacity 0.4s ease; z-index:10; pointer-events:none;">
-                      <div class="rounded-2xl border border-white/[0.06] px-4 py-3" style="background:#1C1C1E; min-width:150px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
-                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2" style="letter-spacing:0.05em;">Today's Goals</p>
-                        <div class="flex flex-col gap-1.5">
-                          <div id="obj-0" class="flex items-center gap-2">
-                            <span id="obj-check-0" class="text-[13px]" style="color:#30D158;">&#10003;</span>
-                            <span id="obj-text-0" class="text-[12px] font-medium" style="color:#30D158;">Gym - 45 min</span>
+                    <!-- Objectives Card (outside pact-container, not affected by zoom) -->
+                    <div id="objectives-card" class="absolute" style="display:none; opacity:0; left:50%; top:340px; transform:translate(-50%, 0); transition: opacity 0.4s ease; z-index:10; pointer-events:none;">
+                      <div style="background:#1C1C1E; width:248px; border-radius:16px; box-shadow: 0 4px 24px rgba(0,0,0,0.5); overflow:hidden;">
+
+                        <!-- Nav -->
+                        <div style="padding:10px 14px 0; display:flex; align-items:center;">
+                          <span style="font-size:13px; color:#0A84FF; font-weight:400;">&#8249; Back</span>
+                        </div>
+
+                        <!-- Profile header -->
+                        <div style="padding:8px 14px 10px;">
+                          <p style="font-size:20px; font-weight:800; color:#fff; letter-spacing:-0.4px; line-height:1.15; margin:0 0 3px;">Marcus</p>
+                          <div style="display:flex; align-items:center; gap:5px;">
+                            <span style="width:6px; height:6px; border-radius:50%; background:#FF9F0A; display:inline-block;"></span>
+                            <span style="font-size:8px; color:rgba(255,255,255,0.4); font-weight:500;">6 of 9 tasks · On track</span>
                           </div>
-                          <div id="obj-1" class="flex items-center gap-2">
-                            <span id="obj-check-1" class="text-[13px]" style="color:rgba(255,255,255,0.3);">&#9675;</span>
-                            <span id="obj-text-1" class="text-[12px] font-medium text-white/70">Read - 20 pages</span>
+                        </div>
+
+                        <!-- Divider -->
+                        <div style="height:0.5px; background:rgba(255,255,255,0.08); margin:0 14px;"></div>
+
+                        <!-- Goals -->
+                        <div style="padding:10px 14px 14px;">
+
+                          <!-- Goal 1: WRITE THE BOOK - DONE 3/3 -->
+                          <div style="margin-bottom:8px;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
+                              <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="width:10px; height:10px; border-radius:2px; background:#30D158; display:inline-flex; align-items:center; justify-content:center;"><svg width="7" height="7" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.5px; text-decoration:line-through;">Write the Book</span>
+                              </div>
+                              <span style="font-size:7px; color:#30D158; font-weight:600;">3/3</span>
+                            </div>
+                            <div style="padding-left:16px; display:flex; flex-direction:column; gap:3px;">
+                              <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="width:8px; height:8px; border-radius:1.5px; background:#30D158; display:inline-flex; align-items:center; justify-content:center;"><svg width="5" height="5" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                <span style="font-size:8px; color:rgba(255,255,255,0.25); font-weight:500; text-decoration:line-through;">1500 words before noon</span>
+                              </div>
+                              <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="width:8px; height:8px; border-radius:1.5px; background:#30D158; display:inline-flex; align-items:center; justify-content:center;"><svg width="5" height="5" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                <span style="font-size:8px; color:rgba(255,255,255,0.25); font-weight:500; text-decoration:line-through;">Edit Chapter 7</span>
+                              </div>
+                              <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="width:8px; height:8px; border-radius:1.5px; background:#30D158; display:inline-flex; align-items:center; justify-content:center;"><svg width="5" height="5" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                <span style="font-size:8px; color:rgba(255,255,255,0.25); font-weight:500; text-decoration:line-through;">Outline next 3 sections</span>
+                              </div>
+                            </div>
                           </div>
-                          <div id="obj-2" class="flex items-center gap-2">
-                            <span id="obj-check-2" class="text-[13px]" style="color:rgba(255,255,255,0.3);">&#9675;</span>
-                            <span id="obj-text-2" class="text-[12px] font-medium text-white/70">Cold plunge</span>
+
+                          <!-- Goal 2: CONQUER THE BODY - DONE 3/3 -->
+                          <div style="margin-bottom:8px;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
+                              <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="width:10px; height:10px; border-radius:2px; background:#30D158; display:inline-flex; align-items:center; justify-content:center;"><svg width="7" height="7" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.5px; text-decoration:line-through;">Conquer the Body</span>
+                              </div>
+                              <span style="font-size:7px; color:#30D158; font-weight:600;">3/3</span>
+                            </div>
+                            <div style="padding-left:16px; display:flex; flex-direction:column; gap:3px;">
+                              <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="width:8px; height:8px; border-radius:1.5px; background:#30D158; display:inline-flex; align-items:center; justify-content:center;"><svg width="5" height="5" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                <span style="font-size:8px; color:rgba(255,255,255,0.25); font-weight:500; text-decoration:line-through;">Dawn march. 5 miles.</span>
+                              </div>
+                              <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="width:8px; height:8px; border-radius:1.5px; background:#30D158; display:inline-flex; align-items:center; justify-content:center;"><svg width="5" height="5" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                <span style="font-size:8px; color:rgba(255,255,255,0.25); font-weight:500; text-decoration:line-through;">Lift heavy. Compound only.</span>
+                              </div>
+                              <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="width:8px; height:8px; border-radius:1.5px; background:#30D158; display:inline-flex; align-items:center; justify-content:center;"><svg width="5" height="5" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                <span style="font-size:8px; color:rgba(255,255,255,0.25); font-weight:500; text-decoration:line-through;">Fast until the work is done</span>
+                              </div>
+                            </div>
                           </div>
+
+                          <!-- Subtle section break -->
+                          <div style="height:0.5px; background:rgba(255,255,255,0.06); margin:2px 0 8px;"></div>
+
+                          <!-- Goal 3: GOVERN THE MIND - PENDING 0/3 -->
+                          <div>
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                              <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="width:10px; height:10px; border-radius:2px; border:1.5px solid rgba(255,255,255,0.25); display:inline-block;"></span>
+                                <span style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:0.5px;">Govern the Mind</span>
+                              </div>
+                              <span style="font-size:7px; color:rgba(255,255,255,0.3); font-weight:600;">0/3</span>
+                            </div>
+                            <div style="padding-left:16px; display:flex; flex-direction:column; gap:5px;">
+                              <div style="display:flex; align-items:center; justify-content:space-between;">
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                  <span id="obj-check-0" style="width:8px; height:8px; border-radius:1.5px; border:1.5px solid rgba(255,255,255,0.18); display:inline-flex; align-items:center; justify-content:center; background:transparent; transition: all 0.3s ease;"></span>
+                                  <span id="obj-text-0" style="font-size:8px; color:rgba(255,255,255,0.55); font-weight:500; transition: all 0.3s ease;">Sit with silence. 20 min.</span>
+                                </div>
+                                <div style="width:16px; height:16px; border-radius:50%; background:rgba(255,159,10,0.12); display:flex; align-items:center; justify-content:center;">
+                                  <svg width="8" height="8" viewBox="0 0 24 24" fill="rgba(255,159,10,0.7)"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
+                                </div>
+                              </div>
+                              <div style="display:flex; align-items:center; justify-content:space-between;">
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                  <span id="obj-check-1" style="width:8px; height:8px; border-radius:1.5px; border:1.5px solid rgba(255,255,255,0.18); display:inline-flex; align-items:center; justify-content:center; background:transparent; transition: all 0.3s ease;"></span>
+                                  <span id="obj-text-1" style="font-size:8px; color:rgba(255,255,255,0.55); font-weight:500; transition: all 0.3s ease;">Study one defeat. Take the lesson.</span>
+                                </div>
+                                <div style="width:16px; height:16px; border-radius:50%; background:rgba(255,159,10,0.12); display:flex; align-items:center; justify-content:center;">
+                                  <svg width="8" height="8" viewBox="0 0 24 24" fill="rgba(255,159,10,0.7)"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
+                                </div>
+                              </div>
+                              <div style="display:flex; align-items:center; justify-content:space-between;">
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                  <span id="obj-check-2" style="width:8px; height:8px; border-radius:1.5px; border:1.5px solid rgba(255,255,255,0.18); display:inline-flex; align-items:center; justify-content:center; background:transparent; transition: all 0.3s ease;"></span>
+                                  <span id="obj-text-2" style="font-size:8px; color:rgba(255,255,255,0.55); font-weight:500; transition: all 0.3s ease;">Write tomorrow's battle orders</span>
+                                </div>
+                                <div style="width:16px; height:16px; border-radius:50%; background:rgba(255,159,10,0.12); display:flex; align-items:center; justify-content:center;">
+                                  <svg width="8" height="8" viewBox="0 0 24 24" fill="rgba(255,159,10,0.7)"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
                         </div>
                       </div>
                     </div>
@@ -456,18 +560,18 @@
                   <div class="flex items-center justify-center gap-2.5 mb-3">
                     <!-- You pill -->
                     <div class="flex items-center gap-1.5 rounded-full px-3 py-1.5" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);">
-                      <span class="text-[11px] font-bold text-white/50">0/5</span>
+                      <span class="text-[11px] font-bold text-white/50">5/9</span>
                       <span class="text-[11px] font-semibold text-white/80">You</span>
                     </div>
                     <!-- Atlas pill -->
-                    <div class="flex items-center gap-1.5 rounded-full px-3 py-1.5" style="background: rgba(255,159,10,0.08); border: 1px solid rgba(255,159,10,0.2);">
-                      <span class="text-[11px] font-bold" style="color: rgba(255,159,10,0.7);">0/5</span>
+                    <div class="flex items-center gap-1.5 rounded-full px-3 py-1.5" style="background: rgba(48,209,88,0.08); border: 1px solid rgba(48,209,88,0.2);">
+                      <span class="text-[11px] font-bold" style="color: rgba(48,209,88,0.7);">9/9</span>
                       <span class="text-[11px] font-semibold text-white/80">Atlas</span>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="#FF9F0A"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#30D158" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </div>
                     <!-- Marcus pill -->
                     <div class="flex items-center gap-1.5 rounded-full px-3 py-1.5" style="background: rgba(255,159,10,0.08); border: 1px solid rgba(255,159,10,0.2);">
-                      <span class="text-[11px] font-bold" style="color: rgba(255,159,10,0.7);">0/5</span>
+                      <span class="text-[11px] font-bold" style="color: rgba(255,159,10,0.7);">6/9</span>
                       <span class="text-[11px] font-semibold text-white/80">Marcus</span>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="#FF9F0A"><path d="M12 2C7.03 2 3 6.03 3 11v5l-1.5 1.5V19h21v-1.5L21 16v-5c0-4.97-4.03-9-9-9zM12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/></svg>
                     </div>
@@ -547,6 +651,7 @@
 
         <!-- Tagline + CTA -->
         <div id="waitlist" class="w-full text-center">
+          <p class="text-xs font-semibold tracking-[0.2em] uppercase mb-3" style="color: #30D158;">Launching this week</p>
           <p class="text-xl sm:text-2xl font-bold tracking-wide mb-1">3 GOALS. EVERY SINGLE DAY.</p>
           <p class="text-sm text-secondary mb-6">Track your progress and lock in with your crew.</p>
           <form id="hero-form" class="waitlist-form flex flex-col sm:flex-row gap-3 mb-3" onsubmit="return false;">
@@ -567,10 +672,10 @@
             </div>
           </div>
           <div class="urgency-rotator mt-3">
-            <p class="urgency-line active text-sm font-bold text-white/80 tracking-tight">Dropping this week. Get in or get left behind.</p>
-            <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Your friends are already signing up.</p>
-            <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Spots are filling fast. Don't sleep on this.</p>
-            <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">First 1,000 get founder badges.</p>
+            <p class="urgency-line active text-sm font-bold text-white/80 tracking-tight">Launching this week. Doors close when we're full.</p>
+            <p class="urgency-line text-sm font-bold text-white/80 tracking-tight"><span class="waitlist-count">847</span> people joined before you opened this page.</p>
+            <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Founding Member spots are almost gone. Claim yours.</p>
+            <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">First 1,000 get Founding Member status. Permanently.</p>
           </div>
         </div>
       </div>
@@ -595,8 +700,8 @@
               </div>
               <span class="text-[32px] font-black leading-none" style="color: rgba(48,209,88,0.3);">01</span>
             </div>
-            <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Set 3 daily goals</h3>
-            <p class="text-[14px] text-white/55 leading-[1.6]">Not ten. Not one. Three things that actually move the needle, every single day.</p>
+            <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Declare 3 Chief Aims</h3>
+            <p class="text-[14px] text-white/55 leading-[1.6]">Not tasks. Not resolutions. Three defining missions for this chapter of your life. Everything you do daily points back to these.</p>
           </div>
           <div class="fade-up stagger-2 relative overflow-hidden rounded-2xl p-7 pt-8 border border-[#30D158]/30" style="background: linear-gradient(165deg, rgba(48,209,88,0.15), rgba(48,209,88,0.03) 60%, transparent); box-shadow: 0 0 50px -8px rgba(48,209,88,0.25), inset 0 1px 0 rgba(48,209,88,0.2);">
             <div class="absolute top-0 left-7 right-7 h-[2px]" style="background: linear-gradient(90deg, transparent, #30D158, transparent);"></div>
@@ -612,8 +717,8 @@
               </div>
               <span class="text-[32px] font-black leading-none" style="color: rgba(48,209,88,0.3);">02</span>
             </div>
-            <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Build the streak</h3>
-            <p class="text-[14px] text-white/55 leading-[1.6]">Show up consistently and watch your streak grow. Miss a day and everyone in your pact knows.</p>
+            <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Deploy 3 Daily Actions</h3>
+            <p class="text-[14px] text-white/55 leading-[1.6]">Each aim breaks into 3 daily actions. Small, precise, repeatable. This isn't a to-do app. It's a targeting system.</p>
           </div>
           <div class="fade-up stagger-3 relative overflow-hidden rounded-2xl p-7 pt-8 border border-[#30D158]/30" style="background: linear-gradient(165deg, rgba(48,209,88,0.15), rgba(48,209,88,0.03) 60%, transparent); box-shadow: 0 0 50px -8px rgba(48,209,88,0.25), inset 0 1px 0 rgba(48,209,88,0.2);">
             <div class="absolute top-0 left-7 right-7 h-[2px]" style="background: linear-gradient(90deg, transparent, #30D158, transparent);"></div>
@@ -629,8 +734,8 @@
               </div>
               <span class="text-[32px] font-black leading-none" style="color: rgba(48,209,88,0.3);">03</span>
             </div>
-            <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Hold each other to it</h3>
-            <p class="text-[14px] text-white/55 leading-[1.6]">Form a pact with 2 or 3 friends. Send nudges when someone slacks. Win together.</p>
+            <h3 class="text-[17px] font-bold mb-2.5 tracking-tight" style="color: #30D158;">Hold Each Other to It</h3>
+            <p class="text-[14px] text-white/55 leading-[1.6]">2 or 3 friends. Live progress. Slack? They nudge you back to the target.</p>
           </div>
         </div>
       </div>
@@ -647,19 +752,19 @@
             <div class="flex flex-col gap-3">
               <div class="flex items-start gap-3">
                 <span class="text-white/20 text-sm mt-0.5">&#10005;</span>
-                <p class="text-sm text-white/40">Set goals on January 1st. Quit by January 12th.</p>
+                <p class="text-sm text-white/40">Another morning. No direction. You react to whatever hits you first.</p>
               </div>
               <div class="flex items-start gap-3">
                 <span class="text-white/20 text-sm mt-0.5">&#10005;</span>
-                <p class="text-sm text-white/40">No one knows if you showed up or not.</p>
+                <p class="text-sm text-white/40">You stay busy to feel productive. Nothing actually moves forward.</p>
               </div>
               <div class="flex items-start gap-3">
                 <span class="text-white/20 text-sm mt-0.5">&#10005;</span>
-                <p class="text-sm text-white/40">"I'll start again Monday" on repeat.</p>
+                <p class="text-sm text-white/40">Nobody is watching. So you let yourself off the hook. Again.</p>
               </div>
               <div class="flex items-start gap-3">
                 <span class="text-white/20 text-sm mt-0.5">&#10005;</span>
-                <p class="text-sm text-white/40">Solo grind. Easy to quit. No stakes.</p>
+                <p class="text-sm text-white/40">"Next week I'll be different." You've been saying that for months. Maybe years.</p>
               </div>
             </div>
           </div>
@@ -669,19 +774,19 @@
             <div class="flex flex-col gap-3">
               <div class="flex items-start gap-3">
                 <span class="text-sm mt-0.5" style="color: #30D158;">&#10003;</span>
-                <p class="text-sm text-white/70">43-day streak and counting. Can't stop now.</p>
+                <p class="text-sm text-white/70">Clarity replaces chaos. You know exactly what matters today.</p>
               </div>
               <div class="flex items-start gap-3">
                 <span class="text-sm mt-0.5" style="color: #30D158;">&#10003;</span>
-                <p class="text-sm text-white/70">Your friends see everything. No hiding.</p>
+                <p class="text-sm text-white/70">No wasted motion. Everything you do earns its place.</p>
               </div>
               <div class="flex items-start gap-3">
                 <span class="text-sm mt-0.5" style="color: #30D158;">&#10003;</span>
-                <p class="text-sm text-white/70">Miss a day? Expect a nudge within the hour.</p>
+                <p class="text-sm text-white/70">Your squad watches live. Showing up becomes the standard.</p>
               </div>
               <div class="flex items-start gap-3">
                 <span class="text-sm mt-0.5" style="color: #30D158;">&#10003;</span>
-                <p class="text-sm text-white/70">You win together or you lose together. Real stakes.</p>
+                <p class="text-sm text-white/70">Go quiet and your friends pull you back. One tap.</p>
               </div>
             </div>
           </div>
@@ -689,105 +794,6 @@
       </div>
     </section>
 
-    <!-- Feature Peek -->
-    <section class="py-16 px-5 overflow-hidden">
-      <div class="max-w-5xl mx-auto">
-        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-white/40 mb-2 text-center">Inside the app</p>
-        <p class="text-lg sm:text-xl font-bold tracking-tight text-center mb-8">More than just a checklist.</p>
-        <div class="feature-scroll flex gap-4 pb-4" style="overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
-          <!-- Card 1: Streaks -->
-          <div class="feature-card flex-shrink-0 w-[280px] rounded-2xl p-5 border border-white/[0.06] scroll-snap-align-start" style="background: #1C1C1E; scroll-snap-align: start;">
-            <div class="flex items-center gap-2 mb-3">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
-              <span class="text-xs font-bold uppercase tracking-wider text-white/40">Streaks</span>
-            </div>
-            <p class="text-[15px] font-bold text-white mb-1">Never break the chain.</p>
-            <p class="text-[13px] text-white/45 leading-relaxed">Track your group streak day by day. One miss resets everyone. The pressure is real.</p>
-            <!-- Mini visual -->
-            <div class="flex items-end gap-1 mt-4">
-              <div class="w-5 h-3 rounded-sm" style="background: #30D158;"></div>
-              <div class="w-5 h-5 rounded-sm" style="background: #30D158;"></div>
-              <div class="w-5 h-7 rounded-sm" style="background: #30D158;"></div>
-              <div class="w-5 h-9 rounded-sm" style="background: #30D158;"></div>
-              <div class="w-5 h-11 rounded-sm" style="background: #30D158;"></div>
-              <div class="w-5 h-8 rounded-sm" style="background: #30D158;"></div>
-              <div class="w-5 h-12 rounded-sm" style="background: #30D158;"></div>
-            </div>
-          </div>
-          <!-- Card 2: Nudges -->
-          <div class="feature-card flex-shrink-0 w-[280px] rounded-2xl p-5 border border-white/[0.06]" style="background: #1C1C1E; scroll-snap-align: start;">
-            <div class="flex items-center gap-2 mb-3">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF9F0A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-              <span class="text-xs font-bold uppercase tracking-wider text-white/40">Nudges</span>
-            </div>
-            <p class="text-[15px] font-bold text-white mb-1">Friendly accountability.</p>
-            <p class="text-[13px] text-white/45 leading-relaxed">Send a nudge when someone's slacking. They'll get a push notification they can't ignore.</p>
-            <!-- Mini visual -->
-            <div class="mt-4 rounded-xl px-3 py-2.5" style="background: rgba(255,159,10,0.08); border: 1px solid rgba(255,159,10,0.15);">
-              <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-full flex items-center justify-center" style="background: rgba(255,159,10,0.2);">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#FF9F0A"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
-                </div>
-                <div>
-                  <p class="text-[11px] font-semibold text-white/70">Atlas nudged you</p>
-                  <p class="text-[10px] text-white/30">2 min ago</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Card 3: Daily Goals -->
-          <div class="feature-card flex-shrink-0 w-[280px] rounded-2xl p-5 border border-white/[0.06]" style="background: #1C1C1E; scroll-snap-align: start;">
-            <div class="flex items-center gap-2 mb-3">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
-              <span class="text-xs font-bold uppercase tracking-wider text-white/40">Daily Goals</span>
-            </div>
-            <p class="text-[15px] font-bold text-white mb-1">3 things. That's it.</p>
-            <p class="text-[13px] text-white/45 leading-relaxed">Pick your three non-negotiables each day. Simple enough to stick to, hard enough to matter.</p>
-            <!-- Mini visual -->
-            <div class="flex flex-col gap-2 mt-4">
-              <div class="flex items-center gap-2">
-                <div class="w-4 h-4 rounded-full flex items-center justify-center" style="background: #30D158;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round"/></svg></div>
-                <span class="text-[12px] text-white/50">Gym - 45 min</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <div class="w-4 h-4 rounded-full flex items-center justify-center" style="background: #30D158;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#000" stroke-width="3" stroke-linecap="round"/></svg></div>
-                <span class="text-[12px] text-white/50">Read 20 pages</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <div class="w-4 h-4 rounded-full border border-white/20"></div>
-                <span class="text-[12px] text-white/30">Cold plunge</span>
-              </div>
-            </div>
-          </div>
-          <!-- Card 4: Pact View -->
-          <div class="feature-card flex-shrink-0 w-[280px] rounded-2xl p-5 border border-white/[0.06]" style="background: #1C1C1E; scroll-snap-align: start;">
-            <div class="flex items-center gap-2 mb-3">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              <span class="text-xs font-bold uppercase tracking-wider text-white/40">Pacts</span>
-            </div>
-            <p class="text-[15px] font-bold text-white mb-1">Your inner circle.</p>
-            <p class="text-[13px] text-white/45 leading-relaxed">Form a pact with 2-3 friends. See who's putting in work and who's falling behind in real time.</p>
-            <!-- Mini visual -->
-            <div class="flex items-center gap-3 mt-4">
-              <div class="flex flex-col items-center gap-1">
-                <div class="w-8 h-8 rounded-full" style="background: #30D158;"></div>
-                <span class="text-[9px] text-white/40">You</span>
-              </div>
-              <div class="h-[1px] flex-1" style="background: rgba(255,255,255,0.1);"></div>
-              <div class="flex flex-col items-center gap-1">
-                <div class="w-8 h-8 rounded-full" style="background: #30D158;"></div>
-                <span class="text-[9px] text-white/40">Atlas</span>
-              </div>
-              <div class="h-[1px] flex-1" style="background: rgba(255,255,255,0.1);"></div>
-              <div class="flex flex-col items-center gap-1">
-                <div class="w-8 h-8 rounded-full border border-white/20" style="background: rgba(255,255,255,0.05);"></div>
-                <span class="text-[9px] text-white/40">Marcus</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
   </main>
 
@@ -796,8 +802,9 @@
     <div class="max-w-5xl mx-auto">
       <!-- Footer CTA -->
       <div class="text-center mb-10">
+        <p class="text-xs font-semibold tracking-[0.2em] uppercase mb-3" style="color: #30D158;">Launching this week</p>
         <h2 class="text-2xl sm:text-3xl font-bold tracking-tight mb-2">Ready to lock in?</h2>
-        <p class="text-sm text-white/50 mb-5">Join the waitlist and be the first to build pacts with your crew.</p>
+        <p class="text-sm text-white/50 mb-5">Become a Founding Member. Be the first to build pacts with your crew.</p>
         <form id="footer-form" class="waitlist-form flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-3" onsubmit="return false;">
           <input type="email" placeholder="Your email address" required
             class="flex-1 bg-card border border-white/10 rounded-2xl py-4 px-4 text-white placeholder:text-white/30 outline-none focus:border-white/30 text-base transition-colors">
@@ -817,10 +824,10 @@
           </div>
         </div>
         <div class="urgency-rotator mt-3">
-          <p class="urgency-line active text-sm font-bold text-white/80 tracking-tight">Dropping this week. Get in or get left behind.</p>
-          <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Your friends are already signing up.</p>
-          <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Spots are filling fast. Don't sleep on this.</p>
-          <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">First 1,000 get founder badges.</p>
+          <p class="urgency-line active text-sm font-bold text-white/80 tracking-tight">Launching this week. Doors close when we're full.</p>
+          <p class="urgency-line text-sm font-bold text-white/80 tracking-tight"><span class="waitlist-count">847</span> people joined before you opened this page.</p>
+          <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Founding Member spots are almost gone. Claim yours.</p>
+          <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">First 1,000 get Founding Member status. Permanently.</p>
         </div>
       </div>
       <!-- Footer bottom -->
@@ -884,12 +891,23 @@
       wrapper.style.height = Math.round(830 * deviceScale) + 'px';
       // Animation: scale 260px viewport to fill 390px screen width
       var animScale = Math.min(390 / 260, 1.45);
+      currentAnimScale = animScale;
       vp.style.width = '260px';
       vp.style.height = '340px';
-      vp.style.transform = 'scale(' + animScale + ')';
       vp.style.transformOrigin = 'top center';
+      applyViewportTransform(false);
       wrap.style.height = Math.round(340 * animScale) + 'px';
       wrap.style.flexShrink = '0';
+    }
+
+    function applyViewportTransform(smooth, duration) {
+      var vp = document.getElementById('animation-viewport');
+      if (!vp) return;
+      var dur = duration || 0.7;
+      vp.style.transition = smooth ? 'transform ' + dur + 's cubic-bezier(0.4,0,0.2,1)' : 'none';
+      var t = 'scale(' + currentAnimScale + ')';
+      if (animScrollY !== 0) t += ' translateY(' + animScrollY + 'px)';
+      vp.style.transform = t;
     }
 
     const MEMBERS = [
@@ -905,6 +923,8 @@
     let captionKey = null;
     let svgPhase = 'duo'; // 'duo' | 'triad' | 'transitioning'
     let objVisible = false;
+    let animScrollY = 0;
+    let currentAnimScale = 1.45;
 
     // ─── Animation Steps ────────────────────────────────────
     const STEPS = [
@@ -951,15 +971,13 @@
     function showObjectives() {
       var card = $('objectives-card');
       card.style.display = 'block';
-      $('obj-check-0').innerHTML = '\u2713';
-      $('obj-check-0').style.color = '#30D158';
-      $('obj-text-0').style.color = '#30D158';
-      $('obj-check-1').innerHTML = '\u25CB';
-      $('obj-check-1').style.color = 'rgba(255,255,255,0.3)';
-      $('obj-text-1').style.color = 'rgba(255,255,255,0.7)';
-      $('obj-check-2').innerHTML = '\u25CB';
-      $('obj-check-2').style.color = 'rgba(255,255,255,0.3)';
-      $('obj-text-2').style.color = 'rgba(255,255,255,0.7)';
+      for (var i = 0; i < 3; i++) {
+        $('obj-check-' + i).style.background = 'transparent';
+        $('obj-check-' + i).style.border = '1.5px solid rgba(255,255,255,0.18)';
+        $('obj-check-' + i).innerHTML = '';
+        $('obj-text-' + i).style.color = 'rgba(255,255,255,0.55)';
+        $('obj-text-' + i).style.textDecoration = 'none';
+      }
       requestAnimationFrame(function() { card.style.opacity = '1'; });
       objVisible = true;
     }
@@ -974,9 +992,11 @@
     function checkObjective(idx) {
       var check = $('obj-check-' + idx);
       var text = $('obj-text-' + idx);
-      check.innerHTML = '\u2713';
-      check.style.color = '#30D158';
-      text.style.color = '#30D158';
+      check.style.background = '#30D158';
+      check.style.border = 'none';
+      check.innerHTML = '<svg width="5" height="5" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      text.style.color = 'rgba(255,255,255,0.25)';
+      text.style.textDecoration = 'line-through';
     }
 
     // ─── Helpers ────────────────────────────────────────────
@@ -1004,6 +1024,8 @@
       var card = $('objectives-card');
       if (card) { card.style.display = 'none'; card.style.opacity = '0'; }
       objVisible = false;
+      animScrollY = 0;
+      applyViewportTransform(false);
     }
 
     function applyStep(s) {
@@ -1014,6 +1036,8 @@
           prevComp = MEMBERS.map(m => m.init >= m.total);
           svgPhase = 'duo';
           hideObjectives();
+          animScrollY = 0;
+          applyViewportTransform(false);
           break;
         case 'triad':
           st.shape = 'triad';
@@ -1034,10 +1058,22 @@
           st.cc = MEMBERS.map(m => m.init);
           prevComp = MEMBERS.map(m => m.init >= m.total);
           hideObjectives();
+          animScrollY = 0;
+          applyViewportTransform(false);
           break;
         case 'zin':
           st.zoom = s.m;
           if (s.m === 2) showObjectives();
+          // Stage 1: scroll to reveal card header + first goal
+          timers.push(setTimeout(function() {
+            animScrollY = -160;
+            applyViewportTransform(true);
+          }, 600));
+          // Stage 2: slow pan to reveal all goals
+          timers.push(setTimeout(function() {
+            animScrollY = -390;
+            applyViewportTransform(true, 2.5);
+          }, 3000));
           break;
         case 'nudge': st.nudge = s.m; break;
         case 'nc': st.nudge = null; break;
@@ -1048,6 +1084,8 @@
         case 'zout':
           st.zoom = null;
           hideObjectives();
+          animScrollY = 0;
+          applyViewportTransform(true);
           break;
       }
     }
