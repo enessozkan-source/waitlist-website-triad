@@ -1,0 +1,12 @@
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+node_modules/
+dist/
+tailwindcss-macos-arm64
+generate-og.js
+package.json
+package-lock.json
