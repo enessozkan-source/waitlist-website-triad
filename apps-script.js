@@ -10,7 +10,7 @@
  * 3. Deploy > New deployment > Web app > Execute as: Me > Who has access: Anyone
  */
 
-var RECAPTCHA_SECRET = 'YOUR_RECAPTCHA_SECRET_KEY';
+var RECAPTCHA_SECRET = '***REMOVED***';
 var EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function doPost(e) {
