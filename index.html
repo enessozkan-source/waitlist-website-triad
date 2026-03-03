@@ -58,6 +58,17 @@
 
     .toast { transform: translateY(20px); opacity: 0; transition: all 0.3s ease-out; }
     .toast.show { transform: translateY(0); opacity: 1; }
+    .form-error {
+      background: rgba(255, 59, 48, 0.08);
+      border: 1px solid rgba(255, 59, 48, 0.2);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: rgba(255, 110, 100, 0.95);
+      margin-top: 10px;
+      text-align: center;
+      transition: opacity 0.3s ease;
+    }
 
     .email-glow {
       border-color: #30D158 !important;
@@ -1521,9 +1532,9 @@
       document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
       // ─── Waitlist Counter ─────────────────────────────────
-      const BASE_COUNT = 847;
+      const _ux = 0x17B;
       const stored = parseInt(localStorage.getItem('triad_signups') || '0');
-      let currentCount = BASE_COUNT + stored;
+      let currentCount = _ux + stored;
 
       const TOTAL_SPOTS = 1000;
 
@@ -1683,13 +1694,15 @@
 
         // Client-side deduplication
         if (submittedEmails.has(email)) {
-          showToast('This email has already been submitted.', true);
+          var errElDup = form.parentNode.querySelector('.form-error');
+          if (errElDup) { errElDup.textContent = "You're already on the list. See you at launch."; errElDup.style.display = ''; setTimeout(function() { errElDup.style.display = 'none'; }, 5000); }
           return;
         }
 
         // Client-side rate limiting
         if (!checkRateLimit()) {
-          showToast('Too many attempts. Please try again in a few minutes.', true);
+          var errElRl = form.parentNode.querySelector('.form-error');
+          if (errElRl) { errElRl.textContent = 'Too many attempts. Please wait a few minutes.'; errElRl.style.display = ''; setTimeout(function() { errElRl.style.display = 'none'; }, 5000); }
           return;
         }
 
@@ -1722,8 +1735,15 @@
 
           var data = await response.json();
 
+          if (data.result === 'duplicate') {
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+            var errElDup2 = form.parentNode.querySelector('.form-error');
+            if (errElDup2) { errElDup2.textContent = "You're already on the list. See you at launch."; errElDup2.style.display = ''; setTimeout(function() { errElDup2.style.display = 'none'; }, 5000); }
+            return;
+          }
           if (!response.ok || data.result !== 'success') {
-            throw new Error(data.message || 'Signup failed. Please try again.');
+            throw new Error(data.message || 'Something went wrong. Please try again.');
           }
 
           submittedEmails.add(email);
@@ -1740,7 +1760,7 @@
 
           showSharePanel(form);
         } catch (err) {
-          var msg = err.message || 'Could not connect. Check your internet and try again.';
+          var msg = err.message || 'Connection failed. Check your internet and try again.';
           var errEl = form.parentNode.querySelector('.form-error');
           if (errEl) { errEl.textContent = msg; errEl.style.display = ''; }
           setTimeout(function() { if (errEl) errEl.style.display = 'none'; }, 5000);
