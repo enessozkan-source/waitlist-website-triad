@@ -7,3 +7,5 @@
 node_modules/
 dist/
 tailwindcss-macos-arm64
+.claude/
+note.md

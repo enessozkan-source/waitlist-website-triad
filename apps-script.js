@@ -79,7 +79,7 @@ function doPost(e) {
       // 6. All checks passed - save to spreadsheet
       sheet.appendRow([email, now.toISOString()]);
       var totalSignups = sheet.getLastRow() - 1;
-      MailApp.sendEmail('REDACTED', 'New Triad Signup #' + totalSignups, 'New signup: ' + email + '\n\nTotal signups: ' + totalSignups);
+      MailApp.sendEmail('240694966+enessozkan-source@users.noreply.github.com', 'New Triad Signup #' + totalSignups, 'New signup: ' + email + '\n\nTotal signups: ' + totalSignups);
     } finally {
       lock.releaseLock();
     }
