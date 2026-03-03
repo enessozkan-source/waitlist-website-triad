@@ -1,0 +1,16 @@
+{
+  "name": "Triad - Join the Waitlist",
+  "short_name": "Triad",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#30D158",
+  "icons": [
+    {
+      "src": "og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "triad--waitlist-landing-page",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i input.css -o style.css --minify",
+    "watch:css": "tailwindcss -i input.css -o style.css --watch",
+    "generate:og": "node generate-og.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enessozkan-source/waitlist-website-triad.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/enessozkan-source/waitlist-website-triad/issues"
+  },
+  "homepage": "https://github.com/enessozkan-source/waitlist-website-triad#readme",
+  "dependencies": {
+    "canvas": "^3.2.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0"
+  }
+}

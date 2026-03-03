@@ -30,20 +30,22 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 3. reCAPTCHA verification (if token provided)
-    if (params.captcha_token) {
-      var captchaResponse = UrlFetchApp.fetch('https://www.google.com/recaptcha/api/siteverify', {
-        method: 'post',
-        payload: {
-          secret: RECAPTCHA_SECRET,
-          response: params.captcha_token
-        }
-      });
-      var captchaResult = JSON.parse(captchaResponse.getContentText());
-      if (!captchaResult.success || captchaResult.score < 0.5) {
-        return ContentService.createTextOutput(JSON.stringify({ result: 'error', message: 'Verification failed' }))
-          .setMimeType(ContentService.MimeType.JSON);
+    // 3. reCAPTCHA verification (mandatory)
+    if (!params.captcha_token) {
+      return ContentService.createTextOutput(JSON.stringify({ result: 'error', message: 'Verification required' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var captchaResponse = UrlFetchApp.fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'post',
+      payload: {
+        secret: RECAPTCHA_SECRET,
+        response: params.captcha_token
       }
+    });
+    var captchaResult = JSON.parse(captchaResponse.getContentText());
+    if (!captchaResult.success || captchaResult.score < 0.5) {
+      return ContentService.createTextOutput(JSON.stringify({ result: 'error', message: 'Verification failed' }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
     // 4. Duplicate detection - check if email already exists

@@ -18,6 +18,7 @@
   <meta property="og:url" content="https://ozkanai.com">
   <link rel="canonical" href="https://ozkanai.com">
   <meta name="theme-color" content="#000000">
+  <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='61' height='61' viewBox='0 0 317 317' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='317' height='317' rx='108' fill='%23000000'/%3E%3Crect width='191' height='32' fill='%23FFFFFF' transform='translate(158.5 241.2) translate(-95.5 -16)'/%3E%3Crect width='190.2' height='31.7' fill='%23FFFFFF' transform='translate(110.75 158.5) rotate(-60) translate(-95.1 -15.85)'/%3E%3Crect width='190.2' height='31.7' fill='%23FFFFFF' transform='translate(206.25 158.5) rotate(-120) translate(-95.1 -15.85)'/%3E%3Crect width='127' height='8' fill='%23000000' transform='translate(158.5 241.2) translate(-63.5 -4)'/%3E%3Crect width='126.8' height='7.92' fill='%23000000' transform='translate(110.75 158.5) rotate(-60) translate(-63.4 -3.96)'/%3E%3Crect width='126.8' height='7.92' fill='%23000000' transform='translate(206.25 158.5) rotate(-120) translate(-63.4 -3.96)'/%3E%3Ccircle cx='158.5' cy='75.8' r='31.5' fill='%23FFFFFF'/%3E%3Ccircle cx='63' cy='241.2' r='31.5' fill='%23FFFFFF'/%3E%3Ccircle cx='254' cy='241.2' r='32.5' fill='%23FFFFFF'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,10 +31,14 @@
   <script src="https://www.google.com/recaptcha/api.js?render=6LedVn0sAAAAABDgrJ9ebzgc69lve1Wu0kOeLuJC" async defer></script>
   <style>
     * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; color-scheme: dark; }
     body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #000; color: #fff; }
 
     .glass { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%); }
+    @supports not (backdrop-filter: blur(1px)) {
+      .glass { background: rgba(0, 0, 0, 0.95); }
+      .launch-banner { background: linear-gradient(90deg, rgba(48,209,88,0.3), rgba(48,209,88,0.45), rgba(48,209,88,0.3)) !important; }
+    }
     .press { transition: transform 0.15s ease; }
     .press:active { transform: scale(0.97); }
 
@@ -221,30 +226,30 @@
       margin: 0 auto;
       transform-origin: top center;
     }
-    /* Strip the device frame completely */
-    .device-iphone-14-pro { width: 390px !important; height: 830px !important; }
+    /* Strip the device frame completely — unlayered styles beat @layer(devices) without !important */
+    .device-iphone-14-pro { width: 390px; height: 830px; }
     .device-iphone-14-pro .device-frame {
-      padding: 0 !important;
-      background: none !important;
-      border: none !important;
-      box-shadow: none !important;
-      border-radius: 44px !important;
-      width: 390px !important;
-      height: 830px !important;
+      padding: 0;
+      background: none;
+      border: none;
+      box-shadow: none;
+      border-radius: 44px;
+      width: 390px;
+      height: 830px;
     }
     .device-iphone-14-pro .device-stripe,
     .device-iphone-14-pro .device-header,
     .device-iphone-14-pro .device-sensors,
     .device-iphone-14-pro .device-btns,
-    .device-iphone-14-pro .device-power { display: none !important; }
+    .device-iphone-14-pro .device-power { display: none; }
     .device-iphone-14-pro .device-screen {
-      background: #000 !important;
+      background: #000;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      border-radius: 44px !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
-      box-shadow: 0 0 80px -10px rgba(48, 209, 88, 0.15), 0 20px 60px -15px rgba(0, 0, 0, 0.7) !important;
+      border-radius: 44px;
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 80px -10px rgba(48, 209, 88, 0.15), 0 20px 60px -15px rgba(0, 0, 0, 0.7);
     }
 
     /* ─── Screen Content ─────────────────────────────── */
@@ -379,7 +384,7 @@
   </div>
 
   <!-- Launch Banner -->
-  <div class="fixed top-0 left-0 right-0 z-50 text-center py-2 text-xs font-semibold tracking-wide" style="background: linear-gradient(90deg, rgba(48,209,88,0.15), rgba(48,209,88,0.25), rgba(48,209,88,0.15)); border-bottom: 1px solid rgba(48,209,88,0.3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+  <div class="launch-banner fixed top-0 left-0 right-0 z-50 text-center py-2 text-xs font-semibold tracking-wide" style="background: linear-gradient(90deg, rgba(48,209,88,0.15), rgba(48,209,88,0.25), rgba(48,209,88,0.15)); border-bottom: 1px solid rgba(48,209,88,0.3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
     <span style="color: #30D158;">Launching this week</span><span class="text-white/50"> · </span><span class="text-white/60">Founding Member spots are limited</span>
   </div>
 
@@ -797,7 +802,7 @@
           <p class="text-sm text-secondary mb-2">Track your progress and lock in with your crew.</p>
           <p class="text-3xl sm:text-5xl font-black tracking-tight mb-2" style="color: #30D158;">Launching this week.</p>
           <p class="text-sm text-white mb-6">Free to join the waitlist.</p>
-          <form id="hero-form" class="waitlist-form flex flex-col sm:flex-row gap-3 mb-3" onsubmit="return false;">
+          <form id="hero-form" class="waitlist-form flex flex-col sm:flex-row gap-3 mb-3">
             <label for="hero-email" class="sr-only">Email address</label>
             <input id="hero-email" type="email" placeholder="Your email address" required maxlength="254"
               class="flex-1 bg-card border border-white/10 rounded-2xl py-4 px-4 text-white placeholder:text-white/30 focus:border-white/30 text-base transition-colors">
@@ -951,7 +956,7 @@
         <p class="text-3xl sm:text-5xl font-black tracking-tight mb-3" style="color: #30D158;">Launching this week.</p>
         <h2 class="text-2xl sm:text-3xl font-bold tracking-tight mb-2">Ready to lock in?</h2>
         <p class="text-sm text-white/50 mb-5">Become a Founding Member. Be the first to build pacts with your crew.</p>
-        <form id="footer-form" class="waitlist-form flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-3" onsubmit="return false;">
+        <form id="footer-form" class="waitlist-form flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-3">
           <label for="footer-email" class="sr-only">Email address</label>
           <input id="footer-email" type="email" placeholder="Your email address" required maxlength="254"
             class="flex-1 bg-card border border-white/10 rounded-2xl py-4 px-4 text-white placeholder:text-white/30 focus:border-white/30 text-base transition-colors">
@@ -990,7 +995,7 @@
             <p><strong class="text-white/30">How long we keep it:</strong> Until launch. After that, your email is migrated to your user account or deleted upon request.</p>
             <p><strong class="text-white/30">Cookies:</strong> We use Google Analytics (GA4) to understand site traffic. Analytics cookies are only set if you accept the cookie banner. No cookies are set without your consent.</p>
             <p><strong class="text-white/30">Your rights:</strong> You can request access to, correction of, or deletion of your data at any time. You can unsubscribe by replying to any email we send.</p>
-            <p><strong class="text-white/30">Contact:</strong> For privacy requests, email us at <span class="text-white/30">privacy@triad.app</span>.</p>
+            <p><strong class="text-white/30">Contact:</strong> For privacy requests, email us at <a href="mailto:privacy@triad.app" class="text-white/30 underline hover:text-white/50 transition-colors">privacy@triad.app</a>.</p>
             <p class="text-white/15">Last updated: March 2, 2026</p>
           </div>
         </div>
@@ -1003,8 +1008,27 @@
 
   <script>
     // ─── Global Error Handler ────────────────────────────────
+    var ERROR_ENDPOINT = ''; // Set to your error reporting URL to enable remote logging
+    function reportError(msg, source, line, col) {
+      console.error('Triad Error:', msg, source, line);
+      if (!ERROR_ENDPOINT || typeof navigator.sendBeacon !== 'function') return;
+      try {
+        var payload = JSON.stringify({
+          msg: String(msg).slice(0, 200),
+          src: String(source || '').slice(-100),
+          line: line || 0,
+          col: col || 0,
+          ua: navigator.userAgent.slice(0, 120),
+          ts: Date.now()
+        });
+        navigator.sendBeacon(ERROR_ENDPOINT, payload);
+      } catch (_) { /* silent */ }
+    }
     window.addEventListener('error', function(e) {
-      console.error('Triad Error:', e.message, e.filename, e.lineno);
+      reportError(e.message, e.filename, e.lineno, e.colno);
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      reportError('UnhandledRejection: ' + (e.reason && e.reason.message || e.reason), '', 0, 0);
     });
 
     // ─── Cookie Consent + GA4 ────────────────────────────────
@@ -1561,26 +1585,26 @@
       }, { threshold: 0.1 });
       document.querySelectorAll('footer .scarcity-bar-wrap').forEach(el => footerBarObs.observe(el));
 
-      // Rotating urgency text
-      const urgencyIntervals = [];
+      // Rotating urgency text (single shared timer keeps all rotators in sync)
+      let urgencyIdx = 0;
+      let urgencyInterval = null;
       function startUrgencyRotation() {
-        document.querySelectorAll('.urgency-rotator').forEach(rotator => {
-          const lines = rotator.querySelectorAll('.urgency-line');
-          if (lines.length < 2) return;
-          let idx = 0;
-          const id = setInterval(() => {
-            lines[idx].classList.remove('active');
-            idx = (idx + 1) % lines.length;
-            lines[idx].classList.add('active');
-          }, 3500);
-          urgencyIntervals.push(id);
-        });
+        if (urgencyInterval) return;
+        urgencyInterval = setInterval(() => {
+          document.querySelectorAll('.urgency-rotator').forEach(rotator => {
+            const lines = rotator.querySelectorAll('.urgency-line');
+            if (lines.length < 2) return;
+            lines[urgencyIdx % lines.length].classList.remove('active');
+            lines[(urgencyIdx + 1) % lines.length].classList.add('active');
+          });
+          urgencyIdx++;
+        }, 3500);
       }
       startUrgencyRotation();
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
-          urgencyIntervals.forEach(id => clearInterval(id));
-          urgencyIntervals.length = 0;
+          clearInterval(urgencyInterval);
+          urgencyInterval = null;
         } else {
           startUrgencyRotation();
         }
@@ -1685,7 +1709,7 @@
 
           var data = await response.json();
 
-          if (!response.ok || data.status !== 'success') {
+          if (!response.ok || data.result !== 'success') {
             throw new Error(data.message || 'Signup failed. Please try again.');
           }
 
