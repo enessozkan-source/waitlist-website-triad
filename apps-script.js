@@ -5,16 +5,16 @@
  * (script.google.com) and deploy as a web app.
  *
  * SETUP:
- * 1. Replace YOUR_RECAPTCHA_SECRET_KEY with your reCAPTCHA v3 secret key
+ * 1. Go to Project Settings > Script Properties > Add: RECAPTCHA_SECRET = your_secret_key
  * 2. Make sure your Google Sheet has headers in row 1: Email, Timestamp, IP
  * 3. Deploy > New deployment > Web app > Execute as: Me > Who has access: Anyone
  */
 
-var RECAPTCHA_SECRET = '***REMOVED***';
 var EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function doPost(e) {
   try {
+    var RECAPTCHA_SECRET = PropertiesService.getScriptProperties().getProperty('RECAPTCHA_SECRET');
     var params = e.parameter;
 
     // 1. Honeypot check - bots fill this hidden field
@@ -79,7 +79,7 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ result: 'error', message: 'Server error' }))
+    return ContentService.createTextOutput(JSON.stringify({ result: 'error', message: 'Server error: ' + err.message }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 }

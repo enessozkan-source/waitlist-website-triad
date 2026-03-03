@@ -28,7 +28,7 @@
     @import url("devices.css") layer(devices);
   </style>
   <link rel="stylesheet" href="style.css">
-  <script src="https://www.google.com/recaptcha/api.js?render=6LedVn0sAAAAABDgrJ9ebzgc69lve1Wu0kOeLuJC" async defer></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=6Lceq34sAAAAADEUWW6KQR7UfAm5LH1WzAFQ-I6a" async defer></script>
   <style>
     * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
     html { scroll-behavior: smooth; color-scheme: dark; }
@@ -812,6 +812,7 @@
               <span class="text-[11px] font-medium opacity-50">Join the waitlist</span>
             </button>
           </form>
+          <p class="form-error text-sm text-red-400 mt-2" style="display:none;"></p>
           <p class="text-xs text-white/40 mt-1">
             <span class="live-dot"></span><span class="waitlist-count font-medium text-white/50">847</span> people on the waitlist
           </p>
@@ -966,6 +967,7 @@
             <span class="text-[11px] font-medium opacity-50">Join the waitlist</span>
           </button>
         </form>
+        <p class="form-error text-sm text-red-400 mt-2" style="display:none;"></p>
         <p class="text-xs text-white/40">Be the first to know. No spam. <a href="#privacy" class="underline hover:text-white/60 transition-colors">Privacy Policy</a></p>
         <p class="text-xs text-white/40 mt-1">
           <span class="live-dot"></span><span class="waitlist-count font-medium text-white/50">847</span> people on the waitlist
@@ -1696,16 +1698,23 @@
           var bodyStr = 'email=' + encodeURIComponent(email) + '&website=' + encodeURIComponent(honeypot ? honeypot.value : '');
           if (typeof grecaptcha !== 'undefined') {
             try {
-              var token = await grecaptcha.execute('6LedVn0sAAAAABDgrJ9ebzgc69lve1Wu0kOeLuJC', { action: 'submit' });
+              var token = await Promise.race([
+                grecaptcha.execute('6Lceq34sAAAAADEUWW6KQR7UfAm5LH1WzAFQ-I6a', { action: 'submit' }),
+                new Promise(function(_, reject) { setTimeout(function() { reject(new Error('timeout')); }, 5000); })
+              ]);
               bodyStr += '&captcha_token=' + encodeURIComponent(token);
-            } catch (e) { /* reCAPTCHA not loaded, continue without */ }
+            } catch (e) { console.warn('reCAPTCHA failed:', e); }
           }
 
+          var controller = new AbortController();
+          var timeoutId = setTimeout(function() { controller.abort(); }, 8000);
           var response = await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: bodyStr,
+            signal: controller.signal,
           });
+          clearTimeout(timeoutId);
 
           var data = await response.json();
 
@@ -1728,7 +1737,9 @@
           showSharePanel(form);
         } catch (err) {
           var msg = err.message || 'Could not connect. Check your internet and try again.';
-          showToast(msg, true);
+          var errEl = form.parentNode.querySelector('.form-error');
+          if (errEl) { errEl.textContent = msg; errEl.style.display = ''; }
+          setTimeout(function() { if (errEl) errEl.style.display = 'none'; }, 5000);
           btn.disabled = false;
           btn.innerHTML = originalHTML;
         }
