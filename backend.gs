@@ -10,6 +10,8 @@
  *      SPREADSHEET_ID     = your_spreadsheet_id  (the long ID from the Sheet URL)
  *      NOTIFICATION_EMAIL = the email address that receives signup alerts
  *      STATS_KEY          = a secret key for the stats dashboard (you choose this)
+ *      UMAMI_API_TOKEN    = your Umami Cloud API token (Settings > API Keys)
+ *      UMAMI_WEBSITE_ID   = your Umami website ID (e.g. e7873232-7d4d-4475-adc1-17d9b083531b)
  * 2. Make sure your Google Sheet has headers in row 1: Email, Timestamp, Referral, Country
  * 3. Deploy > New deployment > Web app > Execute as: Me > Who has access: Anyone
  * 4. Run setupKeepWarm() once from the editor to install the 1-minute ping trigger.
@@ -159,6 +161,25 @@ function doGet(e) {
   return jsonResponse({ status: 'ok' });
 }
 
+/**
+ * Fetch data from Umami Cloud API.
+ * Returns parsed JSON or null on failure.
+ */
+function fetchUmami(endpoint, token) {
+  try {
+    var res = UrlFetchApp.fetch('https://api.umami.is/v1' + endpoint, {
+      headers: { 'Authorization': 'Bearer ' + token },
+      muteHttpExceptions: true
+    });
+    if (res.getResponseCode() === 200) {
+      return JSON.parse(res.getContentText());
+    }
+  } catch (err) {
+    console.error('Umami API error:', err);
+  }
+  return null;
+}
+
 function buildStatsPage(props) {
   const SPREADSHEET_ID = props.getProperty('SPREADSHEET_ID');
   const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('Sheet1');
@@ -199,6 +220,39 @@ function buildStatsPage(props) {
   const growth = yesterday > 0 ? Math.round(((today - yesterday) / yesterday) * 100) : null;
   const growthLabel = growth === null ? '' : (growth >= 0 ? '+' + growth + '% vs yesterday' : growth + '% vs yesterday');
   const growthColor = growth === null ? 'rgba(255,255,255,0.3)' : (growth >= 0 ? '#30D158' : '#ff453a');
+
+  // Umami analytics data
+  var umamiToken = props.getProperty('UMAMI_API_TOKEN');
+  var umamiSiteId = props.getProperty('UMAMI_WEBSITE_ID');
+  var umami = { enabled: false };
+  if (umamiToken && umamiSiteId) {
+    var startAt7d = sevenDaysAgo.getTime();
+    var startAtToday = todayStart.getTime();
+    var startAtYesterday = yesterdayStart.getTime();
+    var endAt = now.getTime();
+
+    var stats7d = fetchUmami('/websites/' + umamiSiteId + '/stats?startAt=' + startAt7d + '&endAt=' + endAt, umamiToken);
+    var statsToday = fetchUmami('/websites/' + umamiSiteId + '/stats?startAt=' + startAtToday + '&endAt=' + endAt, umamiToken);
+    var statsYesterday = fetchUmami('/websites/' + umamiSiteId + '/stats?startAt=' + startAtYesterday + '&endAt=' + startAtToday, umamiToken);
+    var umamiReferrers = fetchUmami('/websites/' + umamiSiteId + '/metrics?startAt=' + startAt7d + '&endAt=' + endAt + '&type=referrer', umamiToken);
+    var umamiBrowsers = fetchUmami('/websites/' + umamiSiteId + '/metrics?startAt=' + startAt7d + '&endAt=' + endAt + '&type=browser', umamiToken);
+    var umamiDevices = fetchUmami('/websites/' + umamiSiteId + '/metrics?startAt=' + startAt7d + '&endAt=' + endAt + '&type=device', umamiToken);
+
+    if (stats7d) {
+      umami.enabled = true;
+      umami.visitors7d = stats7d.visitors ? stats7d.visitors.value : 0;
+      umami.pageviews7d = stats7d.pageviews ? stats7d.pageviews.value : 0;
+      umami.bounces7d = stats7d.bounces ? stats7d.bounces.value : 0;
+      umami.visitorsToday = statsToday ? (statsToday.visitors ? statsToday.visitors.value : 0) : 0;
+      umami.pageviewsToday = statsToday ? (statsToday.pageviews ? statsToday.pageviews.value : 0) : 0;
+      umami.visitorsYesterday = statsYesterday ? (statsYesterday.visitors ? statsYesterday.visitors.value : 0) : 0;
+      umami.bounceRate7d = umami.visitors7d > 0 ? Math.round((umami.bounces7d / umami.visitors7d) * 100) : 0;
+      umami.conversionRate7d = umami.visitors7d > 0 ? ((last7 / umami.visitors7d) * 100).toFixed(1) : '0.0';
+      umami.referrers = umamiReferrers || [];
+      umami.browsers = umamiBrowsers || [];
+      umami.devices = umamiDevices || [];
+    }
+  }
 
   // Country names lookup
   var CN = {'US':'United States','GB':'United Kingdom','DE':'Germany','FR':'France','IN':'India','CA':'Canada',
@@ -330,6 +384,73 @@ function buildStatsPage(props) {
         '<div style="font-size:11px;margin-top:4px;color:rgba(255,255,255,0.3)">this week</div>' +
       '</div>' +
     '</div>' +
+
+    // Umami site traffic section
+    (umami.enabled ?
+      '<div class="section" style="background:linear-gradient(135deg,#0d1828,#0a1015);border:1px solid rgba(94,147,255,0.2);border-radius:20px;padding:24px 28px;margin-bottom:14px;animation-delay:0.12s">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
+          '<div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px">Site Traffic (7 days)</div>' +
+          '<div style="font-size:10px;color:rgba(94,147,255,0.5);background:rgba(94,147,255,0.1);padding:3px 8px;border-radius:999px">via Umami</div>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:16px">' +
+          '<div>' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Visitors</div>' +
+            '<div style="font-size:24px;font-weight:700;color:#5e93ff">' + umami.visitors7d + '</div>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Pageviews</div>' +
+            '<div style="font-size:24px;font-weight:700;color:#5e93ff">' + umami.pageviews7d + '</div>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Bounce</div>' +
+            '<div style="font-size:24px;font-weight:700;color:' + (umami.bounceRate7d > 70 ? '#ff453a' : '#5e93ff') + '">' + umami.bounceRate7d + '%</div>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Conversion</div>' +
+            '<div style="font-size:24px;font-weight:700;color:#30D158">' + umami.conversionRate7d + '%</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+          '<div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:12px">' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Today</div>' +
+            '<div style="font-size:20px;font-weight:700">' + umami.visitorsToday + ' <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.3)">visitors</span></div>' +
+          '</div>' +
+          '<div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:12px">' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Yesterday</div>' +
+            '<div style="font-size:20px;font-weight:700">' + umami.visitorsYesterday + ' <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.3)">visitors</span></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // Umami referrers + devices
+      '<div class="section" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;animation-delay:0.13s">' +
+        '<div style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px">' +
+          '<div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px">Top Referrers</div>' +
+          (umami.referrers.length > 0 ?
+            umami.referrers.slice(0, 5).map(function(r) {
+              return '<div style="display:flex;justify-content:space-between;margin-bottom:8px">' +
+                '<span style="font-size:12px;color:rgba(255,255,255,0.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px">' + (r.x || 'direct') + '</span>' +
+                '<span style="font-size:12px;font-weight:600;color:#5e93ff">' + r.y + '</span>' +
+              '</div>';
+            }).join('')
+            : '<p style="font-size:12px;color:rgba(255,255,255,0.25)">No data yet</p>'
+          ) +
+        '</div>' +
+        '<div style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px">' +
+          '<div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px">Devices</div>' +
+          (umami.devices.length > 0 ?
+            umami.devices.slice(0, 5).map(function(d) {
+              var icon = d.x === 'mobile' ? '&#128241;' : (d.x === 'desktop' ? '&#128187;' : '&#128196;');
+              return '<div style="display:flex;justify-content:space-between;margin-bottom:8px">' +
+                '<span style="font-size:12px;color:rgba(255,255,255,0.7)">' + icon + ' ' + d.x + '</span>' +
+                '<span style="font-size:12px;font-weight:600;color:#5e93ff">' + d.y + '</span>' +
+              '</div>';
+            }).join('')
+            : '<p style="font-size:12px;color:rgba(255,255,255,0.25)">No data yet</p>'
+          ) +
+        '</div>' +
+      '</div>'
+    : '') +
 
     // Bar chart
     '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.15s">' +

@@ -20,15 +20,31 @@
   <meta name="theme-color" content="#000000">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='61' height='61' viewBox='0 0 317 317' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='317' height='317' rx='108' fill='%23000000'/%3E%3Crect width='191' height='32' fill='%23FFFFFF' transform='translate(158.5 241.2) translate(-95.5 -16)'/%3E%3Crect width='190.2' height='31.7' fill='%23FFFFFF' transform='translate(110.75 158.5) rotate(-60) translate(-95.1 -15.85)'/%3E%3Crect width='190.2' height='31.7' fill='%23FFFFFF' transform='translate(206.25 158.5) rotate(-120) translate(-95.1 -15.85)'/%3E%3Crect width='127' height='8' fill='%23000000' transform='translate(158.5 241.2) translate(-63.5 -4)'/%3E%3Crect width='126.8' height='7.92' fill='%23000000' transform='translate(110.75 158.5) rotate(-60) translate(-63.4 -3.96)'/%3E%3Crect width='126.8' height='7.92' fill='%23000000' transform='translate(206.25 158.5) rotate(-120) translate(-63.4 -3.96)'/%3E%3Ccircle cx='158.5' cy='75.8' r='31.5' fill='%23FFFFFF'/%3E%3Ccircle cx='63' cy='241.2' r='31.5' fill='%23FFFFFF'/%3E%3Ccircle cx='254' cy='241.2' r='32.5' fill='%23FFFFFF'/%3E%3C/svg%3E">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Self-hosted Inter variable font */
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400 900;
+      font-display: swap;
+      src: url(fonts/inter-latin.woff2) format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400 900;
+      font-display: swap;
+      src: url(fonts/inter-latin-ext.woff2) format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+  </style>
   <style>
     @layer devices;
     @import url("devices.css") layer(devices);
   </style>
   <link rel="stylesheet" href="style.css">
-  <script src="https://www.google.com/recaptcha/api.js?render=6Lceq34sAAAAADEUWW6KQR7UfAm5LH1WzAFQ-I6a" async defer></script>
+  <!-- reCAPTCHA v3 loaded dynamically on email input focus -->
   <style>
     * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
     html { scroll-behavior: smooth; color-scheme: dark; }
@@ -363,40 +379,9 @@
       margin: 8px auto 4px;
       flex-shrink: 0;
     }
-    /* Cookie consent banner */
-    .consent-banner {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 60;
-      background: #1C1C1E;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      padding: 16px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      font-size: 13px;
-      color: rgba(255,255,255,0.6);
-      transform: translateY(100%);
-      transition: transform 0.3s ease;
-    }
-    .consent-banner.show { transform: translateY(0); }
-    .consent-banner button {
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: opacity 0.15s ease;
-    }
-    .consent-banner button:hover { opacity: 0.85; }
-    .consent-accept { background: #30D158; color: #000; }
-    .consent-decline { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
   </style>
+  <!-- Umami Analytics (cookie-free, privacy-friendly) -->
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="e7873232-7d4d-4475-adc1-17d9b083531b"></script>
 </head>
 <!-- overflow-x-hidden prevents horizontal scroll from phone mockup scaling -->
 <body class="min-h-screen overflow-x-hidden">
@@ -406,15 +391,6 @@
       This site requires JavaScript to join the waitlist. Please enable JavaScript.
     </div>
   </noscript>
-
-  <!-- Cookie Consent Banner -->
-  <div id="consent-banner" class="consent-banner">
-    <span>We use cookies to understand how visitors interact with our site. <a href="policies.html#privacy-policy" class="underline hover:text-white/80 transition-colors">Privacy Policy</a></span>
-    <div class="flex gap-2">
-      <button class="consent-decline" onclick="handleConsent(false)">Decline</button>
-      <button class="consent-accept" onclick="handleConsent(true)">Accept</button>
-    </div>
-  </div>
 
   <!-- Launch Banner -->
   <div class="launch-banner fixed top-0 left-0 right-0 z-50 text-center py-2 text-xs font-semibold tracking-wide" style="background: linear-gradient(90deg, rgba(48,209,88,0.15), rgba(48,209,88,0.25), rgba(48,209,88,0.15)); border-bottom: 1px solid rgba(48,209,88,0.3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
@@ -846,6 +822,7 @@
             </button>
           </form>
           <p class="form-error text-sm text-red-400 mt-2" style="display:none;"></p>
+          <p class="text-[11px] text-white/30 mt-1">By joining, you agree to our <a href="policies.html#privacy-policy" class="underline hover:text-white/50 transition-colors">Privacy Policy</a> and <a href="policies.html#terms-of-service" class="underline hover:text-white/50 transition-colors">Terms of Service</a>.</p>
           <p class="text-xs text-white/40 mt-1">
             <span class="live-dot"></span><span class="waitlist-count font-medium text-white/50"></span> people on the waitlist
           </p>
@@ -1001,7 +978,7 @@
           </button>
         </form>
         <p class="form-error text-sm text-red-400 mt-2" style="display:none;"></p>
-        <p class="text-xs text-white/40">Be the first to know. No spam. <a href="policies.html#privacy-policy" class="underline hover:text-white/60 transition-colors">Privacy Policy</a></p>
+        <p class="text-[11px] text-white/30">By joining, you agree to our <a href="policies.html#privacy-policy" class="underline hover:text-white/50 transition-colors">Privacy Policy</a> and <a href="policies.html#terms-of-service" class="underline hover:text-white/50 transition-colors">Terms of Service</a>.</p>
         <p class="text-xs text-white/40 mt-1">
           <span class="live-dot"></span><span class="waitlist-count font-medium text-white/50"></span> people on the waitlist
         </p>
@@ -1060,38 +1037,16 @@
       reportError('UnhandledRejection: ' + (e.reason && e.reason.message || e.reason), '', 0, 0);
     });
 
-    // ─── Cookie Consent + GA4 ────────────────────────────────
-    // GA4 Measurement ID - replace with real ID before launch (see not/not.md)
-    var GA4_ID = 'G-R8JN40HRDV';
-
-    function loadGA4() {
+    // ─── Lazy-load reCAPTCHA v3 on email input focus ─────────
+    var recaptchaLoaded = false;
+    function loadRecaptcha() {
+      if (recaptchaLoaded) return;
+      recaptchaLoaded = true;
       var s = document.createElement('script');
+      s.src = 'https://www.google.com/recaptcha/api.js?render=6Lceq34sAAAAADEUWW6KQR7UfAm5LH1WzAFQ-I6a';
       s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA4_ID;
       document.head.appendChild(s);
-      window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', GA4_ID);
     }
-
-    function handleConsent(accepted) {
-      localStorage.setItem('triad_cookie_consent', accepted ? 'yes' : 'no');
-      document.getElementById('consent-banner').classList.remove('show');
-      if (accepted) loadGA4();
-    }
-
-    (function initConsent() {
-      var consent = localStorage.getItem('triad_cookie_consent');
-      if (consent === 'yes') {
-        loadGA4();
-      } else if (consent === null) {
-        setTimeout(function() {
-          document.getElementById('consent-banner').classList.add('show');
-        }, 1500);
-      }
-    })();
 
     // ─── Constants ──────────────────────────────────────────
     const W = '#FFFFFF', G = '#30D158', BK = '#000000';
@@ -1649,9 +1604,14 @@
       const _urlParams = new URLSearchParams(window.location.search);
       const PAGE_REF = (_urlParams.get('ref') || _urlParams.get('utm_source') || '').trim().toLowerCase().slice(0, 50);
 
-      // Silently detect country via IP for analytics (fails gracefully)
+      // Country detection deferred to email input focus (GDPR: no third-party calls before user interaction)
       let PAGE_COUNTRY = '';
-      fetch('https://api.country.is/').then(function(r){return r.json();}).then(function(d){PAGE_COUNTRY=(d.country||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,2);}).catch(function(){});
+      var countryFetched = false;
+      function fetchCountry() {
+        if (countryFetched) return;
+        countryFetched = true;
+        fetch('https://api.country.is/').then(function(r){return r.json();}).then(function(d){PAGE_COUNTRY=(d.country||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,2);}).catch(function(){});
+      }
 
       // Fetch live waitlist count from server so all devices show the real number
       fetch(GOOGLE_SCRIPT_URL + '?action=count').then(function(r){return r.json();}).then(function(d){
@@ -1810,9 +1770,6 @@
           clearInterval(msgInterval);
           submittedEmails.add(email);
 
-          // GA4 conversion event
-          if (typeof gtag === 'function') gtag('event', 'waitlist_signup');
-
           // Update counter with server count (offset already included server-side)
           if (data.count) {
             currentCount = data.count;
@@ -1842,6 +1799,10 @@
         const input = form.querySelector('input[type="email"]');
         const btn = form.querySelector('button[type="submit"]');
         btn.disabled = true; // Disable via JS so no-JS users can still submit
+        input.addEventListener('focus', function() {
+          loadRecaptcha();
+          fetchCountry();
+        }, { once: true });
         input.addEventListener('input', function() {
           const valid = emailRegex.test(this.value.trim());
           this.classList.toggle('email-glow', valid);
