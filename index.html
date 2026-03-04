@@ -1661,7 +1661,7 @@
 
       // Fetch live waitlist count from server so all devices show the real number
       fetch(GOOGLE_SCRIPT_URL + '?action=count').then(function(r){return r.json();}).then(function(d){
-        if(d.count && d.count > currentCount){
+        if(d.count && d.count >= _ux && d.count !== currentCount){
           currentCount = d.count;
           localStorage.setItem('_t_cfg', d.count.toString());
           updateCounterDisplay();
