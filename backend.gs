@@ -18,6 +18,7 @@
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const MILESTONES = [100, 500, 1000, 5000, 10000];
+const DISPLAY_OFFSET = 379;
 
 function doPost(e) {
   try {
@@ -116,7 +117,7 @@ function doPost(e) {
       lock.releaseLock();
     }
 
-    return jsonResponse({ result: 'success', count: totalSignups });
+    return jsonResponse({ result: 'success', count: totalSignups + DISPLAY_OFFSET });
 
   } catch (err) {
     console.error('doPost error:', err);
@@ -138,6 +139,19 @@ function doGet(e) {
       return buildStatsPage(props);
     } catch (err) {
       return HtmlService.createHtmlOutput('<p style="font-family:sans-serif;padding:40px;color:#c00">Error loading stats: ' + err.message + '</p>');
+    }
+  }
+
+  // Public count endpoint for frontend display
+  if (params.action === 'count') {
+    try {
+      const SPREADSHEET_ID = props.getProperty('SPREADSHEET_ID');
+      const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('Sheet1');
+      const lastRow = sheet.getLastRow();
+      const realCount = lastRow > 1 ? lastRow - 1 : 0;
+      return jsonResponse({ count: realCount + DISPLAY_OFFSET });
+    } catch (err) {
+      return jsonResponse({ count: DISPLAY_OFFSET });
     }
   }
 
