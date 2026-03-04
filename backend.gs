@@ -183,8 +183,8 @@ function buildStatsPage(props) {
   }
 
   const growth = yesterday > 0 ? Math.round(((today - yesterday) / yesterday) * 100) : null;
-  const growthLabel = growth === null ? 'first day' : (growth >= 0 ? '+' + growth + '%' : growth + '%');
-  const growthColor = growth === null ? '#00d4ff' : (growth >= 0 ? '#00ff88' : '#ff4d4d');
+  const growthLabel = growth === null ? '' : (growth >= 0 ? '+' + growth + '% vs yesterday' : growth + '% vs yesterday');
+  const growthColor = growth === null ? 'rgba(255,255,255,0.3)' : (growth >= 0 ? '#30D158' : '#ff453a');
 
   // Country names lookup
   var CN = {'US':'United States','GB':'United Kingdom','DE':'Germany','FR':'France','IN':'India','CA':'Canada',
@@ -264,10 +264,6 @@ function buildStatsPage(props) {
   var updatedAt = now.toLocaleString('en-US', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
   var countryCount = Object.keys(countryCounts).length;
   var countryDataJson = JSON.stringify(countryCounts);
-
-  // Growth vs yesterday
-  var growthLabel = growth === null ? '' : (growth >= 0 ? '+' + growth + '% vs yesterday' : growth + '% vs yesterday');
-  var growthColor = growth === null ? 'rgba(255,255,255,0.3)' : (growth >= 0 ? '#30D158' : '#ff453a');
 
   var html = '<!DOCTYPE html><html><head>' +
     '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +

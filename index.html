@@ -1807,10 +1807,10 @@
           // GA4 conversion event
           if (typeof gtag === 'function') gtag('event', 'waitlist_signup');
 
-          // Update counter with server truth
+          // Update counter with server truth + base offset
           if (data.count) {
-            currentCount = data.count;
-            localStorage.setItem('_t_cfg', data.count.toString());
+            currentCount = _ux + data.count;
+            localStorage.setItem('_t_cfg', currentCount.toString());
           } else {
             currentCount++;
           }
