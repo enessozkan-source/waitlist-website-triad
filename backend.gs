@@ -212,193 +212,162 @@ function buildStatsPage(props) {
     var count = countryCounts[cc];
     var pct = total > 0 ? Math.round((count / maxCC) * 100) : 0;
     var name = CN[cc] || cc;
-    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(0,255,136,0.06)">' +
+    return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
       '<span style="font-size:18px;line-height:1">' + flag(cc) + '</span>' +
-      '<span style="flex:1;font-size:13px;color:rgba(255,255,255,0.75);font-family:Courier New,monospace">' + name + '</span>' +
-      '<div style="width:80px;background:rgba(0,255,136,0.08);border-radius:2px;height:3px;margin-right:8px">' +
-        '<div style="background:#00ff88;height:3px;border-radius:2px;width:' + pct + '%"></div>' +
+      '<span style="flex:1;font-size:13px;color:rgba(255,255,255,0.8)">' + name + '</span>' +
+      '<div style="width:80px;background:rgba(255,255,255,0.06);border-radius:999px;height:4px;margin-right:8px">' +
+        '<div style="background:#30D158;height:4px;border-radius:999px;width:' + pct + '%"></div>' +
       '</div>' +
-      '<span style="font-size:13px;font-weight:700;color:#00ff88;font-family:Courier New,monospace;min-width:24px;text-align:right">' + count + '</span>' +
+      '<span style="font-size:13px;font-weight:600;color:#30D158;min-width:24px;text-align:right">' + count + '</span>' +
     '</div>';
   }).join('');
 
   // Bar chart
   const days = Object.keys(dailyCounts).sort();
-  const DAY_NAMES = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const maxBar = Math.max.apply(null, days.map(function(d){return dailyCounts[d];}).concat([1]));
+  const CW = 100, BAR_W = 60, CHART_H = 90, BAR_MAX_H = 68;
   var bars = '';
   days.forEach(function(dayKey, i) {
     var count = dailyCounts[dayKey];
-    var barH = count > 0 ? Math.max(Math.round((count / maxBar) * 70), 6) : 3;
-    var x = i * 100 + 20;
-    var y = 80 - barH;
+    var barH = count > 0 ? Math.max(Math.round((count / maxBar) * BAR_MAX_H), 6) : 3;
+    var x = i * CW + (CW - BAR_W) / 2;
+    var y = CHART_H - barH - 18;
     var isToday = i === 6;
+    var fill = isToday ? '#30D158' : 'rgba(48,209,88,0.3)';
     var date = new Date(dayKey + 'T12:00:00');
     var label = DAY_NAMES[date.getDay()];
-    if (isToday) {
-      bars += '<rect x="' + x + '" y="' + y + '" width="60" height="' + barH + '" rx="4" fill="url(#bg)"/>';
-    } else {
-      bars += '<rect x="' + x + '" y="' + y + '" width="60" height="' + barH + '" rx="4" fill="rgba(0,255,136,0.2)"/>';
-    }
-    if (count > 0) bars += '<text x="' + (x+30) + '" y="' + (y-6) + '" text-anchor="middle" fill="rgba(0,255,136,0.7)" style="font-size:10px;font-family:Courier New,monospace">' + count + '</text>';
-    bars += '<text x="' + (x+30) + '" y="98" text-anchor="middle" fill="' + (isToday ? '#00ff88' : 'rgba(0,255,136,0.35)') + '" style="font-size:10px;font-family:Courier New,monospace;font-weight:' + (isToday?'700':'400') + '">' + label + '</text>';
+    bars += '<rect x="' + x + '" y="' + y + '" width="' + BAR_W + '" height="' + barH + '" rx="8" fill="' + fill + '"/>';
+    if (count > 0) bars += '<text x="' + (x+BAR_W/2) + '" y="' + (y-5) + '" text-anchor="middle" style="font-size:11px;fill:rgba(255,255,255,0.5);font-family:-apple-system,sans-serif">' + count + '</text>';
+    bars += '<text x="' + (x+BAR_W/2) + '" y="' + (CHART_H-2) + '" text-anchor="middle" style="font-size:11px;fill:' + (isToday ? '#30D158' : 'rgba(255,255,255,0.3)') + ';font-family:-apple-system,sans-serif;font-weight:' + (isToday?'700':'400') + '">' + label + '</text>';
   });
 
   // Source rows
-  var topRefs = Object.keys(refCounts).sort(function(a,b){return refCounts[b]-refCounts[a];}).slice(0,8);
+  var topRefs = Object.keys(refCounts).sort(function(a,b){return refCounts[b]-refCounts[a];}).slice(0, 8);
   var maxRef = topRefs.length > 0 ? refCounts[topRefs[0]] : 1;
   var sourceRows = topRefs.map(function(ref) {
     var count = refCounts[ref];
     var pct = total > 0 ? Math.round((count / total) * 100) : 0;
     var barPct = Math.round((count / maxRef) * 100);
-    return '<div style="margin-bottom:12px">' +
-      '<div style="display:flex;justify-content:space-between;margin-bottom:5px">' +
-        '<span style="font-size:12px;color:rgba(0,255,136,0.7);font-family:Courier New,monospace">' + ref.toUpperCase() + '</span>' +
-        '<span style="font-size:12px;font-family:Courier New,monospace;color:#00ff88">' + count + ' <span style="color:rgba(0,255,136,0.4)">[' + pct + '%]</span></span>' +
+    return '<div style="margin-bottom:14px">' +
+      '<div style="display:flex;justify-content:space-between;margin-bottom:6px">' +
+        '<span style="font-size:13px;color:rgba(255,255,255,0.8)">' + ref + '</span>' +
+        '<span style="font-size:13px;font-weight:600">' + count + ' <span style="color:rgba(255,255,255,0.3);font-weight:400">' + pct + '%</span></span>' +
       '</div>' +
-      '<div style="background:rgba(0,255,136,0.08);border-radius:1px;height:3px">' +
-        '<div style="background:linear-gradient(90deg,#00ff88,#00d4ff);height:3px;border-radius:1px;width:' + barPct + '%"></div>' +
+      '<div style="background:rgba(255,255,255,0.06);border-radius:999px;height:4px">' +
+        '<div style="background:#30D158;border-radius:999px;height:4px;width:' + barPct + '%"></div>' +
       '</div>' +
     '</div>';
   }).join('');
 
-  var ts = now.toLocaleString('en-US', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  var updatedAt = now.toLocaleString('en-US', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
   var countryCount = Object.keys(countryCounts).length;
   var countryDataJson = JSON.stringify(countryCounts);
 
+  // Growth vs yesterday
+  var growthLabel = growth === null ? '' : (growth >= 0 ? '+' + growth + '% vs yesterday' : growth + '% vs yesterday');
+  var growthColor = growth === null ? 'rgba(255,255,255,0.3)' : (growth >= 0 ? '#30D158' : '#ff453a');
+
   var html = '<!DOCTYPE html><html><head>' +
     '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
-    '<title>TRIAD // INTELLIGENCE DASHBOARD</title>' +
+    '<title>Triad Stats</title>' +
     '<style>' +
-    ':root{--g:#00ff88;--c:#00d4ff;--o:#ff6b35;--bg:#020805}' +
     '*{box-sizing:border-box;margin:0;padding:0}' +
-    'body{background:var(--bg);color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:24px 20px;max-width:640px;margin:0 auto;' +
-      'background-image:linear-gradient(rgba(0,255,136,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,0.025) 1px,transparent 1px);' +
-      'background-size:40px 40px}' +
-    '@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.2}}' +
-    '@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}' +
-    '@keyframes scan{0%{top:-2px}100%{top:100%}}' +
-    '@keyframes blink{0%,100%{opacity:1}49%{opacity:1}50%,99%{opacity:0}}' +
-    '@keyframes glow{0%,100%{text-shadow:0 0 20px var(--g),0 0 40px rgba(0,255,136,0.4)}50%{text-shadow:0 0 30px var(--g),0 0 60px rgba(0,255,136,0.6)}}' +
-    '.f{animation:fadeUp 0.5s ease both}' +
-    '.hc{background:rgba(0,15,8,0.9);border:1px solid rgba(0,255,136,0.2);border-radius:6px;position:relative;padding:16px;' +
-      'box-shadow:0 0 20px rgba(0,255,136,0.05),inset 0 0 40px rgba(0,255,136,0.02)}' +
-    '.hc::before{content:"";position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:2px solid var(--g);border-left:2px solid var(--g)}' +
-    '.hc::after{content:"";position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:2px solid var(--g);border-right:2px solid var(--g)}' +
-    '.lbl{font-size:9px;color:rgba(0,255,136,0.45);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;font-family:Courier New,monospace}' +
-    '.val{font-family:Courier New,monospace;font-weight:700;letter-spacing:-0.5px}' +
-    '.scan-line{position:fixed;left:0;right:0;height:1px;background:linear-gradient(transparent,rgba(0,255,136,0.4),transparent);animation:scan 6s linear infinite;pointer-events:none;z-index:9999}' +
+    'body{background:#0a0a0a;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:28px 20px;max-width:560px;margin:0 auto}' +
+    '@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}' +
+    '@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}' +
+    '.section{animation:fadeUp 0.4s ease both}' +
     '</style></head><body>' +
-    '<div class="scan-line"></div>' +
 
     // Header
-    '<div class="f" style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start">' +
+    '<div class="section" style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px">' +
       '<div>' +
-        '<div style="font-size:10px;color:rgba(0,255,136,0.4);font-family:Courier New,monospace;letter-spacing:3px;margin-bottom:4px">// CLASSIFIED INTEL</div>' +
-        '<div style="font-size:22px;font-weight:800;letter-spacing:-0.5px;color:#fff">TRIAD <span style="color:var(--g)">WAITLIST</span></div>' +
-        '<div style="font-size:10px;color:rgba(0,255,136,0.4);font-family:Courier New,monospace;margin-top:3px">' +
-          '<span style="color:var(--g);animation:pulse 1.5s infinite;display:inline-block">&#9632;</span> LIVE &nbsp;|&nbsp; ' + ts + ' &nbsp;|&nbsp; ' +
-          countryCount + ' COUNTRIES DETECTED' +
+        '<div style="font-size:20px;font-weight:700;letter-spacing:-0.5px">Triad Waitlist</div>' +
+        '<div style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:3px">' +
+          '<span style="display:inline-block;width:7px;height:7px;background:#30D158;border-radius:50%;margin-right:5px;animation:pulse 2s infinite"></span>' +
+          'Updated ' + updatedAt +
+          (countryCount > 0 ? ' &nbsp;&middot;&nbsp; ' + countryCount + ' countries' : '') +
         '</div>' +
       '</div>' +
-      '<div style="text-align:right">' +
-        '<div style="font-size:9px;color:rgba(0,255,136,0.3);font-family:Courier New,monospace">SYS STATUS</div>' +
-        '<div style="font-size:11px;color:var(--g);font-family:Courier New,monospace">OPERATIONAL<span style="animation:blink 1s infinite">_</span></div>' +
-      '</div>' +
     '</div>' +
 
-    // Total
-    '<div class="f hc" style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-color:rgba(0,255,136,0.35);animation-delay:0.05s">' +
+    // Total card
+    '<div class="section" style="background:linear-gradient(135deg,#0d2818,#0a1510);border:1px solid rgba(48,209,88,0.2);border-radius:20px;padding:24px 28px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;animation-delay:0.05s">' +
       '<div>' +
-        '<div class="lbl">TOTAL ENROLLED</div>' +
-        '<div class="val" style="font-size:64px;color:var(--g);letter-spacing:-3px;line-height:1;animation:glow 3s ease-in-out infinite">' + total + '</div>' +
-        '<div style="font-size:11px;color:rgba(0,255,136,0.4);font-family:Courier New,monospace;margin-top:4px">SUBJECTS ON WAITLIST</div>' +
+        '<div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Total Signups</div>' +
+        '<div style="font-size:60px;font-weight:800;color:#30D158;letter-spacing:-2px;line-height:1">' + total + '</div>' +
+        '<div style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:6px">people on the waitlist</div>' +
       '</div>' +
-      '<div style="text-align:right">' +
-        '<div style="font-size:9px;color:rgba(0,255,136,0.3);font-family:Courier New,monospace;margin-bottom:4px">GROWTH INDEX</div>' +
-        '<div style="font-size:28px;font-weight:800;color:' + growthColor + ';font-family:Courier New,monospace">' + growthLabel + '</div>' +
-        '<div style="font-size:9px;color:rgba(0,255,136,0.3);font-family:Courier New,monospace;margin-top:2px">VS YESTERDAY</div>' +
-      '</div>' +
+      '<svg width="44" height="44" viewBox="0 0 24 24" fill="none" style="opacity:0.6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#30D158" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke="#30D158" stroke-width="2"/><path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="#30D158" stroke-width="2" stroke-linecap="round"/><path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="#30D158" stroke-width="2" stroke-linecap="round"/></svg>' +
     '</div>' +
 
-    // 3-col stats
-    '<div class="f" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;animation-delay:0.1s">' +
-      '<div class="hc">' +
-        '<div class="lbl">TODAY</div>' +
-        '<div class="val" style="font-size:32px;color:#fff">' + today + '</div>' +
-        '<div style="font-size:9px;color:var(--c);font-family:Courier New,monospace;margin-top:3px">T+0 HRS</div>' +
+    // 3-col grid
+    '<div class="section" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;animation-delay:0.1s">' +
+      '<div style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px">' +
+        '<div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Today</div>' +
+        '<div style="font-size:30px;font-weight:700;letter-spacing:-0.5px">' + today + '</div>' +
+        '<div style="font-size:11px;margin-top:4px;color:' + growthColor + '">' + (growthLabel || 'no data') + '</div>' +
       '</div>' +
-      '<div class="hc">' +
-        '<div class="lbl">YESTERDAY</div>' +
-        '<div class="val" style="font-size:32px;color:#fff">' + yesterday + '</div>' +
-        '<div style="font-size:9px;color:rgba(0,212,255,0.5);font-family:Courier New,monospace;margin-top:3px">T-24 HRS</div>' +
+      '<div style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px">' +
+        '<div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Yesterday</div>' +
+        '<div style="font-size:30px;font-weight:700;letter-spacing:-0.5px">' + yesterday + '</div>' +
+        '<div style="font-size:11px;margin-top:4px;color:rgba(255,255,255,0.3)">baseline</div>' +
       '</div>' +
-      '<div class="hc">' +
-        '<div class="lbl">7-DAY OPS</div>' +
-        '<div class="val" style="font-size:32px;color:#fff">' + last7 + '</div>' +
-        '<div style="font-size:9px;color:rgba(0,212,255,0.5);font-family:Courier New,monospace;margin-top:3px">ROLLING WEEK</div>' +
+      '<div style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px">' +
+        '<div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">7 Days</div>' +
+        '<div style="font-size:30px;font-weight:700;letter-spacing:-0.5px">' + last7 + '</div>' +
+        '<div style="font-size:11px;margin-top:4px;color:rgba(255,255,255,0.3)">this week</div>' +
       '</div>' +
     '</div>' +
 
     // Bar chart
-    '<div class="f hc" style="margin-bottom:12px;animation-delay:0.15s">' +
-      '<div class="lbl">SIGNAL ACTIVITY // 7-DAY WAVE</div>' +
-      '<svg viewBox="0 0 700 100" width="100%" style="overflow:visible;margin-top:4px">' +
-        '<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00ff88"/><stop offset="100%" stop-color="#00d4ff"/></linearGradient></defs>' +
-        bars +
-      '</svg>' +
+    '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.15s">' +
+      '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px">Last 7 Days</div>' +
+      '<svg viewBox="0 0 700 90" width="100%" preserveAspectRatio="none" style="overflow:visible">' + bars + '</svg>' +
     '</div>' +
 
-    // World map - D3 powered
-    '<div class="f hc" style="margin-bottom:12px;animation-delay:0.2s">' +
-      '<div class="lbl">GLOBAL REACH // SIGNAL ORIGIN MAP</div>' +
-      '<div id="map-wrap" style="position:relative;background:#000e06;border-radius:4px;overflow:hidden;margin-top:8px;' + (countryRows ? 'margin-bottom:16px' : '') + '">' +
+    // World map
+    '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.2s">' +
+      '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px">Global Reach</div>' +
+      '<div id="map-wrap" style="position:relative;background:#0d1f12;border-radius:10px;overflow:hidden;margin-bottom:' + (countryRows ? '20px' : '0') + '">' +
         '<svg id="world-svg" style="width:100%;display:block"></svg>' +
-        '<div id="map-tip" style="display:none;position:absolute;background:rgba(0,10,5,0.95);border:1px solid rgba(0,255,136,0.5);border-radius:4px;padding:5px 10px;font-size:11px;font-family:Courier New,monospace;color:#00ff88;pointer-events:none;white-space:nowrap;z-index:10"></div>' +
+        '<div id="map-tip" style="display:none;position:absolute;background:rgba(10,25,15,0.97);border:1px solid rgba(48,209,88,0.4);border-radius:8px;padding:6px 12px;font-size:12px;color:#30D158;pointer-events:none;white-space:nowrap;z-index:10"></div>' +
       '</div>' +
-      (countryRows || '<div style="font-size:12px;color:rgba(0,255,136,0.3);font-family:Courier New,monospace;padding:8px 0">NO LOCATION DATA YET. DATA WILL APPEAR WITH NEW SIGNUPS.</div>') +
+      (countryRows || '<p style="font-size:13px;color:rgba(255,255,255,0.25)">No location data yet. Will appear with new signups.</p>') +
     '</div>' +
 
     // Sources
-    '<div class="f hc" style="animation-delay:0.25s">' +
-      '<div class="lbl">SOURCE INTEL // ACQUISITION CHANNELS</div>' +
-      '<div style="margin-top:12px">' +
-        (sourceRows || '<div style="font-size:12px;color:rgba(0,255,136,0.3);font-family:Courier New,monospace">NO SOURCE DATA DETECTED.</div>') +
-      '</div>' +
+    '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;animation-delay:0.25s">' +
+      '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px">Top Sources</div>' +
+      (sourceRows || '<p style="font-size:13px;color:rgba(255,255,255,0.25)">No referral data yet.</p>') +
     '</div>' +
 
-    '<div style="margin-top:20px;font-size:9px;color:rgba(0,255,136,0.2);text-align:center;font-family:Courier New,monospace;letter-spacing:2px">// TRIAD SYSTEMS - RESTRICTED ACCESS - INTERNAL USE ONLY //</div>' +
+    '<p style="margin-top:24px;font-size:11px;color:rgba(255,255,255,0.12);text-align:center">Triad - Internal use only</p>' +
 
     // D3 world map scripts
     '<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>' +
     '<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>' +
     '<script>' +
     'var CDATA=' + countryDataJson + ';' +
-    // Numeric ISO-3166 to alpha-2 mapping
     'var N2A={4:"AF",8:"AL",12:"DZ",24:"AO",32:"AR",36:"AU",40:"AT",50:"BD",56:"BE",64:"BT",68:"BO",76:"BR",100:"BG",116:"KH",124:"CA",144:"LK",152:"CL",156:"CN",158:"TW",170:"CO",191:"HR",196:"CY",203:"CZ",208:"DK",231:"ET",246:"FI",250:"FR",266:"GA",276:"DE",288:"GH",300:"GR",320:"GT",344:"HK",348:"HU",356:"IN",360:"ID",364:"IR",368:"IQ",376:"IL",380:"IT",388:"JM",392:"JP",398:"KZ",404:"KE",410:"KR",418:"LA",422:"LB",458:"MY",484:"MX",504:"MA",516:"NA",524:"NP",528:"NL",554:"NZ",566:"NG",578:"NO",586:"PK",608:"PH",616:"PL",620:"PT",634:"QA",642:"RO",643:"RU",682:"SA",688:"RS",702:"SG",703:"SK",710:"ZA",724:"ES",752:"SE",756:"CH",764:"TH",792:"TR",804:"UA",784:"AE",826:"GB",840:"US",858:"UY",862:"VE",704:"VN",372:"IE",232:"ER",270:"GM",324:"GN",384:"CI",466:"ML",562:"NE",686:"SN",694:"SL",768:"TG",204:"BJ",800:"UG",706:"SO",716:"ZW",894:"ZM"};' +
-    // Country name lookup for tooltip
-    'var CN={"US":"United States","GB":"United Kingdom","DE":"Germany","FR":"France","IN":"India","CA":"Canada","AU":"Australia","TR":"Turkey","BR":"Brazil","JP":"Japan","CN":"China","KR":"South Korea","NL":"Netherlands","ES":"Spain","IT":"Italy","RU":"Russia","PL":"Poland","SE":"Sweden","NO":"Norway","DK":"Denmark","FI":"Finland","BE":"Belgium","CH":"Switzerland","AT":"Austria","PT":"Portugal","IE":"Ireland","MX":"Mexico","AR":"Argentina","CO":"Colombia","CL":"Chile","NG":"Nigeria","ZA":"South Africa","EG":"Egypt","KE":"Kenya","MA":"Morocco","SA":"Saudi Arabia","AE":"UAE","IL":"Israel","IR":"Iran","PK":"Pakistan","BD":"Bangladesh","VN":"Vietnam","TH":"Thailand","ID":"Indonesia","MY":"Malaysia","PH":"Philippines","SG":"Singapore","HK":"Hong Kong","TW":"Taiwan","NZ":"New Zealand","UA":"Ukraine","GR":"Greece","RO":"Romania","HU":"Hungary","CZ":"Czechia","SK":"Slovakia","HR":"Croatia","RS":"Serbia"};' +
+    'var CNAMES={"US":"United States","GB":"United Kingdom","DE":"Germany","FR":"France","IN":"India","CA":"Canada","AU":"Australia","TR":"Turkey","BR":"Brazil","JP":"Japan","CN":"China","KR":"South Korea","NL":"Netherlands","ES":"Spain","IT":"Italy","RU":"Russia","PL":"Poland","SE":"Sweden","NO":"Norway","DK":"Denmark","FI":"Finland","BE":"Belgium","CH":"Switzerland","AT":"Austria","PT":"Portugal","IE":"Ireland","MX":"Mexico","AR":"Argentina","CO":"Colombia","CL":"Chile","NG":"Nigeria","ZA":"South Africa","EG":"Egypt","KE":"Kenya","MA":"Morocco","SA":"Saudi Arabia","AE":"UAE","IL":"Israel","IR":"Iran","PK":"Pakistan","BD":"Bangladesh","VN":"Vietnam","TH":"Thailand","ID":"Indonesia","MY":"Malaysia","PH":"Philippines","SG":"Singapore","HK":"Hong Kong","TW":"Taiwan","NZ":"New Zealand","UA":"Ukraine","GR":"Greece","RO":"Romania","HU":"Hungary","CZ":"Czechia","SK":"Slovakia","HR":"Croatia","RS":"Serbia"};' +
     '(function(){' +
       'var wrap=document.getElementById("map-wrap");' +
       'var svg=d3.select("#world-svg");' +
-      'var W=wrap.offsetWidth||600;' +
+      'var W=wrap.offsetWidth||520;' +
       'var H=Math.round(W*0.52);' +
       'svg.attr("viewBox","0 0 "+W+" "+H).attr("height",H);' +
       'var proj=d3.geoNaturalEarth1().scale(W/6.3).translate([W/2,H/2]);' +
       'var gpath=d3.geoPath().projection(proj);' +
       'var maxCount=Object.keys(CDATA).length>0?Math.max.apply(null,Object.keys(CDATA).map(function(k){return CDATA[k];})):1;' +
-      // Ocean sphere
-      'svg.append("path").datum({type:"Sphere"}).attr("d",gpath).attr("fill","#000e06").attr("stroke","rgba(0,255,136,0.1)").attr("stroke-width","0.5");' +
-      // Graticule grid
-      'svg.append("path").datum(d3.geoGraticule()()).attr("d",gpath).attr("fill","none").attr("stroke","rgba(0,255,136,0.04)").attr("stroke-width","0.5");' +
+      'svg.append("path").datum({type:"Sphere"}).attr("d",gpath).attr("fill","#0d1f12").attr("stroke","rgba(48,209,88,0.1)").attr("stroke-width","0.5");' +
+      'svg.append("path").datum(d3.geoGraticule()()).attr("d",gpath).attr("fill","none").attr("stroke","rgba(255,255,255,0.03)").attr("stroke-width","0.5");' +
       'd3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(function(world){' +
         'var countries=topojson.feature(world,world.objects.countries);' +
-        // Draw country fills - slightly brighter for countries with signups
         'svg.selectAll(".cy").data(countries.features).enter().append("path")' +
           '.attr("class","cy").attr("d",gpath)' +
-          '.attr("fill",function(d){var a=N2A[+d.id];return(a&&CDATA[a])?"#0d3020":"#021208";})' +
-          '.attr("stroke","rgba(0,255,136,0.18)").attr("stroke-width","0.4");' +
-        // Dots with pulsing ring for countries with signups
+          '.attr("fill",function(d){var a=N2A[+d.id];return(a&&CDATA[a])?"#1a4a28":"#162a1c";})' +
+          '.attr("stroke","rgba(48,209,88,0.2)").attr("stroke-width","0.4");' +
         'countries.features.forEach(function(f){' +
           'var a=N2A[+f.id];' +
           'if(!a||!CDATA[a])return;' +
@@ -406,35 +375,32 @@ function buildStatsPage(props) {
           'var c=gpath.centroid(f);' +
           'if(!c||isNaN(c[0])||isNaN(c[1]))return;' +
           'var r=Math.max(4,Math.min(14,4+(cnt/maxCount)*10));' +
-          // Pulsing ring
-          'var ring=svg.append("circle").attr("cx",c[0]).attr("cy",c[1]).attr("r",r).attr("fill","none").attr("stroke","#00ff88").attr("stroke-width","1.2").attr("opacity","0.7");' +
+          'var ring=svg.append("circle").attr("cx",c[0]).attr("cy",c[1]).attr("r",r).attr("fill","none").attr("stroke","#30D158").attr("stroke-width","1.2").attr("opacity","0.6");' +
           'ring.append("animate").attr("attributeName","r").attr("from",r).attr("to",r*2.8).attr("dur","2.5s").attr("repeatCount","indefinite");' +
-          'ring.append("animate").attr("attributeName","opacity").attr("from","0.7").attr("to","0").attr("dur","2.5s").attr("repeatCount","indefinite");' +
-          // Solid center dot
-          'svg.append("circle").attr("cx",c[0]).attr("cy",c[1]).attr("r",r*0.38).attr("fill","#00ff88");' +
+          'ring.append("animate").attr("attributeName","opacity").attr("from","0.6").attr("to","0").attr("dur","2.5s").attr("repeatCount","indefinite");' +
+          'svg.append("circle").attr("cx",c[0]).attr("cy",c[1]).attr("r",r*0.38).attr("fill","#30D158");' +
         '});' +
-        // Tooltip on hover
         'var tip=document.getElementById("map-tip");' +
         'svg.selectAll(".cy")' +
           '.on("mousemove",function(event,d){' +
             'var a=N2A[+d.id];' +
             'if(!a||!CDATA[a]){tip.style.display="none";return;}' +
             'tip.style.display="block";' +
-            'tip.textContent=(CN[a]||a)+": "+CDATA[a]+" signup"+(CDATA[a]>1?"s":"");' +
+            'tip.textContent=(CNAMES[a]||a)+": "+CDATA[a]+" signup"+(CDATA[a]>1?"s":"");' +
             'var rect=wrap.getBoundingClientRect();' +
             'var ex=event.clientX-rect.left,ey=event.clientY-rect.top;' +
-            'tip.style.left=Math.min(ex+12,wrap.offsetWidth-150)+"px";' +
-            'tip.style.top=Math.max(ey-30,4)+"px";' +
+            'tip.style.left=Math.min(ex+12,wrap.offsetWidth-160)+"px";' +
+            'tip.style.top=Math.max(ey-34,4)+"px";' +
           '})' +
           '.on("mouseleave",function(){tip.style.display="none";});' +
       '}).catch(function(){' +
-        'document.getElementById("map-wrap").innerHTML="<div style=\\"padding:20px;font-size:11px;color:rgba(0,255,136,0.3);font-family:Courier New,monospace\\">MAP DATA UNAVAILABLE</div>";' +
+        'document.getElementById("map-wrap").style.display="none";' +
       '});' +
     '})();' +
     '</script>' +
     '</body></html>';
 
-  return HtmlService.createHtmlOutput(html).setTitle('TRIAD // INTEL');
+  return HtmlService.createHtmlOutput(html).setTitle('Triad Stats');
 }
 
 // Run this function once from the Apps Script editor to install the keep-warm trigger.

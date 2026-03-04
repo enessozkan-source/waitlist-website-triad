@@ -82,40 +82,25 @@
       opacity: 1;
       cursor: not-allowed;
     }
+    @keyframes btn-shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
     .btn-loading {
-      position: relative;
-      overflow: hidden;
+      background: linear-gradient(90deg, #fff 0%, #e0e0e0 50%, #fff 100%) !important;
+      background-size: 200% 100% !important;
+      animation: btn-shimmer 2s ease-in-out infinite;
     }
-    .btn-loading::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 3px;
-      background: linear-gradient(90deg, #30D158, #00d4ff);
-      border-radius: 0 0 16px 16px;
-      animation: btn-progress 6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    .btn-loading .a-text {
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
-    @keyframes btn-progress {
-      0% { width: 0%; }
-      20% { width: 35%; }
-      50% { width: 65%; }
-      80% { width: 85%; }
-      100% { width: 98%; }
+    .btn-loading .a-text.fade-out {
+      opacity: 0;
+      transform: translateY(-8px);
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .btn-spinner {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(0,0,0,0.15);
-      border-top-color: #000;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin-right: 8px;
-      vertical-align: middle;
+    .btn-loading .a-text.fade-in {
+      opacity: 1;
+      transform: translateY(0);
     }
     @keyframes counter-pulse {
       0%, 100% { opacity: 1; }
@@ -1754,11 +1739,22 @@
         btn.classList.add('btn-loading');
         var loadingMsgs = ['Securing your spot...', 'Verifying...', 'Almost there...'];
         var msgIdx = 0;
-        btn.innerHTML = '<span class="text-base font-bold"><span class="btn-spinner"></span>' + loadingMsgs[0] + '</span>';
+        btn.innerHTML = '<span class="text-base font-bold a-text fade-in">' + loadingMsgs[0] + '</span>';
         var msgInterval = setInterval(function() {
           msgIdx++;
           if (msgIdx < loadingMsgs.length) {
-            btn.innerHTML = '<span class="text-base font-bold"><span class="btn-spinner"></span>' + loadingMsgs[msgIdx] + '</span>';
+            var span = btn.querySelector('.a-text');
+            if (span) {
+              span.classList.remove('fade-in');
+              span.classList.add('fade-out');
+              setTimeout(function() {
+                btn.innerHTML = '<span class="text-base font-bold a-text fade-out">' + loadingMsgs[msgIdx] + '</span>';
+                requestAnimationFrame(function() {
+                  var newSpan = btn.querySelector('.a-text');
+                  if (newSpan) { newSpan.classList.remove('fade-out'); newSpan.classList.add('fade-in'); }
+                });
+              }, 300);
+            }
           }
         }, 2000);
 
