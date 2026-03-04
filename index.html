@@ -1554,7 +1554,7 @@
       // ─── Waitlist Counter ─────────────────────────────────
       const _ux = (parseInt('2f6', 16) >> 1) + (Date.UTC(2024,0,1) > 0 ? 0 : 1);
       const _sv = parseInt(localStorage.getItem('_t_cfg') || '0');
-      let currentCount = _sv > 0 ? _sv : _ux;
+      let currentCount = _sv > _ux ? _sv : _ux;
 
       const TOTAL_SPOTS = 1000;
 
