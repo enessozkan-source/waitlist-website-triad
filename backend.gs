@@ -61,10 +61,11 @@ function doPost(e) {
     }
 
     // 5-7. Acquire lock to prevent TOCTOU race on duplicate check and write
+    let totalSignups = 0;
     const lock = LockService.getScriptLock();
     lock.waitLock(5000);
     try {
-      const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
+      const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('Sheet1');
       const lastRow = sheet.getLastRow();
 
       // 5. Duplicate detection - read only email column (A) to minimize data transfer
@@ -98,7 +99,7 @@ function doPost(e) {
       // 7. All checks passed - write directly to next row (faster than appendRow)
       const newRow = lastRow + 1;
       sheet.getRange(newRow, 1, 1, 4).setValues([[email, now.toISOString(), rawRef, rawCountry]]);
-      const totalSignups = newRow - 1;
+      totalSignups = newRow - 1;
 
       // Queue email notification for async sending via keepWarm trigger
       const pendingEmail = {
@@ -115,7 +116,7 @@ function doPost(e) {
       lock.releaseLock();
     }
 
-    return jsonResponse({ result: 'success' });
+    return jsonResponse({ result: 'success', count: totalSignups });
 
   } catch (err) {
     console.error('doPost error:', err);
@@ -146,7 +147,7 @@ function doGet(e) {
 
 function buildStatsPage(props) {
   const SPREADSHEET_ID = props.getProperty('SPREADSHEET_ID');
-  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('Sheet1');
   const data = sheet.getDataRange().getValues();
 
   const now = new Date();

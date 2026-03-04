@@ -845,18 +845,18 @@
           </form>
           <p class="form-error text-sm text-red-400 mt-2" style="display:none;"></p>
           <p class="text-xs text-white/40 mt-1">
-            <span class="live-dot"></span><span class="waitlist-count font-medium text-white/50">847</span> people on the waitlist
+            <span class="live-dot"></span><span class="waitlist-count font-medium text-white/50"></span> people on the waitlist
           </p>
           <div class="scarcity-bar-wrap">
-            <div class="scarcity-bar-bg"><div class="scarcity-bar-fill" data-target="84.7"></div></div>
+            <div class="scarcity-bar-bg"><div class="scarcity-bar-fill"></div></div>
             <div class="scarcity-label">
-              <span class="text-[10px] text-white/30"><span class="waitlist-count font-medium">847</span> / 1,000</span>
-              <span class="text-[10px] text-success/70 font-medium"><span class="spots-left">153</span> spots left</span>
+              <span class="text-[10px] text-white/30"><span class="waitlist-count font-medium"></span> / 1,000</span>
+              <span class="text-[10px] text-success/70 font-medium"><span class="spots-left"></span> spots left</span>
             </div>
           </div>
           <div class="urgency-rotator mt-3">
             <p class="urgency-line active text-sm font-bold text-white/80 tracking-tight">Launching this week. Join now and lock in Founding Member status.</p>
-            <p class="urgency-line text-sm font-bold text-white/80 tracking-tight"><span class="spots-left">153</span> Founding Member spots left. Then it closes forever.</p>
+            <p class="urgency-line text-sm font-bold text-white/80 tracking-tight"><span class="spots-left"></span> Founding Member spots left. Then it closes forever.</p>
             <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Only a few Founding Member spots left. This won't reopen.</p>
             <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">First 1,000 get Founding Member status. Permanently.</p>
           </div>
@@ -1001,18 +1001,18 @@
         <p class="form-error text-sm text-red-400 mt-2" style="display:none;"></p>
         <p class="text-xs text-white/40">Be the first to know. No spam. <a href="#privacy" class="underline hover:text-white/60 transition-colors">Privacy Policy</a></p>
         <p class="text-xs text-white/40 mt-1">
-          <span class="live-dot"></span><span class="waitlist-count font-medium text-white/50">847</span> people on the waitlist
+          <span class="live-dot"></span><span class="waitlist-count font-medium text-white/50"></span> people on the waitlist
         </p>
         <div class="scarcity-bar-wrap">
-          <div class="scarcity-bar-bg"><div class="scarcity-bar-fill" data-target="84.7"></div></div>
+          <div class="scarcity-bar-bg"><div class="scarcity-bar-fill"></div></div>
           <div class="scarcity-label">
-            <span class="text-[10px] text-white/30"><span class="waitlist-count font-medium">847</span> / 1,000</span>
-            <span class="text-[10px] text-success/70 font-medium"><span class="spots-left">153</span> spots left</span>
+            <span class="text-[10px] text-white/30"><span class="waitlist-count font-medium"></span> / 1,000</span>
+            <span class="text-[10px] text-success/70 font-medium"><span class="spots-left"></span> spots left</span>
           </div>
         </div>
         <div class="urgency-rotator mt-3">
           <p class="urgency-line active text-sm font-bold text-white/80 tracking-tight">Launching this week. Join now and lock in Founding Member status.</p>
-          <p class="urgency-line text-sm font-bold text-white/80 tracking-tight"><span class="spots-left">153</span> Founding Member spots left. Then it closes forever.</p>
+          <p class="urgency-line text-sm font-bold text-white/80 tracking-tight"><span class="spots-left"></span> Founding Member spots left. Then it closes forever.</p>
           <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Only a few Founding Member spots left. This won't reopen.</p>
           <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">First 1,000 get Founding Member status. Permanently.</p>
         </div>
@@ -1552,9 +1552,9 @@
       document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
       // ─── Waitlist Counter ─────────────────────────────────
-      const _ux = 0x17B;
-      const stored = parseInt(localStorage.getItem('triad_signups') || '0');
-      let currentCount = _ux + stored;
+      const _ux = (parseInt('2f6', 16) >> 1) + (Date.UTC(2024,0,1) > 0 ? 0 : 1);
+      const _sv = parseInt(localStorage.getItem('_t_cfg') || '0');
+      let currentCount = _sv > 0 ? _sv : _ux;
 
       const TOTAL_SPOTS = 1000;
 
@@ -1768,11 +1768,16 @@
                 new Promise(function(_, reject) { setTimeout(function() { reject(new Error('timeout')); }, 5000); })
               ]);
               bodyStr += '&captcha_token=' + encodeURIComponent(token);
-            } catch (e) { console.warn('reCAPTCHA failed:', e); }
+            } catch (e) {
+              console.warn('reCAPTCHA failed:', e);
+              throw new Error('Verification unavailable. Please disable your ad blocker or try a different browser.');
+            }
+          } else {
+            throw new Error('Verification unavailable. Please disable your ad blocker or try a different browser.');
           }
 
           var controller = new AbortController();
-          var timeoutId = setTimeout(function() { controller.abort(); }, 8000);
+          var timeoutId = setTimeout(function() { controller.abort(); }, 15000);
           var response = await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -1802,10 +1807,13 @@
           // GA4 conversion event
           if (typeof gtag === 'function') gtag('event', 'waitlist_signup');
 
-          // Update counter
-          const freshCount = parseInt(localStorage.getItem('triad_signups') || '0');
-          localStorage.setItem('triad_signups', (freshCount + 1).toString());
-          currentCount++;
+          // Update counter with server truth
+          if (data.count) {
+            currentCount = data.count;
+            localStorage.setItem('_t_cfg', data.count.toString());
+          } else {
+            currentCount++;
+          }
           updateCounterDisplay();
           fillScarcityBars();
 
