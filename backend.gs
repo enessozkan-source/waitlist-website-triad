@@ -198,52 +198,14 @@ function buildStatsPage(props) {
     'UA':'Ukraine','GR':'Greece','RO':'Romania','HU':'Hungary','CZ':'Czechia',
     'SK':'Slovakia','HR':'Croatia','RS':'Serbia'};
 
-  // Country lat/lng to SVG x,y (viewBox 1000x500 equirectangular)
-  var CPOS = {
-    'US':[231,144],'CA':[184,86],'MX':[194,210],'BR':[294,294],'AR':[263,361],
-    'CO':[228,242],'CL':[255,341],'PE':[234,281],'VE':[240,222],
-    'GB':[492,97],'IE':[473,100],'FR':[498,119],'DE':[528,100],'IT':[531,133],
-    'ES':[458,133],'PT':[444,136],'NL':[499,93],'BE':[498,100],'SE':[544,68],
-    'NO':[528,60],'DK':[527,83],'FI':[565,61],'PL':[545,97],'CZ':[535,100],
-    'RO':[561,113],'UA':[565,103],'TR':[597,131],'RU':[708,78],'GR':[554,137],
-    'HU':[544,108],'CH':[505,108],'AT':[532,108],'SK':[540,102],'HR':[534,114],
-    'RS':[549,113],'CN':[792,153],'JP':[883,150],'KR':[819,138],'IN':[715,194],
-    'PK':[659,165],'BD':[715,176],'VN':[775,210],'TH':[760,199],'ID':[786,255],
-    'MY':[763,229],'PH':[801,210],'SG':[769,247],'AU':[869,325],'NZ':[877,366],
-    'HK':[784,184],'TW':[803,183],'NG':[497,241],'ZA':[522,353],'EG':[554,168],
-    'KE':[565,252],'MA':[458,163],'ET':[571,243],'GH':[474,252],
-    'SA':[599,192],'AE':[617,193],'IL':[562,165],'IR':[633,160],'IQ':[609,157]};
-
   // Flag emoji from country code
   function flag(cc) {
     if (!cc || cc.length !== 2) return '';
     return '&#' + (127397 + cc.charCodeAt(0)) + ';&#' + (127397 + cc.charCodeAt(1)) + ';';
   }
 
-  // Build world map dots
   var topCountries = Object.keys(countryCounts).sort(function(a,b){return countryCounts[b]-countryCounts[a];});
   var maxCC = topCountries.length > 0 ? countryCounts[topCountries[0]] : 1;
-  var mapDots = '';
-  topCountries.forEach(function(cc) {
-    var pos = CPOS[cc];
-    if (!pos) return;
-    var r = Math.max(4, Math.min(14, 4 + (countryCounts[cc] / maxCC) * 10));
-    mapDots += '<circle cx="' + pos[0] + '" cy="' + pos[1] + '" r="' + r + '" fill="rgba(0,255,136,0.15)" stroke="#00ff88" stroke-width="1.5"/>' +
-               '<circle cx="' + pos[0] + '" cy="' + pos[1] + '" r="' + (r * 0.35) + '" fill="#00ff88"/>';
-  });
-
-  // Grid lines for world map
-  var gridLines = '';
-  for (var gx = 0; gx <= 1000; gx += 100) {
-    gridLines += '<line x1="' + gx + '" y1="0" x2="' + gx + '" y2="500" stroke="rgba(0,255,136,0.06)" stroke-width="1"/>';
-  }
-  for (var gy = 0; gy <= 500; gy += 100) {
-    var sw = gy === 250 ? '1.5' : '1';
-    var sc = gy === 250 ? 'rgba(0,255,136,0.15)' : 'rgba(0,255,136,0.06)';
-    gridLines += '<line x1="0" y1="' + gy + '" x2="1000" y2="' + gy + '" stroke="' + sc + '" stroke-width="' + sw + '"/>';
-  }
-  // Prime meridian
-  gridLines += '<line x1="500" y1="0" x2="500" y2="500" stroke="rgba(0,255,136,0.12)" stroke-width="1" stroke-dasharray="4,4"/>';
 
   // Country list rows
   var countryRows = topCountries.slice(0, 10).map(function(cc) {
@@ -302,6 +264,7 @@ function buildStatsPage(props) {
 
   var ts = now.toLocaleString('en-US', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
   var countryCount = Object.keys(countryCounts).length;
+  var countryDataJson = JSON.stringify(countryCounts);
 
   var html = '<!DOCTYPE html><html><head>' +
     '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
@@ -386,19 +349,12 @@ function buildStatsPage(props) {
       '</svg>' +
     '</div>' +
 
-    // World map
+    // World map - D3 powered
     '<div class="f hc" style="margin-bottom:12px;animation-delay:0.2s">' +
       '<div class="lbl">GLOBAL REACH // SIGNAL ORIGIN MAP</div>' +
-      '<div style="position:relative;background:#000e06;border-radius:4px;overflow:hidden;margin-top:8px;margin-bottom:16px">' +
-        '<svg viewBox="0 0 1000 500" width="100%" style="display:block;opacity:0.95">' +
-          gridLines +
-          mapDots +
-          // Corner labels
-          '<text x="8" y="14" fill="rgba(0,255,136,0.25)" style="font-size:10px;font-family:Courier New">180W</text>' +
-          '<text x="470" y="14" fill="rgba(0,255,136,0.25)" style="font-size:10px;font-family:Courier New">0</text>' +
-          '<text x="964" y="14" fill="rgba(0,255,136,0.25)" style="font-size:10px;font-family:Courier New">180E</text>' +
-          '<text x="8" y="258" fill="rgba(0,255,136,0.3)" style="font-size:10px;font-family:Courier New">EQ</text>' +
-        '</svg>' +
+      '<div id="map-wrap" style="position:relative;background:#000e06;border-radius:4px;overflow:hidden;margin-top:8px;' + (countryRows ? 'margin-bottom:16px' : '') + '">' +
+        '<svg id="world-svg" style="width:100%;display:block"></svg>' +
+        '<div id="map-tip" style="display:none;position:absolute;background:rgba(0,10,5,0.95);border:1px solid rgba(0,255,136,0.5);border-radius:4px;padding:5px 10px;font-size:11px;font-family:Courier New,monospace;color:#00ff88;pointer-events:none;white-space:nowrap;z-index:10"></div>' +
       '</div>' +
       (countryRows || '<div style="font-size:12px;color:rgba(0,255,136,0.3);font-family:Courier New,monospace;padding:8px 0">NO LOCATION DATA YET. DATA WILL APPEAR WITH NEW SIGNUPS.</div>') +
     '</div>' +
@@ -412,6 +368,70 @@ function buildStatsPage(props) {
     '</div>' +
 
     '<div style="margin-top:20px;font-size:9px;color:rgba(0,255,136,0.2);text-align:center;font-family:Courier New,monospace;letter-spacing:2px">// TRIAD SYSTEMS - RESTRICTED ACCESS - INTERNAL USE ONLY //</div>' +
+
+    // D3 world map scripts
+    '<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>' +
+    '<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>' +
+    '<script>' +
+    'var CDATA=' + countryDataJson + ';' +
+    // Numeric ISO-3166 to alpha-2 mapping
+    'var N2A={4:"AF",8:"AL",12:"DZ",24:"AO",32:"AR",36:"AU",40:"AT",50:"BD",56:"BE",64:"BT",68:"BO",76:"BR",100:"BG",116:"KH",124:"CA",144:"LK",152:"CL",156:"CN",158:"TW",170:"CO",191:"HR",196:"CY",203:"CZ",208:"DK",231:"ET",246:"FI",250:"FR",266:"GA",276:"DE",288:"GH",300:"GR",320:"GT",344:"HK",348:"HU",356:"IN",360:"ID",364:"IR",368:"IQ",376:"IL",380:"IT",388:"JM",392:"JP",398:"KZ",404:"KE",410:"KR",418:"LA",422:"LB",458:"MY",484:"MX",504:"MA",516:"NA",524:"NP",528:"NL",554:"NZ",566:"NG",578:"NO",586:"PK",608:"PH",616:"PL",620:"PT",634:"QA",642:"RO",643:"RU",682:"SA",688:"RS",702:"SG",703:"SK",710:"ZA",724:"ES",752:"SE",756:"CH",764:"TH",792:"TR",804:"UA",784:"AE",826:"GB",840:"US",858:"UY",862:"VE",704:"VN",372:"IE",232:"ER",270:"GM",324:"GN",384:"CI",466:"ML",562:"NE",686:"SN",694:"SL",768:"TG",204:"BJ",800:"UG",706:"SO",716:"ZW",894:"ZM"};' +
+    // Country name lookup for tooltip
+    'var CN={"US":"United States","GB":"United Kingdom","DE":"Germany","FR":"France","IN":"India","CA":"Canada","AU":"Australia","TR":"Turkey","BR":"Brazil","JP":"Japan","CN":"China","KR":"South Korea","NL":"Netherlands","ES":"Spain","IT":"Italy","RU":"Russia","PL":"Poland","SE":"Sweden","NO":"Norway","DK":"Denmark","FI":"Finland","BE":"Belgium","CH":"Switzerland","AT":"Austria","PT":"Portugal","IE":"Ireland","MX":"Mexico","AR":"Argentina","CO":"Colombia","CL":"Chile","NG":"Nigeria","ZA":"South Africa","EG":"Egypt","KE":"Kenya","MA":"Morocco","SA":"Saudi Arabia","AE":"UAE","IL":"Israel","IR":"Iran","PK":"Pakistan","BD":"Bangladesh","VN":"Vietnam","TH":"Thailand","ID":"Indonesia","MY":"Malaysia","PH":"Philippines","SG":"Singapore","HK":"Hong Kong","TW":"Taiwan","NZ":"New Zealand","UA":"Ukraine","GR":"Greece","RO":"Romania","HU":"Hungary","CZ":"Czechia","SK":"Slovakia","HR":"Croatia","RS":"Serbia"};' +
+    '(function(){' +
+      'var wrap=document.getElementById("map-wrap");' +
+      'var svg=d3.select("#world-svg");' +
+      'var W=wrap.offsetWidth||600;' +
+      'var H=Math.round(W*0.52);' +
+      'svg.attr("viewBox","0 0 "+W+" "+H).attr("height",H);' +
+      'var proj=d3.geoNaturalEarth1().scale(W/6.3).translate([W/2,H/2]);' +
+      'var gpath=d3.geoPath().projection(proj);' +
+      'var maxCount=Object.keys(CDATA).length>0?Math.max.apply(null,Object.keys(CDATA).map(function(k){return CDATA[k];})):1;' +
+      // Ocean sphere
+      'svg.append("path").datum({type:"Sphere"}).attr("d",gpath).attr("fill","#000e06").attr("stroke","rgba(0,255,136,0.1)").attr("stroke-width","0.5");' +
+      // Graticule grid
+      'svg.append("path").datum(d3.geoGraticule()()).attr("d",gpath).attr("fill","none").attr("stroke","rgba(0,255,136,0.04)").attr("stroke-width","0.5");' +
+      'd3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(function(world){' +
+        'var countries=topojson.feature(world,world.objects.countries);' +
+        // Draw country fills - slightly brighter for countries with signups
+        'svg.selectAll(".cy").data(countries.features).enter().append("path")' +
+          '.attr("class","cy").attr("d",gpath)' +
+          '.attr("fill",function(d){var a=N2A[+d.id];return(a&&CDATA[a])?"#0d3020":"#021208";})' +
+          '.attr("stroke","rgba(0,255,136,0.18)").attr("stroke-width","0.4");' +
+        // Dots with pulsing ring for countries with signups
+        'countries.features.forEach(function(f){' +
+          'var a=N2A[+f.id];' +
+          'if(!a||!CDATA[a])return;' +
+          'var cnt=CDATA[a];' +
+          'var c=gpath.centroid(f);' +
+          'if(!c||isNaN(c[0])||isNaN(c[1]))return;' +
+          'var r=Math.max(4,Math.min(14,4+(cnt/maxCount)*10));' +
+          // Pulsing ring
+          'var ring=svg.append("circle").attr("cx",c[0]).attr("cy",c[1]).attr("r",r).attr("fill","none").attr("stroke","#00ff88").attr("stroke-width","1.2").attr("opacity","0.7");' +
+          'ring.append("animate").attr("attributeName","r").attr("from",r).attr("to",r*2.8).attr("dur","2.5s").attr("repeatCount","indefinite");' +
+          'ring.append("animate").attr("attributeName","opacity").attr("from","0.7").attr("to","0").attr("dur","2.5s").attr("repeatCount","indefinite");' +
+          // Solid center dot
+          'svg.append("circle").attr("cx",c[0]).attr("cy",c[1]).attr("r",r*0.38).attr("fill","#00ff88");' +
+        '});' +
+        // Tooltip on hover
+        'var tip=document.getElementById("map-tip");' +
+        'svg.selectAll(".cy")' +
+          '.on("mousemove",function(event,d){' +
+            'var a=N2A[+d.id];' +
+            'if(!a||!CDATA[a]){tip.style.display="none";return;}' +
+            'tip.style.display="block";' +
+            'tip.textContent=(CN[a]||a)+": "+CDATA[a]+" signup"+(CDATA[a]>1?"s":"");' +
+            'var rect=wrap.getBoundingClientRect();' +
+            'var ex=event.clientX-rect.left,ey=event.clientY-rect.top;' +
+            'tip.style.left=Math.min(ex+12,wrap.offsetWidth-150)+"px";' +
+            'tip.style.top=Math.max(ey-30,4)+"px";' +
+          '})' +
+          '.on("mouseleave",function(){tip.style.display="none";});' +
+      '}).catch(function(){' +
+        'document.getElementById("map-wrap").innerHTML="<div style=\\"padding:20px;font-size:11px;color:rgba(0,255,136,0.3);font-family:Courier New,monospace\\">MAP DATA UNAVAILABLE</div>";' +
+      '});' +
+    '})();' +
+    '</script>' +
     '</body></html>';
 
   return HtmlService.createHtmlOutput(html).setTitle('TRIAD // INTEL');
