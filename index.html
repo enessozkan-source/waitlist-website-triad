@@ -798,20 +798,20 @@
           </div>
         </div>
 
-        <!-- Live Caption (below phone) -->
-        <div class="w-full text-center py-4 min-h-[72px] flex items-center justify-center px-2">
-          <p id="pact-caption" class="text-white text-[28px] sm:text-[32px] font-black leading-[1.1] tracking-tight" style="transition: opacity 0.25s ease;">
-            <span style="color:#30D158">2 friends.</span> One pact.
-          </p>
-        </div>
+      </div>
 
+      <!-- Live Caption (below phone, full width) -->
+      <div class="w-full max-w-7xl text-center pt-8 sm:pt-12 pb-2 min-h-[48px] flex items-center justify-center px-2">
+        <p id="pact-caption" class="text-white text-xl sm:text-3xl font-black leading-[0.95] tracking-tight" style="transition: opacity 0.25s ease;">
+          <span style="color:#30D158">2 friends.</span> One pact.
+        </p>
+      </div>
+
+      <div class="w-full max-w-md flex flex-col items-center">
         <!-- Tagline + CTA -->
         <div id="waitlist" class="w-full text-center">
-          <h1 class="text-xl sm:text-2xl font-bold tracking-wide mb-1">3 GOALS. EVERY SINGLE DAY.</h1>
-          <p class="text-sm text-secondary mb-2">Track your progress and lock in with your crew.</p>
-          <p class="text-3xl sm:text-5xl font-black tracking-tight mb-2" style="color: #30D158;">Launching this week.</p>
           <p class="text-sm text-white mb-6">Free to join the waitlist.</p>
-          <form id="hero-form" class="waitlist-form flex flex-col sm:flex-row gap-3 mb-3">
+          <form id="hero-form" class="waitlist-form flex flex-col sm:flex-row gap-3 mb-0">
             <label for="hero-email" class="sr-only">Email address</label>
             <input id="hero-email" type="email" placeholder="Your email address" required maxlength="254"
               class="flex-1 bg-card border border-white/10 rounded-2xl py-4 px-4 text-white placeholder:text-white/30 focus:border-white/30 text-base transition-colors">
@@ -821,9 +821,9 @@
               <span class="text-[11px] font-medium opacity-50">Join the waitlist</span>
             </button>
           </form>
-          <p class="form-error text-sm text-red-400 mt-2" style="display:none;"></p>
-          <p class="text-[11px] text-white/30 mt-1">By joining, you agree to our <a href="policies.html#privacy-policy" class="underline hover:text-white/50 transition-colors">Privacy Policy</a> and <a href="policies.html#terms-of-service" class="underline hover:text-white/50 transition-colors">Terms of Service</a>.</p>
-          <p class="text-xs text-white/40 mt-1">
+          <p class="form-error text-sm text-red-400 mt-1 mb-2" style="display:none;"></p>
+          <p class="text-[11px] text-white/30 mt-1 mb-4">By joining, you agree to our <a href="policies.html#privacy-policy" class="underline hover:text-white/50 transition-colors">Privacy Policy</a> and <a href="policies.html#terms-of-service" class="underline hover:text-white/50 transition-colors">Terms of Service</a>.</p>
+          <p class="text-xs text-white/40 mt-4">
             <span class="live-dot"></span><span class="waitlist-count font-medium text-white/50"></span> people on the waitlist
           </p>
           <div class="scarcity-bar-wrap">
@@ -839,6 +839,9 @@
             <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">Only a few Founding Member spots left. This won't reopen.</p>
             <p class="urgency-line text-sm font-bold text-white/80 tracking-tight">First 1,000 get Founding Member status. Permanently.</p>
           </div>
+          <p class="text-3xl sm:text-5xl font-black tracking-tight mt-6 mb-2" style="color: #30D158; margin-top: 1.5rem;">Launching this week.</p>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-wide mb-1">3 GOALS. EVERY SINGLE DAY.</h1>
+          <p class="text-sm text-secondary">Track your progress and lock in with your crew.</p>
         </div>
       </div>
     </section>
@@ -978,8 +981,8 @@
           </button>
         </form>
         <p class="form-error text-sm text-red-400 mt-2" style="display:none;"></p>
-        <p class="text-[11px] text-white/30">By joining, you agree to our <a href="policies.html#privacy-policy" class="underline hover:text-white/50 transition-colors">Privacy Policy</a> and <a href="policies.html#terms-of-service" class="underline hover:text-white/50 transition-colors">Terms of Service</a>.</p>
-        <p class="text-xs text-white/40 mt-1">
+        <p class="text-[11px] text-white/30 mb-4">By joining, you agree to our <a href="policies.html#privacy-policy" class="underline hover:text-white/50 transition-colors">Privacy Policy</a> and <a href="policies.html#terms-of-service" class="underline hover:text-white/50 transition-colors">Terms of Service</a>.</p>
+        <p class="text-xs text-white/40 mt-4">
           <span class="live-dot"></span><span class="waitlist-count font-medium text-white/50"></span> people on the waitlist
         </p>
         <div class="scarcity-bar-wrap">
@@ -1082,8 +1085,8 @@
       var vh = window.innerHeight;
       // Width constraint: screen (390px) + 32px padding
       var scaleW = (vw - 32) / 390;
-      // Height constraint: leave room for header(56) + caption(88) + gap(24) + CTA(180) = 348px
-      var scaleH = (vh - 348) / 830;
+      // Height constraint: leave room for header(56) + caption(250) + gap(64) + CTA(180) = 550px
+      var scaleH = (vh - 550) / 830;
       var deviceScale = Math.min(scaleW, scaleH, 1.0);
       deviceScale = Math.max(deviceScale, 0.4);
       wrapper.style.transform = 'scale(' + deviceScale + ')';

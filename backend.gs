@@ -66,7 +66,7 @@ function doPost(e) {
     // 5-7. Acquire lock to prevent TOCTOU race on duplicate check and write
     let totalSignups = 0;
     const lock = LockService.getScriptLock();
-    lock.waitLock(5000);
+    lock.waitLock(15000);
     try {
       const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('Sheet1');
       const lastRow = sheet.getLastRow();
@@ -81,25 +81,8 @@ function doPost(e) {
         }
       }
 
-      // 6. Rate limiting - read only last 50 rows of timestamp column (B)
+      // 6. All checks passed - write directly to next row (faster than appendRow)
       const now = new Date();
-      if (lastRow > 1) {
-        const rateStart = Math.max(2, lastRow - 49);
-        const rateRows = lastRow - rateStart + 1;
-        const timestamps = sheet.getRange(rateStart, 2, rateRows, 1).getValues();
-        const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
-        let recentCount = 0;
-        for (let j = timestamps.length - 1; j >= 0; j--) {
-          const rowTime = new Date(timestamps[j][0]);
-          if (isNaN(rowTime) || rowTime < tenMinutesAgo) break;
-          recentCount++;
-        }
-        if (recentCount > 20) {
-          return jsonResponse({ result: 'error', message: "We're seeing a lot of signups right now. Try again in a few minutes." });
-        }
-      }
-
-      // 7. All checks passed - write directly to next row (faster than appendRow)
       const newRow = lastRow + 1;
       sheet.getRange(newRow, 1, 1, 4).setValues([[email, now.toISOString(), rawRef, rawCountry]]);
       totalSignups = newRow - 1;
@@ -140,7 +123,7 @@ function doGet(e) {
     try {
       return buildStatsPage(props);
     } catch (err) {
-      return HtmlService.createHtmlOutput('<p style="font-family:sans-serif;padding:40px;color:#c00">Error loading stats: ' + err.message + '</p>');
+      return HtmlService.createHtmlOutput('<p style="font-family:sans-serif;padding:40px;color:#c00">Error loading stats. Check the server logs for details.</p>');
     }
   }
 
@@ -180,6 +163,10 @@ function fetchUmami(endpoint, token) {
   return null;
 }
 
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 function buildStatsPage(props) {
   const SPREADSHEET_ID = props.getProperty('SPREADSHEET_ID');
   const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('Sheet1');
@@ -187,41 +174,137 @@ function buildStatsPage(props) {
 
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yesterdayStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
-  const sevenDaysAgo = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const yesterdayStart = new Date(todayStart.getTime() - 86400000);
+  const sevenDaysAgo = new Date(todayStart.getTime() - 7 * 86400000);
+  const fourteenDaysAgo = new Date(todayStart.getTime() - 14 * 86400000);
+  const thirtyDaysAgo = new Date(todayStart.getTime() - 30 * 86400000);
+  const twentyFourHoursAgo = new Date(now.getTime() - 86400000);
 
   function toLocalKey(d) {
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   }
 
+  // 30-day daily counts
   const dailyCounts = {};
-  for (let d = 6; d >= 0; d--) {
-    dailyCounts[toLocalKey(new Date(todayStart.getTime() - d * 24 * 60 * 60 * 1000))] = 0;
+  for (let d = 29; d >= 0; d--) {
+    dailyCounts[toLocalKey(new Date(todayStart.getTime() - d * 86400000))] = 0;
   }
 
-  let total = 0, today = 0, yesterday = 0, last7 = 0;
-  const refCounts = {}, countryCounts = {};
+  let total = 0, today = 0, yesterday = 0, last7 = 0, last30 = 0, prevWeekCount = 0;
+  const refCounts = {}, countryCounts = {}, allDayCounts = {}, domainCounts = {};
+  const hourlyCounts = new Array(24).fill(0);
+  const velocitySlots = new Array(24).fill(0);
+  let firstSignupDate = null;
 
+  // Single-pass data loop
   for (let i = 1; i < data.length; i++) {
     if (!data[i][0]) continue;
     total++;
     const rowTime = new Date(data[i][1]);
+
     if (rowTime >= todayStart) today++;
     if (rowTime >= yesterdayStart && rowTime < todayStart) yesterday++;
     if (rowTime >= sevenDaysAgo) last7++;
+    if (rowTime >= thirtyDaysAgo) last30++;
+    if (rowTime >= fourteenDaysAgo && rowTime < sevenDaysAgo) prevWeekCount++;
+
     const dayKey = toLocalKey(rowTime);
     if (dailyCounts.hasOwnProperty(dayKey)) dailyCounts[dayKey]++;
-    const ref = (data[i][2] || '').toString().trim() || 'direct';
+    allDayCounts[dayKey] = (allDayCounts[dayKey] || 0) + 1;
+
+    if (!firstSignupDate || rowTime < firstSignupDate) firstSignupDate = rowTime;
+    hourlyCounts[rowTime.getHours()]++;
+
+    if (rowTime >= twentyFourHoursAgo) {
+      var hoursAgo = Math.floor((now.getTime() - rowTime.getTime()) / 3600000);
+      if (hoursAgo >= 0 && hoursAgo < 24) velocitySlots[23 - hoursAgo]++;
+    }
+
+    var emailStr = (data[i][0] || '').toString().trim();
+    var atIdx = emailStr.lastIndexOf('@');
+    if (atIdx > 0) {
+      var domain = emailStr.substring(atIdx + 1).toLowerCase();
+      domainCounts[domain] = (domainCounts[domain] || 0) + 1;
+    }
+
+    var ref = (data[i][2] || '').toString().trim() || 'direct';
     refCounts[ref] = (refCounts[ref] || 0) + 1;
-    const cc = (data[i][3] || '').toString().trim().toUpperCase();
+    var cc = (data[i][3] || '').toString().trim().toUpperCase();
     if (cc.length === 2) countryCounts[cc] = (countryCounts[cc] || 0) + 1;
   }
 
+  // Growth
   const growth = yesterday > 0 ? Math.round(((today - yesterday) / yesterday) * 100) : null;
   const growthLabel = growth === null ? '' : (growth >= 0 ? '+' + growth + '% vs yesterday' : growth + '% vs yesterday');
   const growthColor = growth === null ? 'rgba(255,255,255,0.3)' : (growth >= 0 ? '#30D158' : '#ff453a');
 
-  // Umami analytics data
+  // Week over week
+  var wowChange = prevWeekCount > 0 ? Math.round(((last7 - prevWeekCount) / prevWeekCount) * 100) : null;
+  var wowLabel = wowChange === null ? 'N/A' : (wowChange >= 0 ? '+' + wowChange + '%' : wowChange + '%');
+  var wowColor = wowChange === null ? 'rgba(255,255,255,0.3)' : (wowChange >= 0 ? '#30D158' : '#ff453a');
+
+  // Average per day
+  var avgPerDay = '0.0';
+  if (firstSignupDate && total > 0) {
+    var daysSinceFirst = Math.max(1, Math.ceil((now.getTime() - firstSignupDate.getTime()) / 86400000));
+    avgPerDay = (total / daysSinceFirst).toFixed(1);
+  }
+
+  // Best day
+  var MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var bestDayKey = '', bestDayCount = 0;
+  Object.keys(allDayCounts).forEach(function(dk) {
+    if (allDayCounts[dk] > bestDayCount) { bestDayCount = allDayCounts[dk]; bestDayKey = dk; }
+  });
+  var bestDayLabel = '';
+  if (bestDayKey) {
+    var bd = new Date(bestDayKey + 'T12:00:00');
+    bestDayLabel = MONTH_NAMES[bd.getMonth()] + ' ' + bd.getDate();
+  }
+
+  // Milestone progress
+  var nextMilestone = MILESTONES[MILESTONES.length - 1];
+  var prevMilestone = 0;
+  for (var m = 0; m < MILESTONES.length; m++) {
+    if (total < MILESTONES[m]) { nextMilestone = MILESTONES[m]; prevMilestone = m > 0 ? MILESTONES[m - 1] : 0; break; }
+  }
+  var milestoneProgress = nextMilestone > prevMilestone
+    ? Math.min(100, Math.round(((total - prevMilestone) / (nextMilestone - prevMilestone)) * 100))
+    : 100;
+
+  // Velocity sparkline
+  var maxVel = Math.max.apply(null, velocitySlots.concat([1]));
+  var sparkPoints = '';
+  var sparkArea = '0,40 ';
+  for (var h = 0; h < 24; h++) {
+    var sx = Math.round((h / 23) * 240);
+    var sy = Math.round(40 - (velocitySlots[h] / maxVel) * 36);
+    sparkPoints += sx + ',' + sy + ' ';
+    sparkArea += sx + ',' + sy + ' ';
+  }
+  sparkArea += '240,40';
+  var velocityTotal = velocitySlots.reduce(function(a, b) { return a + b; }, 0);
+
+  // Recent signups (last 15)
+  var recentSignups = [];
+  for (var ri = data.length - 1; ri >= 1 && recentSignups.length < 15; ri--) {
+    if (!data[ri][0]) continue;
+    var emailRaw = data[ri][0].toString().trim();
+    var ts = new Date(data[ri][1]);
+    var refVal = (data[ri][2] || '').toString().trim() || 'direct';
+    var ccVal = (data[ri][3] || '').toString().trim().toUpperCase();
+    var atPos = emailRaw.lastIndexOf('@');
+    var masked = atPos > 1 ? emailRaw[0] + '***' + emailRaw.substring(atPos) : '***';
+    var diffMin = Math.floor((now.getTime() - ts.getTime()) / 60000);
+    var relTime;
+    if (diffMin < 1) relTime = 'just now';
+    else if (diffMin < 60) relTime = diffMin + 'm ago';
+    else if (diffMin < 1440) relTime = Math.floor(diffMin / 60) + 'h ago';
+    else relTime = Math.floor(diffMin / 1440) + 'd ago';
+    recentSignups.push({ masked: masked, time: relTime, ref: refVal, cc: ccVal });
+  }
+
+  // Umami analytics
   var umamiToken = props.getProperty('UMAMI_API_TOKEN');
   var umamiSiteId = props.getProperty('UMAMI_WEBSITE_ID');
   var umami = { enabled: false };
@@ -240,14 +323,32 @@ function buildStatsPage(props) {
 
     if (stats7d) {
       umami.enabled = true;
+      // 7-day stats (all fields)
       umami.visitors7d = stats7d.visitors ? stats7d.visitors.value : 0;
       umami.pageviews7d = stats7d.pageviews ? stats7d.pageviews.value : 0;
       umami.bounces7d = stats7d.bounces ? stats7d.bounces.value : 0;
-      umami.visitorsToday = statsToday ? (statsToday.visitors ? statsToday.visitors.value : 0) : 0;
-      umami.pageviewsToday = statsToday ? (statsToday.pageviews ? statsToday.pageviews.value : 0) : 0;
-      umami.visitorsYesterday = statsYesterday ? (statsYesterday.visitors ? statsYesterday.visitors.value : 0) : 0;
+      umami.visits7d = stats7d.visits ? stats7d.visits.value : 0;
+      umami.totaltime7d = stats7d.totaltime ? stats7d.totaltime.value : 0;
       umami.bounceRate7d = umami.visitors7d > 0 ? Math.round((umami.bounces7d / umami.visitors7d) * 100) : 0;
       umami.conversionRate7d = umami.visitors7d > 0 ? ((last7 / umami.visitors7d) * 100).toFixed(1) : '0.0';
+      umami.pagesPerVisitor7d = umami.visitors7d > 0 ? (umami.pageviews7d / umami.visitors7d).toFixed(1) : '0.0';
+      if (umami.visits7d > 0) {
+        var avgSec = Math.round(umami.totaltime7d / umami.visits7d);
+        umami.avgDuration7d = avgSec < 60 ? avgSec + 's' : Math.floor(avgSec / 60) + 'm ' + (avgSec % 60) + 's';
+      } else {
+        umami.avgDuration7d = '0s';
+      }
+      // Today stats (all fields)
+      umami.visitorsToday = statsToday ? (statsToday.visitors ? statsToday.visitors.value : 0) : 0;
+      umami.pageviewsToday = statsToday ? (statsToday.pageviews ? statsToday.pageviews.value : 0) : 0;
+      umami.bouncesToday = statsToday ? (statsToday.bounces ? statsToday.bounces.value : 0) : 0;
+      umami.visitsToday = statsToday ? (statsToday.visits ? statsToday.visits.value : 0) : 0;
+      // Yesterday stats (all fields)
+      umami.visitorsYesterday = statsYesterday ? (statsYesterday.visitors ? statsYesterday.visitors.value : 0) : 0;
+      umami.pageviewsYesterday = statsYesterday ? (statsYesterday.pageviews ? statsYesterday.pageviews.value : 0) : 0;
+      umami.bouncesYesterday = statsYesterday ? (statsYesterday.bounces ? statsYesterday.bounces.value : 0) : 0;
+      umami.visitsYesterday = statsYesterday ? (statsYesterday.visits ? statsYesterday.visits.value : 0) : 0;
+      // Metrics
       umami.referrers = umamiReferrers || [];
       umami.browsers = umamiBrowsers || [];
       umami.devices = umamiDevices || [];
@@ -267,48 +368,52 @@ function buildStatsPage(props) {
     'UA':'Ukraine','GR':'Greece','RO':'Romania','HU':'Hungary','CZ':'Czechia',
     'SK':'Slovakia','HR':'Croatia','RS':'Serbia'};
 
-  // Flag emoji from country code
   function flag(cc) {
     if (!cc || cc.length !== 2) return '';
     return '&#' + (127397 + cc.charCodeAt(0)) + ';&#' + (127397 + cc.charCodeAt(1)) + ';';
   }
 
+  // Country data - show ALL countries with percentages
   var topCountries = Object.keys(countryCounts).sort(function(a,b){return countryCounts[b]-countryCounts[a];});
   var maxCC = topCountries.length > 0 ? countryCounts[topCountries[0]] : 1;
-
-  // Country list rows
-  var countryRows = topCountries.slice(0, 10).map(function(cc) {
+  var countryCount = topCountries.length;
+  var countryRows = topCountries.map(function(cc) {
     var count = countryCounts[cc];
-    var pct = total > 0 ? Math.round((count / maxCC) * 100) : 0;
+    var pct = total > 0 ? ((count / total) * 100).toFixed(1) : '0.0';
+    var barPct = Math.round((count / maxCC) * 100);
     var name = CN[cc] || cc;
     return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
-      '<span style="font-size:18px;line-height:1">' + flag(cc) + '</span>' +
-      '<span style="flex:1;font-size:13px;color:rgba(255,255,255,0.8)">' + name + '</span>' +
+      '<span style="font-size:18px;line-height:1;min-width:28px">' + flag(cc) + '</span>' +
+      '<span style="flex:1;font-size:13px;color:rgba(255,255,255,0.8)">' + escHtml(name) + '</span>' +
       '<div style="width:80px;background:rgba(255,255,255,0.06);border-radius:999px;height:4px;margin-right:8px">' +
-        '<div style="background:#30D158;height:4px;border-radius:999px;width:' + pct + '%"></div>' +
+        '<div style="background:#30D158;height:4px;border-radius:999px;width:' + barPct + '%"></div>' +
       '</div>' +
-      '<span style="font-size:13px;font-weight:600;color:#30D158;min-width:24px;text-align:right">' + count + '</span>' +
+      '<span style="font-size:12px;color:rgba(255,255,255,0.35);min-width:40px;text-align:right">' + pct + '%</span>' +
+      '<span style="font-size:13px;font-weight:600;color:#30D158;min-width:28px;text-align:right">' + count + '</span>' +
     '</div>';
   }).join('');
 
-  // Bar chart
-  const days = Object.keys(dailyCounts).sort();
-  const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const maxBar = Math.max.apply(null, days.map(function(d){return dailyCounts[d];}).concat([1]));
-  const CW = 100, BAR_W = 60, CHART_H = 90, BAR_MAX_H = 68;
+  // 30-day bar chart
+  var days = Object.keys(dailyCounts).sort();
+  var maxBar = Math.max.apply(null, days.map(function(d){return dailyCounts[d];}).concat([1]));
+  var CW = 28, BAR_W = 16, CHART_H = 100, BAR_MAX_H = 72;
   var bars = '';
   days.forEach(function(dayKey, i) {
     var count = dailyCounts[dayKey];
-    var barH = count > 0 ? Math.max(Math.round((count / maxBar) * BAR_MAX_H), 6) : 3;
+    var barH = count > 0 ? Math.max(Math.round((count / maxBar) * BAR_MAX_H), 4) : 2;
     var x = i * CW + (CW - BAR_W) / 2;
-    var y = CHART_H - barH - 18;
-    var isToday = i === 6;
-    var fill = isToday ? '#30D158' : 'rgba(48,209,88,0.3)';
-    var date = new Date(dayKey + 'T12:00:00');
-    var label = DAY_NAMES[date.getDay()];
-    bars += '<rect x="' + x + '" y="' + y + '" width="' + BAR_W + '" height="' + barH + '" rx="8" fill="' + fill + '"/>';
-    if (count > 0) bars += '<text x="' + (x+BAR_W/2) + '" y="' + (y-5) + '" text-anchor="middle" style="font-size:11px;fill:rgba(255,255,255,0.5);font-family:-apple-system,sans-serif">' + count + '</text>';
-    bars += '<text x="' + (x+BAR_W/2) + '" y="' + (CHART_H-2) + '" text-anchor="middle" style="font-size:11px;fill:' + (isToday ? '#30D158' : 'rgba(255,255,255,0.3)') + ';font-family:-apple-system,sans-serif;font-weight:' + (isToday?'700':'400') + '">' + label + '</text>';
+    var y = CHART_H - barH - 16;
+    var isToday = i === days.length - 1;
+    var fill = isToday ? '#30D158' : 'rgba(48,209,88,0.25)';
+    bars += '<rect x="' + x + '" y="' + y + '" width="' + BAR_W + '" height="' + barH + '" rx="4" fill="' + fill + '"/>';
+    if (isToday || count === maxBar) {
+      bars += '<text x="' + (x + BAR_W/2) + '" y="' + (y - 3) + '" text-anchor="middle" style="font-size:9px;fill:rgba(255,255,255,0.5);font-family:-apple-system,sans-serif">' + count + '</text>';
+    }
+    if (i % 7 === 0 || isToday) {
+      var date = new Date(dayKey + 'T12:00:00');
+      var lbl = (date.getMonth() + 1) + '/' + date.getDate();
+      bars += '<text x="' + (x + BAR_W/2) + '" y="' + (CHART_H - 2) + '" text-anchor="middle" style="font-size:8px;fill:rgba(255,255,255,0.25);font-family:-apple-system,sans-serif">' + lbl + '</text>';
+    }
   });
 
   // Source rows
@@ -320,7 +425,7 @@ function buildStatsPage(props) {
     var barPct = Math.round((count / maxRef) * 100);
     return '<div style="margin-bottom:14px">' +
       '<div style="display:flex;justify-content:space-between;margin-bottom:6px">' +
-        '<span style="font-size:13px;color:rgba(255,255,255,0.8)">' + ref + '</span>' +
+        '<span style="font-size:13px;color:rgba(255,255,255,0.8)">' + escHtml(ref) + '</span>' +
         '<span style="font-size:13px;font-weight:600">' + count + ' <span style="color:rgba(255,255,255,0.3);font-weight:400">' + pct + '%</span></span>' +
       '</div>' +
       '<div style="background:rgba(255,255,255,0.06);border-radius:999px;height:4px">' +
@@ -329,9 +434,56 @@ function buildStatsPage(props) {
     '</div>';
   }).join('');
 
+  // Hourly heatmap cells
+  var maxHourly = Math.max.apply(null, hourlyCounts.concat([1]));
+  var heatmapCells = '';
+  for (var hh = 0; hh < 24; hh++) {
+    var intensity = hourlyCounts[hh] / maxHourly;
+    var alpha = Math.max(0.08, intensity * 0.9);
+    var hbg = 'rgba(48,209,88,' + alpha.toFixed(2) + ')';
+    heatmapCells += '<div style="flex:1;text-align:center">' +
+      '<div style="background:' + hbg + ';border-radius:6px;height:32px;margin-bottom:4px;display:flex;align-items:center;justify-content:center">' +
+        (hourlyCounts[hh] > 0 ? '<span style="font-size:9px;font-weight:600;color:' + (intensity > 0.5 ? '#fff' : 'rgba(255,255,255,0.5)') + '">' + hourlyCounts[hh] + '</span>' : '') +
+      '</div>' +
+      '<div style="font-size:7px;color:rgba(255,255,255,0.25)">' + (hh < 10 ? '0' : '') + hh + '</div>' +
+    '</div>';
+  }
+
+  // Email domain rows
+  var topDomains = Object.keys(domainCounts).sort(function(a, b) { return domainCounts[b] - domainCounts[a]; }).slice(0, 8);
+  var maxDomain = topDomains.length > 0 ? domainCounts[topDomains[0]] : 1;
+  var domainRows = topDomains.map(function(dom) {
+    var count = domainCounts[dom];
+    var pct = total > 0 ? Math.round((count / total) * 100) : 0;
+    var barPct = Math.round((count / maxDomain) * 100);
+    return '<div style="margin-bottom:14px">' +
+      '<div style="display:flex;justify-content:space-between;margin-bottom:6px">' +
+        '<span style="font-size:13px;color:rgba(255,255,255,0.8)">' + escHtml(dom) + '</span>' +
+        '<span style="font-size:13px;font-weight:600">' + count + ' <span style="color:rgba(255,255,255,0.3);font-weight:400">' + pct + '%</span></span>' +
+      '</div>' +
+      '<div style="background:rgba(255,255,255,0.06);border-radius:999px;height:4px">' +
+        '<div style="background:#5e93ff;border-radius:999px;height:4px;width:' + barPct + '%"></div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  // Recent signup table rows
+  var recentRows = '';
+  recentSignups.forEach(function(s) {
+    recentRows += '<tr style="border-bottom:1px solid rgba(255,255,255,0.05)">' +
+      '<td style="padding:10px 0;font-size:13px;color:rgba(255,255,255,0.7);font-family:monospace">' + escHtml(s.masked) + '</td>' +
+      '<td style="padding:10px 8px;font-size:12px;color:rgba(255,255,255,0.35)">' + escHtml(s.time) + '</td>' +
+      '<td style="padding:10px 8px;font-size:12px;color:rgba(255,255,255,0.5)">' + escHtml(s.ref) + '</td>' +
+      '<td style="padding:10px 0;font-size:14px;text-align:right">' + (s.cc ? flag(s.cc) : '') + '</td>' +
+    '</tr>';
+  });
+
   var updatedAt = now.toLocaleString('en-US', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-  var countryCount = Object.keys(countryCounts).length;
   var countryDataJson = JSON.stringify(countryCounts);
+
+  // ═══════════════════════════════════════
+  // HTML
+  // ═══════════════════════════════════════
 
   var html = '<!DOCTYPE html><html><head>' +
     '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
@@ -342,9 +494,11 @@ function buildStatsPage(props) {
     '@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}' +
     '@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}' +
     '.section{animation:fadeUp 0.4s ease both}' +
+    '.scrollbox{max-height:400px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent}' +
+    '.scrollbox::-webkit-scrollbar{width:4px}.scrollbox::-webkit-scrollbar-track{background:transparent}.scrollbox::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}' +
     '</style></head><body>' +
 
-    // Header
+    // ── 1. Header ──
     '<div class="section" style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px">' +
       '<div>' +
         '<div style="font-size:20px;font-weight:700;letter-spacing:-0.5px">Triad Waitlist</div>' +
@@ -356,7 +510,7 @@ function buildStatsPage(props) {
       '</div>' +
     '</div>' +
 
-    // Total card
+    // ── 2. Total Signups ──
     '<div class="section" style="background:linear-gradient(135deg,#0d2818,#0a1510);border:1px solid rgba(48,209,88,0.2);border-radius:20px;padding:24px 28px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;animation-delay:0.05s">' +
       '<div>' +
         '<div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Total Signups</div>' +
@@ -366,7 +520,19 @@ function buildStatsPage(props) {
       '<svg width="44" height="44" viewBox="0 0 24 24" fill="none" style="opacity:0.6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#30D158" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" stroke="#30D158" stroke-width="2"/><path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="#30D158" stroke-width="2" stroke-linecap="round"/><path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="#30D158" stroke-width="2" stroke-linecap="round"/></svg>' +
     '</div>' +
 
-    // 3-col grid
+    // ── 3. Milestone Progress ──
+    '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px 20px;margin-bottom:14px;animation-delay:0.07s">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
+        '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px">Next Milestone</div>' +
+        '<div style="font-size:13px;font-weight:600;color:#30D158">' + total + ' / ' + nextMilestone + '</div>' +
+      '</div>' +
+      '<div style="background:rgba(255,255,255,0.06);border-radius:999px;height:8px;overflow:hidden">' +
+        '<div style="background:linear-gradient(90deg,#30D158,#5e93ff);height:8px;border-radius:999px;width:' + milestoneProgress + '%"></div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:8px;text-align:center">' + milestoneProgress + '% to ' + nextMilestone + ' signups</div>' +
+    '</div>' +
+
+    // ── 4. Today / Yesterday / 7 Days ──
     '<div class="section" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;animation-delay:0.1s">' +
       '<div style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px">' +
         '<div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Today</div>' +
@@ -385,14 +551,34 @@ function buildStatsPage(props) {
       '</div>' +
     '</div>' +
 
-    // Umami site traffic section
+    // ── 5. Key Metrics (Avg/Day, Best Day, Week/Week) ──
+    '<div class="section" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;animation-delay:0.11s">' +
+      '<div style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px">' +
+        '<div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Avg / Day</div>' +
+        '<div style="font-size:26px;font-weight:700;letter-spacing:-0.5px;color:#5e93ff">' + avgPerDay + '</div>' +
+        '<div style="font-size:11px;margin-top:4px;color:rgba(255,255,255,0.3)">all time</div>' +
+      '</div>' +
+      '<div style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px">' +
+        '<div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Best Day</div>' +
+        '<div style="font-size:26px;font-weight:700;letter-spacing:-0.5px;color:#30D158">' + bestDayCount + '</div>' +
+        '<div style="font-size:11px;margin-top:4px;color:rgba(255,255,255,0.3)">' + (bestDayLabel || 'n/a') + '</div>' +
+      '</div>' +
+      '<div style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px">' +
+        '<div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Week / Week</div>' +
+        '<div style="font-size:26px;font-weight:700;letter-spacing:-0.5px;color:' + wowColor + '">' + wowLabel + '</div>' +
+        '<div style="font-size:11px;margin-top:4px;color:rgba(255,255,255,0.3)">vs prev 7 days</div>' +
+      '</div>' +
+    '</div>' +
+
+    // ── 6. Umami Site Traffic (enhanced) ──
     (umami.enabled ?
       '<div class="section" style="background:linear-gradient(135deg,#0d1828,#0a1015);border:1px solid rgba(94,147,255,0.2);border-radius:20px;padding:24px 28px;margin-bottom:14px;animation-delay:0.12s">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
           '<div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px">Site Traffic (7 days)</div>' +
           '<div style="font-size:10px;color:rgba(94,147,255,0.5);background:rgba(94,147,255,0.1);padding:3px 8px;border-radius:999px">via Umami</div>' +
         '</div>' +
-        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:16px">' +
+        // Row 1: Visitors, Pageviews, Sessions, Bounce Rate
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px">' +
           '<div>' +
             '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Visitors</div>' +
             '<div style="font-size:24px;font-weight:700;color:#5e93ff">' + umami.visitors7d + '</div>' +
@@ -402,38 +588,58 @@ function buildStatsPage(props) {
             '<div style="font-size:24px;font-weight:700;color:#5e93ff">' + umami.pageviews7d + '</div>' +
           '</div>' +
           '<div>' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Sessions</div>' +
+            '<div style="font-size:24px;font-weight:700;color:#5e93ff">' + umami.visits7d + '</div>' +
+          '</div>' +
+          '<div>' +
             '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Bounce</div>' +
             '<div style="font-size:24px;font-weight:700;color:' + (umami.bounceRate7d > 70 ? '#ff453a' : '#5e93ff') + '">' + umami.bounceRate7d + '%</div>' +
           '</div>' +
+        '</div>' +
+        // Row 2: Avg Duration, Pages/Visitor, Conversion
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">' +
+          '<div>' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Avg Duration</div>' +
+            '<div style="font-size:20px;font-weight:700;color:#5e93ff">' + umami.avgDuration7d + '</div>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Pages / Visitor</div>' +
+            '<div style="font-size:20px;font-weight:700;color:#5e93ff">' + umami.pagesPerVisitor7d + '</div>' +
+          '</div>' +
           '<div>' +
             '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Conversion</div>' +
-            '<div style="font-size:24px;font-weight:700;color:#30D158">' + umami.conversionRate7d + '%</div>' +
+            '<div style="font-size:20px;font-weight:700;color:#30D158">' + umami.conversionRate7d + '%</div>' +
           '</div>' +
         '</div>' +
+        // Today / Yesterday with full stats
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
           '<div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:12px">' +
-            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Today</div>' +
-            '<div style="font-size:20px;font-weight:700">' + umami.visitorsToday + ' <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.3)">visitors</span></div>' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:8px">Today</div>' +
+            '<div style="font-size:18px;font-weight:700;margin-bottom:4px">' + umami.visitorsToday + ' <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,0.3)">visitors</span></div>' +
+            '<div style="font-size:13px;color:rgba(255,255,255,0.5)">' + umami.pageviewsToday + ' <span style="font-size:11px;color:rgba(255,255,255,0.3)">pageviews</span></div>' +
+            '<div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:2px">' + umami.visitsToday + ' <span style="font-size:11px;color:rgba(255,255,255,0.3)">sessions</span></div>' +
           '</div>' +
           '<div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:12px">' +
-            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Yesterday</div>' +
-            '<div style="font-size:20px;font-weight:700">' + umami.visitorsYesterday + ' <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.3)">visitors</span></div>' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:8px">Yesterday</div>' +
+            '<div style="font-size:18px;font-weight:700;margin-bottom:4px">' + umami.visitorsYesterday + ' <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,0.3)">visitors</span></div>' +
+            '<div style="font-size:13px;color:rgba(255,255,255,0.5)">' + umami.pageviewsYesterday + ' <span style="font-size:11px;color:rgba(255,255,255,0.3)">pageviews</span></div>' +
+            '<div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:2px">' + umami.visitsYesterday + ' <span style="font-size:11px;color:rgba(255,255,255,0.3)">sessions</span></div>' +
           '</div>' +
         '</div>' +
       '</div>' +
 
-      // Umami referrers + devices
-      '<div class="section" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;animation-delay:0.13s">' +
+      // ── 7. Umami Referrers + Devices + Browsers (3 columns) ──
+      '<div class="section" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;animation-delay:0.13s">' +
         '<div style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px">' +
           '<div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px">Top Referrers</div>' +
           (umami.referrers.length > 0 ?
             umami.referrers.slice(0, 5).map(function(r) {
               return '<div style="display:flex;justify-content:space-between;margin-bottom:8px">' +
-                '<span style="font-size:12px;color:rgba(255,255,255,0.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px">' + (r.x || 'direct') + '</span>' +
-                '<span style="font-size:12px;font-weight:600;color:#5e93ff">' + r.y + '</span>' +
+                '<span style="font-size:11px;color:rgba(255,255,255,0.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px">' + escHtml(r.x || 'direct') + '</span>' +
+                '<span style="font-size:11px;font-weight:600;color:#5e93ff">' + r.y + '</span>' +
               '</div>';
             }).join('')
-            : '<p style="font-size:12px;color:rgba(255,255,255,0.25)">No data yet</p>'
+            : '<p style="font-size:11px;color:rgba(255,255,255,0.25)">No data yet</p>'
           ) +
         '</div>' +
         '<div style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px">' +
@@ -442,33 +648,97 @@ function buildStatsPage(props) {
             umami.devices.slice(0, 5).map(function(d) {
               var icon = d.x === 'mobile' ? '&#128241;' : (d.x === 'desktop' ? '&#128187;' : '&#128196;');
               return '<div style="display:flex;justify-content:space-between;margin-bottom:8px">' +
-                '<span style="font-size:12px;color:rgba(255,255,255,0.7)">' + icon + ' ' + d.x + '</span>' +
-                '<span style="font-size:12px;font-weight:600;color:#5e93ff">' + d.y + '</span>' +
+                '<span style="font-size:11px;color:rgba(255,255,255,0.7)">' + icon + ' ' + escHtml(d.x) + '</span>' +
+                '<span style="font-size:11px;font-weight:600;color:#5e93ff">' + d.y + '</span>' +
               '</div>';
             }).join('')
-            : '<p style="font-size:12px;color:rgba(255,255,255,0.25)">No data yet</p>'
+            : '<p style="font-size:11px;color:rgba(255,255,255,0.25)">No data yet</p>'
+          ) +
+        '</div>' +
+        '<div style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px">' +
+          '<div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px">Browsers</div>' +
+          (umami.browsers.length > 0 ?
+            umami.browsers.slice(0, 5).map(function(b) {
+              return '<div style="display:flex;justify-content:space-between;margin-bottom:8px">' +
+                '<span style="font-size:11px;color:rgba(255,255,255,0.7)">' + escHtml(b.x) + '</span>' +
+                '<span style="font-size:11px;font-weight:600;color:#5e93ff">' + b.y + '</span>' +
+              '</div>';
+            }).join('')
+            : '<p style="font-size:11px;color:rgba(255,255,255,0.25)">No data yet</p>'
           ) +
         '</div>' +
       '</div>'
     : '') +
 
-    // Bar chart
-    '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.15s">' +
-      '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px">Last 7 Days</div>' +
-      '<svg viewBox="0 0 700 90" width="100%" preserveAspectRatio="none" style="overflow:visible">' + bars + '</svg>' +
+    // ── 8. Signup Velocity (24h) ──
+    '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.14s">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+        '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px">Signup Velocity (24h)</div>' +
+        '<div style="font-size:20px;font-weight:700;color:#30D158">' + velocityTotal + ' <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,0.3)">signups</span></div>' +
+      '</div>' +
+      '<svg viewBox="0 0 240 40" width="100%" preserveAspectRatio="none" style="overflow:visible">' +
+        '<polygon points="' + sparkArea + '" fill="rgba(48,209,88,0.15)"/>' +
+        '<polyline points="' + sparkPoints.trim() + '" fill="none" stroke="#30D158" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '</svg>' +
     '</div>' +
 
-    // World map
-    '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.2s">' +
-      '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px">Global Reach</div>' +
+    // ── 9. 30-Day Trend ──
+    '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.15s">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
+        '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px">Last 30 Days</div>' +
+        '<div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5)">' + last30 + ' total</div>' +
+      '</div>' +
+      '<svg viewBox="0 0 840 100" width="100%" preserveAspectRatio="none" style="overflow:visible">' + bars + '</svg>' +
+    '</div>' +
+
+    // ── 10. Hourly Heatmap ──
+    '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.17s">' +
+      '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px">Signups by Hour</div>' +
+      '<div style="display:flex;gap:3px">' + heatmapCells + '</div>' +
+    '</div>' +
+
+    // ── 11. Email Domains ──
+    '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.19s">' +
+      '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px">Email Providers</div>' +
+      (domainRows || '<p style="font-size:13px;color:rgba(255,255,255,0.25)">No data yet.</p>') +
+    '</div>' +
+
+    // ── 12. Recent Signups ──
+    '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.21s">' +
+      '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px">Recent Signups</div>' +
+      (recentRows ?
+        '<div style="overflow-x:auto">' +
+          '<table style="width:100%;border-collapse:collapse">' +
+            '<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.1)">' +
+              '<th style="text-align:left;padding:0 0 8px;font-size:10px;color:rgba(255,255,255,0.25);font-weight:500;text-transform:uppercase;letter-spacing:0.5px">Email</th>' +
+              '<th style="text-align:left;padding:0 8px 8px;font-size:10px;color:rgba(255,255,255,0.25);font-weight:500;text-transform:uppercase;letter-spacing:0.5px">When</th>' +
+              '<th style="text-align:left;padding:0 8px 8px;font-size:10px;color:rgba(255,255,255,0.25);font-weight:500;text-transform:uppercase;letter-spacing:0.5px">Source</th>' +
+              '<th style="text-align:right;padding:0 0 8px;font-size:10px;color:rgba(255,255,255,0.25);font-weight:500;text-transform:uppercase;letter-spacing:0.5px"></th>' +
+            '</tr></thead>' +
+            '<tbody>' + recentRows + '</tbody>' +
+          '</table>' +
+        '</div>'
+        : '<p style="font-size:13px;color:rgba(255,255,255,0.25)">No signups yet.</p>'
+      ) +
+    '</div>' +
+
+    // ── 13. World Map + Country List (improved) ──
+    '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.23s">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
+        '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px">Global Reach</div>' +
+        '<div style="font-size:12px;color:rgba(255,255,255,0.4)">' + countryCount + ' countries &middot; ' + total + ' signups</div>' +
+      '</div>' +
       '<div id="map-wrap" style="position:relative;background:#0d1f12;border-radius:10px;overflow:hidden;margin-bottom:' + (countryRows ? '20px' : '0') + '">' +
         '<svg id="world-svg" style="width:100%;display:block"></svg>' +
         '<div id="map-tip" style="display:none;position:absolute;background:rgba(10,25,15,0.97);border:1px solid rgba(48,209,88,0.4);border-radius:8px;padding:6px 12px;font-size:12px;color:#30D158;pointer-events:none;white-space:nowrap;z-index:10"></div>' +
       '</div>' +
-      (countryRows || '<p style="font-size:13px;color:rgba(255,255,255,0.25)">No location data yet. Will appear with new signups.</p>') +
+      (countryRows ?
+        '<div class="scrollbox">' + countryRows + '</div>'
+        : '<p style="font-size:13px;color:rgba(255,255,255,0.25)">No location data yet. Will appear with new signups.</p>'
+      ) +
     '</div>' +
 
-    // Sources
+    // ── 14. Top Sources ──
     '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;animation-delay:0.25s">' +
       '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px">Top Sources</div>' +
       (sourceRows || '<p style="font-size:13px;color:rgba(255,255,255,0.25)">No referral data yet.</p>') +
