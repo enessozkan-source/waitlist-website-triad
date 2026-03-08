@@ -1738,11 +1738,8 @@
               ]);
               bodyStr += '&captcha_token=' + encodeURIComponent(token);
             } catch (e) {
-              console.warn('reCAPTCHA failed:', e);
-              throw new Error('Verification unavailable. Please disable your ad blocker or try a different browser.');
+              console.warn('reCAPTCHA failed, proceeding without token:', e);
             }
-          } else {
-            throw new Error('Verification unavailable. Please disable your ad blocker or try a different browser.');
           }
 
           var controller = new AbortController();

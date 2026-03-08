@@ -47,20 +47,19 @@ function doPost(e) {
     // 3b. Country code - 2 uppercase letters only
     const rawCountry = (params.country || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2);
 
-    // 4. reCAPTCHA verification (mandatory)
-    if (!params.captcha_token) {
-      return jsonResponse({ result: 'error', message: 'Verification required. Please try again.' });
-    }
-    const captchaResponse = UrlFetchApp.fetch('https://www.google.com/recaptcha/api/siteverify', {
-      method: 'post',
-      payload: {
-        secret: RECAPTCHA_SECRET,
-        response: params.captcha_token
+    // 4. reCAPTCHA verification (optional - skip if token missing)
+    if (params.captcha_token) {
+      const captchaResponse = UrlFetchApp.fetch('https://www.google.com/recaptcha/api/siteverify', {
+        method: 'post',
+        payload: {
+          secret: RECAPTCHA_SECRET,
+          response: params.captcha_token
+        }
+      });
+      const captchaResult = JSON.parse(captchaResponse.getContentText());
+      if (!captchaResult.success || captchaResult.score < 0.3 || captchaResult.action !== 'submit') {
+        return jsonResponse({ result: 'error', message: "We couldn't verify your submission. Please try again." });
       }
-    });
-    const captchaResult = JSON.parse(captchaResponse.getContentText());
-    if (!captchaResult.success || captchaResult.score < 0.5 || captchaResult.action !== 'submit') {
-      return jsonResponse({ result: 'error', message: "We couldn't verify your submission. Please try again." });
     }
 
     // 5-7. Acquire lock to prevent TOCTOU race on duplicate check and write
