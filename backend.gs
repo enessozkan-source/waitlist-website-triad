@@ -139,6 +139,28 @@ function doGet(e) {
     }
   }
 
+  // Error logging endpoint - receives frontend JS errors
+  if (params.action === 'error') {
+    try {
+      const SPREADSHEET_ID = props.getProperty('SPREADSHEET_ID');
+      const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+      let errorSheet = ss.getSheetByName('Errors');
+      if (!errorSheet) {
+        errorSheet = ss.insertSheet('Errors');
+        errorSheet.getRange(1, 1, 1, 6).setValues([['Timestamp', 'Message', 'Source', 'Line', 'UserAgent', 'URL']]);
+      }
+      const msg = (params.msg || '').slice(0, 300);
+      const src = (params.src || '').slice(0, 200);
+      const line = (params.line || '0') + ':' + (params.col || '0');
+      const ua = (params.ua || '').slice(0, 150);
+      const url = (params.url || '').slice(0, 200);
+      errorSheet.appendRow([new Date().toISOString(), msg, src, line, ua, url]);
+    } catch (err) {
+      console.error('Error logging failed:', err);
+    }
+    return jsonResponse({ status: 'ok' });
+  }
+
   // Default response used by keep-warm trigger
   return jsonResponse({ status: 'ok' });
 }
@@ -319,6 +341,7 @@ function buildStatsPage(props) {
     var umamiReferrers = fetchUmami('/websites/' + umamiSiteId + '/metrics?startAt=' + startAt7d + '&endAt=' + endAt + '&type=referrer', umamiToken);
     var umamiBrowsers = fetchUmami('/websites/' + umamiSiteId + '/metrics?startAt=' + startAt7d + '&endAt=' + endAt + '&type=browser', umamiToken);
     var umamiDevices = fetchUmami('/websites/' + umamiSiteId + '/metrics?startAt=' + startAt7d + '&endAt=' + endAt + '&type=device', umamiToken);
+    var umamiEvents = fetchUmami('/websites/' + umamiSiteId + '/metrics?startAt=' + startAt7d + '&endAt=' + endAt + '&type=event', umamiToken);
 
     if (stats7d) {
       umami.enabled = true;
@@ -351,6 +374,7 @@ function buildStatsPage(props) {
       umami.referrers = umamiReferrers || [];
       umami.browsers = umamiBrowsers || [];
       umami.devices = umamiDevices || [];
+      umami.events = umamiEvents || [];
     }
   }
 
@@ -666,6 +690,59 @@ function buildStatsPage(props) {
             : '<p style="font-size:11px;color:rgba(255,255,255,0.25)">No data yet</p>'
           ) +
         '</div>' +
+      '</div>' +
+
+      // ── 7b. User Engagement Funnel ──
+      '<div class="section" style="background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.135s">' +
+        '<div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">User Engagement Funnel (7 days)</div>' +
+        (function() {
+          var evMap = {};
+          (umami.events || []).forEach(function(ev) { evMap[ev.x] = ev.y; });
+          var visits = umami.visitors7d || 0;
+          var scrolled = evMap['scroll_depth'] || 0;
+          var focused = evMap['email_focus'] || 0;
+          var abandoned = evMap['form_abandon'] || 0;
+          var errors = evMap['form_error'] || 0;
+          var exits = evMap['page_exit'] || 0;
+          var funnel = [
+            { label: 'Visited', count: visits, color: '#5e93ff' },
+            { label: 'Scrolled', count: scrolled, color: '#5e93ff' },
+            { label: 'Focused Email', count: focused, color: '#30D158' },
+            { label: 'Signed Up', count: last7, color: '#30D158' },
+          ];
+          var maxF = Math.max(visits, 1);
+          var funnelHtml = funnel.map(function(step) {
+            var pct = Math.round((step.count / maxF) * 100);
+            var barW = Math.max(pct, 2);
+            return '<div style="margin-bottom:12px">' +
+              '<div style="display:flex;justify-content:space-between;margin-bottom:4px">' +
+                '<span style="font-size:12px;color:rgba(255,255,255,0.7)">' + step.label + '</span>' +
+                '<span style="font-size:12px;font-weight:600;color:' + step.color + '">' + step.count + ' <span style="font-weight:400;color:rgba(255,255,255,0.3)">' + pct + '%</span></span>' +
+              '</div>' +
+              '<div style="background:rgba(255,255,255,0.06);border-radius:999px;height:6px">' +
+                '<div style="background:' + step.color + ';border-radius:999px;height:6px;width:' + barW + '%;opacity:0.8"></div>' +
+              '</div>' +
+            '</div>';
+          }).join('');
+          if (abandoned > 0 || errors > 0) {
+            funnelHtml += '<div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">' +
+              '<div style="font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">Drop-off Signals</div>';
+            if (abandoned > 0) {
+              funnelHtml += '<div style="display:flex;justify-content:space-between;margin-bottom:6px">' +
+                '<span style="font-size:12px;color:rgba(255,255,255,0.6)">Typed email but left</span>' +
+                '<span style="font-size:12px;font-weight:600;color:#ff453a">' + abandoned + '</span>' +
+              '</div>';
+            }
+            if (errors > 0) {
+              funnelHtml += '<div style="display:flex;justify-content:space-between;margin-bottom:6px">' +
+                '<span style="font-size:12px;color:rgba(255,255,255,0.6)">Form errors</span>' +
+                '<span style="font-size:12px;font-weight:600;color:#ff453a">' + errors + '</span>' +
+              '</div>';
+            }
+            funnelHtml += '</div>';
+          }
+          return funnelHtml || '<p style="font-size:12px;color:rgba(255,255,255,0.25)">Collecting data. Events will appear after a few visits.</p>';
+        })() +
       '</div>'
     : '') +
 
@@ -742,6 +819,43 @@ function buildStatsPage(props) {
       '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px">Top Sources</div>' +
       (sourceRows || '<p style="font-size:13px;color:rgba(255,255,255,0.25)">No referral data yet.</p>') +
     '</div>' +
+
+    // ── 15. Recent JS Errors ──
+    (function() {
+      try {
+        var errSheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('Errors');
+        if (!errSheet || errSheet.getLastRow() <= 1) return '';
+        var lastErrRow = errSheet.getLastRow();
+        var startRow = Math.max(2, lastErrRow - 9);
+        var errData = errSheet.getRange(startRow, 1, lastErrRow - startRow + 1, 6).getValues();
+        var errRows = '';
+        for (var ei = errData.length - 1; ei >= 0; ei--) {
+          var eTs = new Date(errData[ei][0]);
+          var eDiff = Math.floor((now.getTime() - eTs.getTime()) / 60000);
+          var eTime = eDiff < 60 ? eDiff + 'm ago' : (eDiff < 1440 ? Math.floor(eDiff / 60) + 'h ago' : Math.floor(eDiff / 1440) + 'd ago');
+          errRows += '<tr style="border-bottom:1px solid rgba(255,255,255,0.05)">' +
+            '<td style="padding:8px 0;font-size:11px;color:rgba(255,255,255,0.4)">' + escHtml(eTime) + '</td>' +
+            '<td style="padding:8px 8px;font-size:11px;color:#ff453a;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(errData[ei][1]) + '</td>' +
+            '<td style="padding:8px 0;font-size:10px;color:rgba(255,255,255,0.3);text-align:right">' + escHtml(errData[ei][3]) + '</td>' +
+          '</tr>';
+        }
+        var totalErrors = lastErrRow - 1;
+        return '<div class="section" style="background:#141414;border:1px solid rgba(255,69,58,0.15);border-radius:16px;padding:20px;margin-bottom:14px;animation-delay:0.27s">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
+            '<div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px">JS Errors</div>' +
+            '<div style="font-size:12px;color:#ff453a;font-weight:600">' + totalErrors + ' total</div>' +
+          '</div>' +
+          '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">' +
+            '<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.1)">' +
+              '<th style="text-align:left;padding:0 0 8px;font-size:10px;color:rgba(255,255,255,0.25);font-weight:500">When</th>' +
+              '<th style="text-align:left;padding:0 8px 8px;font-size:10px;color:rgba(255,255,255,0.25);font-weight:500">Error</th>' +
+              '<th style="text-align:right;padding:0 0 8px;font-size:10px;color:rgba(255,255,255,0.25);font-weight:500">Line</th>' +
+            '</tr></thead>' +
+            '<tbody>' + errRows + '</tbody>' +
+          '</table></div>' +
+        '</div>';
+      } catch (_) { return ''; }
+    })() +
 
     '<p style="margin-top:24px;font-size:11px;color:rgba(255,255,255,0.12);text-align:center">Triad - Internal use only</p>' +
 

@@ -1017,20 +1017,21 @@
 
   <script>
     // ─── Global Error Handler ────────────────────────────────
-    var ERROR_ENDPOINT = ''; // Set to your error reporting URL to enable remote logging
+    var ERROR_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwhKFceC40wW5xww-lTM9gsfOH3FrDjqcNT72yPwxfmA6uP8lnHHW_f_lnY0G18B33wLg/exec';
     function reportError(msg, source, line, col) {
       console.error('Triad Error:', msg, source, line);
-      if (!ERROR_ENDPOINT || typeof navigator.sendBeacon !== 'function') return;
+      if (!ERROR_ENDPOINT) return;
       try {
-        var payload = JSON.stringify({
-          msg: String(msg).slice(0, 200),
-          src: String(source || '').slice(-100),
-          line: line || 0,
-          col: col || 0,
-          ua: navigator.userAgent.slice(0, 120),
-          ts: Date.now()
-        });
-        navigator.sendBeacon(ERROR_ENDPOINT, payload);
+        var url = ERROR_ENDPOINT +
+          '?action=error' +
+          '&msg=' + encodeURIComponent(String(msg).slice(0, 200)) +
+          '&src=' + encodeURIComponent(String(source || '').slice(-100)) +
+          '&line=' + (line || 0) +
+          '&col=' + (col || 0) +
+          '&ua=' + encodeURIComponent(navigator.userAgent.slice(0, 120)) +
+          '&url=' + encodeURIComponent(location.href.slice(0, 150));
+        var img = new Image();
+        img.src = url;
       } catch (_) { /* silent */ }
     }
     window.addEventListener('error', function(e) {
@@ -1782,6 +1783,7 @@
 
           showSharePanel(form);
         } catch (err) {
+          uTrack('form_error', { error: (err.message || 'unknown').slice(0, 100) });
           var msg = err.message || 'Connection failed. Check your internet and try again.';
           var errEl = form.parentNode.querySelector('.form-error');
           if (errEl) { errEl.textContent = msg; errEl.style.display = ''; }
@@ -1817,6 +1819,68 @@
 
       setupFormValidation('hero-form');
       setupFormValidation('footer-form');
+
+      // ─── Umami Custom Event Tracking ────────────────────────
+      // Tracks user engagement to understand why visitors leave without signing up
+      function uTrack(name, data) {
+        if (typeof umami !== 'undefined' && umami.track) {
+          umami.track(name, data);
+        }
+      }
+
+      // Scroll depth tracking (25%, 50%, 75%, 100%)
+      var scrollMarks = {};
+      window.addEventListener('scroll', function() {
+        var scrollPct = Math.round((window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100);
+        [25, 50, 75, 100].forEach(function(mark) {
+          if (scrollPct >= mark && !scrollMarks[mark]) {
+            scrollMarks[mark] = true;
+            uTrack('scroll_depth', { depth: mark });
+          }
+        });
+      }, { passive: true });
+
+      // Email input focus (user showed intent)
+      var emailFocusTracked = false;
+      document.querySelectorAll('.waitlist-form input[type="email"]').forEach(function(input) {
+        input.addEventListener('focus', function() {
+          if (!emailFocusTracked) {
+            emailFocusTracked = true;
+            uTrack('email_focus', { form: this.closest('form').id });
+          }
+        }, { once: true });
+      });
+
+      // Email input started typing but abandoned (fires on page unload)
+      var typedEmail = false;
+      var submittedForm = false;
+      document.querySelectorAll('.waitlist-form input[type="email"]').forEach(function(input) {
+        input.addEventListener('input', function() { typedEmail = true; }, { once: true });
+      });
+
+      // Track time on page + abandon detection on page exit
+      document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden') {
+          var timeOnPage = Math.round((Date.now() - PAGE_LOAD_TIME) / 1000);
+          uTrack('page_exit', {
+            time_seconds: timeOnPage,
+            scrolled: Object.keys(scrollMarks).length > 0,
+            focused_email: emailFocusTracked,
+            typed_email: typedEmail,
+            submitted: submittedForm
+          });
+          if (typedEmail && !submittedForm) {
+            uTrack('form_abandon', { time_seconds: timeOnPage });
+          }
+        }
+      });
+
+      // Patch submit to mark successful submission
+      var _origSubmit = submit;
+      submit = async function(form) {
+        await _origSubmit(form);
+        if (submittedEmails.size > 0) submittedForm = true;
+      };
     });
   </script>
 </body>
